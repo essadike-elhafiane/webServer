@@ -6,7 +6,7 @@
 /*   By: eelhafia <eelhafia@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/29 21:28:36 by eelhafia          #+#    #+#             */
-/*   Updated: 2023/09/30 15:49:57 by eelhafia         ###   ########.fr       */
+/*   Updated: 2023/10/01 05:32:03 by eelhafia         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,7 @@
 int main() {
     int serverSocket, clientSocket;
     socklen_t clientLength;
-    char buffer[256];
+    // char buffer[256];
     struct sockaddr_in serverAddress, clientAddress;
 
     // Create the server socket
@@ -59,7 +59,7 @@ int main() {
         // write(clientSocket, buffer, message.length());
         std::cout << requests << std::endl;
         std::string rOK = "HTTP/1.1 200 OK\r\nContent-Length: ";
-        std::ifstream r("file.html");
+        std::ifstream r("html/file.html");
         if (!r.is_open())
             exit(1);
             
@@ -67,7 +67,9 @@ int main() {
         std::string line; 
         while (!std::getline(r, line).fail())
             response = response + line + '\n';
+        
         rOK = rOK + std::to_string(response.length()) + "\r\n\r\n" + response;
+        std::cout << std::endl << std::endl;
         // std::cout << rOK << std::endl;
         if (send(clientSocket, rOK.c_str(), rOK.length(), 0) < 0)
         {
@@ -76,6 +78,7 @@ int main() {
             continue;
         }
         close(clientSocket);
+        // exit(1);
     }
 
     close(serverSocket);

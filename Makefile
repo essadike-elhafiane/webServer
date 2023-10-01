@@ -6,9 +6,9 @@ SRC = main.cpp
 
 obj = $(SRC:.cpp=.o)
 
-all: $(Name)
+all: $(NAME)
 
-$(Name): $(obj)
+$(NAME): $(obj)
 	$(CC) $(obj) -o $@
 
 %.o: %.cpp include/webserv.hpp
@@ -18,6 +18,6 @@ clean:
 	$(RM) $(obj)
 
 fclean: clean
-	$(RM) $(Name)
+	$(RM) $(NAME)
 
 re: fclean all
