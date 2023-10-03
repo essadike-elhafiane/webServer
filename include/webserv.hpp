@@ -11,6 +11,10 @@
 #include <netinet/in.h>
 #include <arpa/inet.h>
 #include <fstream>
+#include <cstdlib>
+#include <cstring>
+#include <netdb.h>
+#include <arpa/inet.h>
 // class webserv
 // {
 //     private:
