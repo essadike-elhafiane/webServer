@@ -25,9 +25,9 @@ class server
         int port;
     public:
         server(std::string name);
-        std::string & getName()
+        std::string getName()
         {
-            name;
+           return name;
         }
         void createSocketServer()
         {
