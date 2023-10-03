@@ -6,7 +6,7 @@
 /*   By: eelhafia <eelhafia@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/29 21:28:36 by eelhafia          #+#    #+#             */
-/*   Updated: 2023/10/03 17:27:40 by eelhafia         ###   ########.fr       */
+/*   Updated: 2023/10/03 22:51:28 by eelhafia         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,81 +31,86 @@ int main() {
         // b[len] = '\n';
         // b[len +1] = '\0';
         // requests = b;
-        // if (requests.substr(4, 17) == "/html/compte.html")
-        // {
-        //     std::cout << requests << std::endl;
-        //     std::string rOK = "HTTP/1.1 200 OK\r\nContent-Length: ";
-        //     std::ifstream r("html/compte.html");
-        //     if (!r.is_open())
-        //         exit(1);
-        //     std::string response;
-        //     std::string line; 
-        //     while (!std::getline(r, line).fail())
-        //         response = response + line + '\n';
+        if (request.getUrl()== "/html/html/compte.html")
+        {
+            std::cout << requests << std::endl;
+            std::string rOK = "HTTP/1.1 200 OK\r\nContent-Length: ";
+            std::ifstream r("html/compte.html");
+            if (!r.is_open())
+                exit(1);
+            std::string response;
+            std::string line; 
+            while (!std::getline(r, line).fail())
+                response = response + line + '\n';
             
-        //     rOK = rOK + std::to_string(response.length()) + "\r\n\r\n" + response;
-        //     std::cout << std::endl << std::endl;
-        //     std::cout << rOK << std::endl;
-        //     if (send(client.getClientSocket(), rOK.c_str(), rOK.length(), 0) < 0)
-        //     {
-        //         std::cerr << "Failed to send response." << std::endl;
-        //         close(client.getClientSocket());
-        //         continue;
-        //     }
-        //     close(client.getClientSocket());
-        //     std::cout << std::endl << "|" << requests.substr(4, 17) << "|" << std::endl << std::endl;
-        //     continue;
-        // }
-        //  if (requests.substr(4, 25) == "/html/html/app-coder.html")
-        // {
-        //     std::cout << requests << std::endl;
-        //     std::string rOK = "HTTP/1.1 200 OK\r\nContent-Length: ";
-        //     std::ifstream r("/html/html/app-coder.html");
-        //     if (!r.is_open())
-        //         exit(1);
-        //     std::string response;
-        //     std::string line; 
-        //     while (!std::getline(r, line).fail())
-        //         response = response + line + '\n';
+            rOK = rOK + std::to_string(response.length()) + "\r\n\r\n" + response;
+            std::cout << std::endl << std::endl;
+            std::cout << rOK << std::endl;
+            if (send(client.getClientSocket(), rOK.c_str(), rOK.length(), 0) < 0)
+            {
+                std::cerr << "Failed to send response." << std::endl;
+                close(client.getClientSocket());
+                continue;
+            }
+            close(client.getClientSocket());
+            // std::cout << std::endl << "|" << requests.substr(4, 17) << "|" << std::endl << std::endl;
+            continue;
+        }
+        if (request.getUrl() == "html/app-coder.html" || request.getUrl() == "/html/html/app-coder.html")
+        {
+            // std::cout << requests << std::endl;
+            std::string rOK = "HTTP/1.1 200 OK\r\nContent-Length: ";
+            std::ifstream r("html/app-coder.html");
+            if (!r.is_open())
+                exit(1);
+            std::string response;
+            std::string line; 
+            while (!std::getline(r, line).fail())
+                response = response + line + '\n';
             
-        //     rOK = rOK + std::to_string(response.length()) + "\r\n\r\n" + response;
-        //     std::cout << std::endl << std::endl;
-        //     std::cout << rOK << std::endl;
-        //     if (send(client.getClientSocket(), rOK.c_str(), rOK.length(), 0) < 0)
-        //     {
-        //         std::cerr << "Failed to send response." << std::endl;
-        //         close(client.getClientSocket());
-        //         continue;
-        //     }
-        //     close(client.getClientSocket());
-        //     std::cout << std::endl << "|" << requests.substr(4, 25) << "|" << std::endl << std::endl;
-        //     continue;
-        // }
+            rOK = rOK + std::to_string(response.length()) + "\r\n\r\n" + response;
+            std::cout << std::endl << std::endl;
+            std::cout << rOK << std::endl;
+            if (send(client.getClientSocket(), rOK.c_str(), rOK.length(), 0) < 0)
+            {
+                std::cerr << "Failed to send response." << std::endl;
+                close(client.getClientSocket());
+                continue;
+            }
+            
+            close(client.getClientSocket());
+            // std::cout << std::endl << "|" << requests.substr(4, 25) << "|" << std::endl << std::endl;
+            continue;
+        }
         // std::cout << std::endl << requests.substr(4, 12) << std::endl;
         // std::string message = "Hello from server!";
         // std::strcpy(buffer, message.c_str());
         // write(client.getClientSocket(), buffer, message.length());
         // std::cout << requests << std::endl;
-        // std::string rOK = "HTTP/1.1 200 OK\r\nContent-Length: ";
-        // std::ifstream r("html/file.html");
-        // if (!r.is_open())
-        //     exit(1);
+        if (request.getUrl() == "/" || request.getUrl() == "/html/conection.html")
+        {
+            std::string rOK = "HTTP/1.1 200 OK\r\nContent-Length: ";
+            std::ifstream r("html/file.html");
+            if (!r.is_open())
+                exit(1);
+                
+            std::string response;
+            std::string line; 
+            while (!std::getline(r, line).fail())
+                response = response + line + '\n';
             
-        // std::string response;
-        // std::string line; 
-        // while (!std::getline(r, line).fail())
-        //     response = response + line + '\n';
+            rOK = rOK + std::to_string(response.length()) + "\r\n\r\n" + response;
+            std::cout << std::endl << std::endl;
+            // std::cout << rOK << std::endl;
+            if (send(client.getClientSocket(), rOK.c_str(), rOK.length(), 0) < 0)
+            {
+                std::cerr << "Failed to send response." << std::endl;
+                close(client.getClientSocket());
+                continue;
+            }
+        }
         
-        // rOK = rOK + std::to_string(response.length()) + "\r\n\r\n" + response;
-        // std::cout << std::endl << std::endl;
-        // // std::cout << rOK << std::endl;
-        // if (send(client.getClientSocket(), rOK.c_str(), rOK.length(), 0) < 0)
-        // {
-        //     std::cerr << "Failed to send response." << std::endl;
-        //     close(client.getClientSocket());
-        //     continue;
-        // }
-        // close(client.getClientSocket());
+        close(client.getClientSocket());
         // exit(1);
     }
 
