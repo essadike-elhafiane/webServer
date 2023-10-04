@@ -17,7 +17,7 @@
 #include <arpa/inet.h> 
 #include "../server/server.hpp"
 #include <set>
-
+#include <fcntl.h>
 class socketClient
 {
     private:
@@ -38,6 +38,8 @@ class socketClient
                 std::cerr << "Error accepting client connection." << std::endl;
                 exit(1);
             }
+            fcntl(clientSocket, F_SETFL, O_NONBLOCK, FD_CLOEXEC);
+
             return clientSocket;
         }
     

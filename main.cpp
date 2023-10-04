@@ -6,7 +6,7 @@
 /*   By: eelhafia <eelhafia@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/29 21:28:36 by eelhafia          #+#    #+#             */
-/*   Updated: 2023/10/04 23:15:47 by eelhafia         ###   ########.fr       */
+/*   Updated: 2023/10/05 00:31:14 by eelhafia         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,21 +14,25 @@
 #include "server/server.hpp"
 #include "socketClient/socketClient.hpp"
 #include "request/request.hpp"
-
+#include <fcntl.h>
 int main()
 {
     server a("server1");
-    a.runServer(1024, 3000);
+    a.runServer(10, 3000);
     fd_set current_socket, ready_socket;
+    fcntl(a.getServerSocket(), F_SETFL, O_NONBLOCK, FD_CLOEXEC);
     FD_ZERO(&current_socket);
     FD_SET(a.getServerSocket(), &current_socket);
     std::set<int> clients;
     clients.insert(a.getServerSocket());
     socketClient client;
+    timeval timeout;
+    timeout.tv_sec = 5;  // Timeout duration in seconds
+    timeout.tv_usec = 0;
     while (true) 
     {
         ready_socket = current_socket; // Create a new fd_set for each iteration
-        if (select(FD_SETSIZE, &ready_socket, NULL, NULL, NULL) < 0) {
+        if (select(FD_SETSIZE, &ready_socket, NULL, NULL, &timeout) < 0) {
             std::cout << "ERROR select\n";
             exit(1);
         }
