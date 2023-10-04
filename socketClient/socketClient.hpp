@@ -16,6 +16,7 @@
 #include <netdb.h>
 #include <arpa/inet.h> 
 #include "../server/server.hpp"
+#include <set>
 
 class socketClient
 {
@@ -29,7 +30,7 @@ class socketClient
         {
             return clientSocket;
         }
-        void setUpAndAccept(server &server)
+        int setUpAndAccept(server &server)
         {
             clientLength = sizeof(clientAddress);
             clientSocket = accept(server.getServerSocket(), (struct sockaddr*)&clientAddress, &clientLength);
@@ -37,7 +38,9 @@ class socketClient
                 std::cerr << "Error accepting client connection." << std::endl;
                 exit(1);
             }
+            return clientSocket;
         }
+    
         ~socketClient();
 };
 
