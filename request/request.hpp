@@ -60,13 +60,7 @@ class request
             return url;
         }
 };
-request::request(/* args */)
-{
-}
-
-request::~request()
-{
-}
+ 
 
 /* code */
 #endif //REQUEST_HPP

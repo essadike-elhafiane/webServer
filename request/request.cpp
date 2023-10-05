@@ -67,3 +67,12 @@ void request::check_request(int client)
         return;
     }
 }
+
+request::request(/* args */)
+{
+}
+
+request::~request()
+{
+}
+ 

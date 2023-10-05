@@ -18,7 +18,7 @@
 
 class server
 {
-    private:
+    private: 
         std::string name;
         int serverSocket;
         struct sockaddr_in serverAddress;
