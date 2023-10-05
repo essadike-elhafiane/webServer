@@ -39,7 +39,6 @@ class socketClient
                 exit(1);
             }
             fcntl(clientSocket, F_SETFL, O_NONBLOCK, FD_CLOEXEC);
-
             return clientSocket;
         }
     

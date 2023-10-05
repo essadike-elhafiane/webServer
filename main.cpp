@@ -6,7 +6,7 @@
 /*   By: eelhafia <eelhafia@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/29 21:28:36 by eelhafia          #+#    #+#             */
-/*   Updated: 2023/10/05 00:31:14 by eelhafia         ###   ########.fr       */
+/*   Updated: 2023/10/05 00:51:14 by eelhafia         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,8 +15,19 @@
 #include "socketClient/socketClient.hpp"
 #include "request/request.hpp"
 #include <fcntl.h>
+
+void sigintHandler(int signal) {
+    std::cout << "Received SIGINT signal. Cleaning up and exiting..." << std::endl;
+
+    // Perform any necessary cleanup tasks here
+
+    // Terminate the program
+    exit(signal);
+}
+
 int main()
 {
+    signal(SIGINT, sigintHandler);
     server a("server1");
     a.runServer(10, 3000);
     fd_set current_socket, ready_socket;

@@ -31,6 +31,7 @@ class request
             ssize_t bytesRead = read(client.getClientSocket(), buffer, sizeof(buffer) - 1);
             if (bytesRead == -1) {
                 std::cerr << "read failed" << std::endl;
+                close(client.getClientSocket());
                 return;
             }
             buffer[bytesRead] = '\0';
@@ -99,7 +100,7 @@ class request
             // if (len > 2048)
             // {
             //     error = 414;
-                std::string rOK = "HTTP/1.1 414 Not Found\r\nContent-Length: ";
+                std::string rOK = "HTTP/1.1 414 Not Found\r\nCache-Control: no-cache\r\nContent-Length: ";
                 std::ifstream r("html/414.html");
                 if (!r.is_open())
                 {
