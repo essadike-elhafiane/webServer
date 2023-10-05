@@ -6,7 +6,7 @@
 /*   By: eelhafia <eelhafia@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/29 21:28:36 by eelhafia          #+#    #+#             */
-/*   Updated: 2023/10/05 15:07:16 by eelhafia         ###   ########.fr       */
+/*   Updated: 2023/10/05 21:39:44 by eelhafia         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,8 @@
 #include "socketClient/socketClient.hpp"
 #include "request/request.hpp"
 #include <fcntl.h>
+#include <poll.h>
+// #include <winsock2.h>
 
 void sigintHandler(int signal) {
     std::cout << "Received SIGINT signal. Cleaning up and exiting..." << std::endl;
@@ -25,77 +27,132 @@ void sigintHandler(int signal) {
     exit(signal);
 }
 
+#define MAX_CLIENTS 10
+
 int main()
 {
-    signal(SIGINT, sigintHandler);
     server a("server1");
-    a.runServer(10, 3000);
-    fd_set current_socket, ready_socket;
+    a.runServer(5, 3000);
     fcntl(a.getServerSocket(), F_SETFL, O_NONBLOCK, FD_CLOEXEC);
-    FD_ZERO(&current_socket);
-    FD_SET(a.getServerSocket(), &current_socket);
-    std::set<int> clients;
-    clients.insert(a.getServerSocket());
-    socketClient client;
-    timeval timeout;
-    timeout.tv_sec = 5;  // Timeout duration in seconds
-    timeout.tv_usec = 0;
+    int serverSocket, clientSocket, i;
+    serverSocket = a.getServerSocket();
+    struct pollfd fds[MAX_CLIENTS + 1];
+    fds[0].fd = serverSocket;
+    fds[0].events = POLLIN;
+
+    for (i = 1; i <= MAX_CLIENTS; i++) {
+        fds[i].fd = -1;
+    }
+
     while (true) 
     {
-        ready_socket = current_socket; // Create a new fd_set for each iteration
-        if (select(FD_SETSIZE, &ready_socket, NULL, NULL, &timeout) < 0) {
-            std::cout << "ERROR select\n";
-            exit(1);
+        int activity = poll(fds, MAX_CLIENTS + 1, -1);
+        if (activity < 0) {
+            perror("Poll error");
+            exit(EXIT_FAILURE);
         }
-        for (std::set<int>::iterator itr = clients.begin(); itr != clients.end(); ) {
-            if (FD_ISSET(*itr, &ready_socket)) {
-                // std::cout << *itr << std::endl;
-                if (*itr == a.getServerSocket()) {
-                    client.setUpAndAccept(a);
-                    clients.insert(client.getClientSocket());
-                    FD_SET(client.getClientSocket(), &current_socket);
-                } else {
-                    request request;
-                    request.receiveRequest(client);
-                    int clientSocket = client.getClientSocket();
-                    FD_CLR(clientSocket, &current_socket);
-                    close(clientSocket);
-                    itr = clients.erase(itr);
-                    continue;
+
+        // Check for activity on the server socket
+        if (fds[0].revents & POLLIN) 
+        {
+            if ((clientSocket = accept(serverSocket, NULL, NULL)) < 0) {
+                perror("Accept error");
+                exit(EXIT_FAILURE);
+            }
+
+            // Add new client socket to the poll descriptor list
+            for (i = 1; i <= MAX_CLIENTS; i++) 
+            {
+                if (fds[i].fd == -1) {
+                    fds[i].fd = clientSocket;
+                    fds[i].events = POLLIN;
+                    break;
                 }
             }
-            ++itr; // Increment iterator
         }
+
+        // Check for activity on client sockets
+        for (i = 1; i <= MAX_CLIENTS; i++) {
+            if (fds[i].fd != -1 && (fds[i].revents & POLLIN)){
+                clientSocket = fds[i].fd;
+                request request;
+                request.receiveRequest(clientSocket);
+                if (request.getUrl()== "/html/html/compte.html" || request.getUrl()== "/html/compte.html")
+                {
+                    std::string rOK = "HTTP/1.1 200 OK\r\nContent-Length: ";
+                    std::ifstream r("html/compte.html");
+                    if (!r.is_open())
+                        exit(1);
+                    std::string response;
+                    std::string line; 
+                    while (!std::getline(r, line).fail())
+                        response = response + line + '\n';
+                    
+                    rOK = rOK + std::to_string(response.length()) + "\r\n\r\n" + response;
+                    std::cout << std::endl << std::endl;
+                    std::cout << rOK << std::endl;
+                    if (send(clientSocket, rOK.c_str(), rOK.length(), 0) < 0)
+                    {
+                        std::cerr << "Failed to send response." << std::endl;
+                        close(clientSocket);
+                        continue;
+                    }
+                    // close(clientSocket);
+                    // std::cout << std::endl << "|" << requests.substr(4, 17) << "|" << std::endl << std::endl;
+                    continue;
+                }
+                if (request.getUrl() == "/html/app-coder.html" || request.getUrl() == "/html/html/app-coder.html")
+                {
+                    std::string rOK = "HTTP/1.1 200 OK\r\nContent-Length: ";
+                    std::ifstream r("html/app-coder.html");
+                    if (!r.is_open())
+                        exit(1);
+                    std::string response;
+                    std::string line; 
+                    while (!std::getline(r, line).fail())
+                        response = response + line + '\n';
+                    
+                    rOK = rOK + std::to_string(response.length()) + "\r\n\r\n" + response;
+                    std::cout << std::endl << std::endl;
+                    std::cout << rOK << std::endl;
+                    if (send(clientSocket, rOK.c_str(), rOK.length(), 0) < 0)
+                    {
+                        std::cerr << "Failed to send response." << std::endl;
+                        close(clientSocket);
+                        continue;
+                    }
+                    
+                    // close(clientSocket);
+                    // std::cout << std::endl << "|" << requests.substr(4, 25) << "|" << std::endl << std::endl;
+                    continue;
+                }
+                if (request.getUrl() == "/" || request.getUrl() == "/html/file.html")
+                {
+                    std::string rOK = "HTTP/1.1 200 OK\r\nContent-Length: ";
+                    std::ifstream r("html/file.html");
+                    if (!r.is_open())
+                        exit(1);
+                        
+                    std::string response;
+                    std::string line; 
+                    while (!std::getline(r, line).fail())
+                        response = response + line + '\n';
+                    
+                    rOK = rOK + std::to_string(response.length()) + "\r\n\r\n" + response;
+                    std::cout << std::endl << std::endl;
+                    // std::cout << rOK << std::endl;
+                    if (send(clientSocket, rOK.c_str(), rOK.length(), 0) < 0)
+                    {
+                        std::cerr << "Failed to send response." << std::endl;
+                        close(clientSocket);
+                        continue;
+                    }
+                }
+                std::cout << clientSocket << std::endl;
+            }
+        }
+        
     }
-    // while (true) {
-    //     ready_socket = current_socket;
-    //     if (select(FD_SETSIZE, &ready_socket, NULL, NULL, NULL) < 0)
-    //     {
-    //         std::cout << "ERRROR select\n";
-    //         exit(1);
-    //     }
-    //     for (std::set<int>::iterator itr = clients.begin(); itr != clients.end() ;itr++)
-    //     {
-    //         std::cout << *itr << std::endl;
-    //         if (FD_ISSET(*itr, &ready_socket))
-    //         {
-    //             if (*itr == a.getServerSocket())
-    //             {
-    //                 client.setUpAndAccept(a); 
-    //                 clients.insert(client.getClientSocket());
-    //                 FD_SET(client.getClientSocket(), &current_socket);
-    //             }
-    //             else
-    //             {
-    //                 request request;
-    //                 request.receiveRequest(client);
-    //                 FD_CLR(*itr, &current_socket);
-    //                 close(client.getClientSocket());
-    //                 // clients.erase(*itr);
-    //             }
-    //         }
-    //     }
-    // }
 
     close(a.getServerSocket());
     return 0;

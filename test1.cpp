@@ -18,112 +18,108 @@
 #include <netdb.h>
 #include <arpa/inet.h> 
 
-int main() {
-    const int MAX_CLIENTS = 10;
-    const int BUFFER_SIZE = 1024;
-    const int PORT = 8080;
+#include <iostream>
+#include <cstring>
+#include <cstdlib>
+#include <unistd.h>
+#include <sys/socket.h>
+#include <arpa/inet.h>
+#include <netinet/in.h>
+#include <poll.h>
 
-    int serverSocket, clientSockets[MAX_CLIENTS], maxSocket;
-    fd_set readfds;
-    char buffer[BUFFER_SIZE];
-    struct sockaddr_in serverAddr;
-    socklen_t addrSize = sizeof(serverAddr);
+#define MAX_CLIENTS 10
+#define BUFFER_SIZE 1024
+
+int main() {
+    int serverSocket, clientSocket, i, valread;
+    struct pollfd fds[MAX_CLIENTS + 1];
+    char buffer[BUFFER_SIZE] = {0};
 
     // Create server socket
-    serverSocket = socket(AF_INET, SOCK_STREAM, 0);
-    if (serverSocket == -1) {
-        std::cerr << "Failed to create socket." << std::endl;
-        return 1;
+    if ((serverSocket = socket(AF_INET, SOCK_STREAM, 0)) == 0) {
+        perror("Failed to create socket");
+        exit(EXIT_FAILURE);
     }
 
     // Set socket options
     int opt = 1;
-    if (setsockopt(serverSocket, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt)) == -1) {
-        std::cerr << "Failed to set socket options." << std::endl;
-        return 1;
+    if (setsockopt(serverSocket, SOL_SOCKET, SO_REUSEADDR, (char *)&opt, sizeof(opt)) < 0) {
+        perror("setsockopt failed");
+        exit(EXIT_FAILURE);
     }
 
-    // Bind socket to port
-    serverAddr.sin_family = AF_INET;
-    serverAddr.sin_addr.s_addr = INADDR_ANY;
-    serverAddr.sin_port = htons(PORT);
-    if (bind(serverSocket, (struct sockaddr*)&serverAddr, addrSize) == -1) {
-        std::cerr << "Failed to bind socket." << std::endl;
-        return 1;
+    // Bind server socket to a port
+    struct sockaddr_in address;
+    address.sin_family = AF_INET;
+    address.sin_addr.s_addr = INADDR_ANY;
+    address.sin_port = htons(8080);
+    if (bind(serverSocket, (struct sockaddr *)&address, sizeof(address)) < 0) {
+        perror("Bind failed");
+        exit(EXIT_FAILURE);
     }
 
     // Listen for connections
-    if (listen(serverSocket, 5) == -1) {
-        std::cerr << "Failed to listen on socket." << std::endl;
-        return 1;
+    if (listen(serverSocket, 3) < 0) {
+        perror("Listen failed");
+        exit(EXIT_FAILURE);
     }
+
+    // Add server socket to the poll descriptor list
+    fds[0].fd = serverSocket;
+    fds[0].events = POLLIN;
+
+    std::cout << "Server started. Listening on port 8080." << std::endl;
 
     // Initialize client sockets
-    for (int i = 0; i < MAX_CLIENTS; ++i) {
-        clientSockets[i] = 0;
+    for (i = 1; i <= MAX_CLIENTS; i++) {
+        fds[i].fd = -1;
     }
 
-    // Main server loop
+    // Accept connections and handle requests
     while (true) {
-        FD_ZERO(&readfds);
-        FD_SET(serverSocket, &readfds);
-        maxSocket = serverSocket;
-
-        // Add active client sockets to the set
-        for (int i = 0; i < MAX_CLIENTS; ++i) {
-            int clientSocket = clientSockets[i];
-            if (clientSocket > 0) {
-                FD_SET(clientSocket, &readfds);
-                if (clientSocket > maxSocket) {
-                    maxSocket = clientSocket;
-                }
-            }
+        int activity = poll(fds, MAX_CLIENTS + 1, -1);
+        if (activity < 0) {
+            perror("Poll error");
+            exit(EXIT_FAILURE);
         }
 
-        // Wait for activity on any socket
-        int activity = select(maxSocket + 1, &readfds, nullptr, nullptr, nullptr);
-        if (activity == -1) {
-            std::cerr << "Error in select." << std::endl;
-            return 1;
-        }
-
-        // Check for new incoming connection
-        if (FD_ISSET(serverSocket, &readfds)) {
-            int newSocket = accept(serverSocket, (struct sockaddr*)&serverAddr, &addrSize);
-            if (newSocket == -1) {
-                std::cerr << "Failed to accept connection." << std::endl;
-                return 1;
+        // Check for activity on the server socket
+        if (fds[0].revents & POLLIN) {
+            if ((clientSocket = accept(serverSocket, NULL, NULL)) < 0) {
+                perror("Accept error");
+                exit(EXIT_FAILURE);
             }
 
-            // Add new client socket to the array
-            for (int i = 0; i < MAX_CLIENTS; ++i) {
-                if (clientSockets[i] == 0) {
-                    clientSockets[i] = newSocket;
+            // Add new client socket to the poll descriptor list
+            for (i = 1; i <= MAX_CLIENTS; i++) {
+                if (fds[i].fd == -1) {
+                    fds[i].fd = clientSocket;
+                    fds[i].events = POLLIN;
                     break;
                 }
             }
         }
 
-        // Handle requests from active client sockets
-        for (int i = 0; i < MAX_CLIENTS; ++i) {
-            int clientSocket = clientSockets[i];
-            if (FD_ISSET(clientSocket, &readfds)) {
-                int bytesRead = read(clientSocket, buffer, BUFFER_SIZE);
-                if (bytesRead == 0) {
-                    // Connection closed by client
-                    close(clientSocket);
-                    clientSockets[i] = 0;
-                } else if (bytesRead == -1) {
-                    std::cerr << "Error in reading from client socket." << std::endl;
-                } else {
-                    // Handle the received request
-                    // Here you can parse the request, generate a response, and send it back to the client
-                    // For simplicity, we'll just print the received data
-                    buffer[bytesRead] = '\0';
-                    std::cout << "Received request: " << buffer << std::endl;
-                }
-           }
+        // Check for activity on client sockets
+        for (i = 1; i <= MAX_CLIENTS; i++) {
+            if (fds[i].fd != -1 && (fds[i].revents & POLLIN)) {
+                clientSocket = fds[i].fd;
+
+                // Read client request
+            //     valread = read(clientSocket, buffer, BUFFER_SIZE);
+            //     if (valread == 0) {
+            //         // Client disconnected, close socket and remove from poll descriptor list
+            //         close(clientSocket);
+            //         fds[i].fd = -1;
+            //         break;
+            //     } else {
+            //         // Send response to the client
+            //         const char *response = "HTTP/1.1 200 OK\r\nContent-Type: text/html\r\n\r\n<html><body><h1>Hello, World!</h1></body></html>";
+            //         send(clientSocket, response, strlen(response), 0);
+            //     }
+            // }
         }
     }
+
     return 0;
 }

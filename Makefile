@@ -1,5 +1,5 @@
 NAME = webserv
-CC = c++ -Wall -Wextra -Werror -std=c++98
+CC = c++ -Wall -Wextra -Werror -g -std=c++98
 RM = rm -f
 
 SRC = main.cpp server/server.cpp socketClient/socketClient.cpp

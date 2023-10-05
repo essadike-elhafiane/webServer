@@ -44,6 +44,13 @@ class server
             serverAddress.sin_addr.s_addr = INADDR_ANY; // Bind to any available address
             serverAddress.sin_port = htons(port);
             // bind server;
+            
+            int opt = 1;
+            if (setsockopt(serverSocket, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt)) == -1) {
+                std::cerr << "Failed to set socket options." << std::endl;
+                return ;
+            }
+
             if (bind(serverSocket, (struct sockaddr*)&serverAddress, sizeof(serverAddress)) < 0) {
                 std::cerr << "Error binding socket." << std::endl;
                 exit(1);
