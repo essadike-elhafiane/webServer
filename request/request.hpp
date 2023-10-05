@@ -36,39 +36,25 @@ class request
             }
             buffer[bytesRead] = '\0';
             len = bytesRead;
-            std::cout << "fg " << client.getClientSocket() << " " << buffer << std::endl;
-            // len = recv(client.getClientSocket(), buffer, 30000 - 1, 0);
-            // if (len == 0 || errno == EAGAIN || errno == EWOULDBLOCK)
-            // {
-            //     close(client.getClientSocket());
-            // } 
-            // if (len < 0)
-            // {
-            //     std::cerr << "Error recv: " << strerror(errno) << std::endl;
-            //     close(client.getClientSocket());
+            std::cout  << buffer;
+            requests = buffer;
+            char* cstr = new char[requests.length() + 1];
+            std::strcpy(cstr, requests.c_str());
+            char* token = std::strtok(cstr, " ");
+            std::vector<std::string> tokens;
+            while (token != nullptr) {
+                tokens.push_back(token);
+                token = std::strtok(nullptr, " ");
+            }
 
-            //     // exit(1);
-            // }
-            // buffer[len] = '\n';
-            // buffer[len +1] = '\0';
-            // requests = *buffer;
-            // std::cout << buffer << std::endl;
-            // char* cstr = new char[requests.length() + 1];
-            // std::strcpy(cstr, requests.c_str());
-            // char* token = std::strtok(cstr, " ");
-            // std::vector<std::string> tokens;
-            // while (token != nullptr) {
-            //     tokens.push_back(token);
-            //     token = std::strtok(nullptr, " ");
-            // }
-
-            // delete[] cstr;
+            delete[] cstr;
             // for (std::vector<std::string>::iterator itr = tokens.begin(); itr != tokens.end(); itr++) {
             //     std::cout << *itr << std::endl;
             // }
-            // typeRequest = tokens[0];
-            // url = tokens[1];
-            // std::cout << "|" << url << "|"<< " " << "|" << typeRequest << "|"<< std::endl;
+            typeRequest = tokens[0];
+            url = tokens[1];
+            std::cout << "|" << url << "|"<< " " << "|" << typeRequest << "|"<< std::endl << std::endl;
+            std::cout << "________________________________________________________" << std::endl << std::endl;
             // std::string u = "/Users/eelhafia/Desktop/webServer" + url;
             // if (access(u.c_str(), R_OK))
             // {
@@ -112,8 +98,8 @@ class request
                 while (!std::getline(r, line).fail())
                     response = response + line + '\n';
                  rOK = rOK + std::to_string(response.length()) + "\r\n\r\n" + response;
-                std::cout << std::endl << std::endl;
-                std::cout << rOK << std::endl;
+                // std::cout << std::endl << std::endl;
+                // std::cout << rOK << std::endl;
             //     std::cout << std::endl << "|" << requests.substr(4, 17) << "|" << std::endl << std::endl;
                 if (send(client.getClientSocket(), rOK.c_str(), rOK.length(), 0) < 0)
                 {

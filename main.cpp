@@ -6,7 +6,7 @@
 /*   By: eelhafia <eelhafia@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/29 21:28:36 by eelhafia          #+#    #+#             */
-/*   Updated: 2023/10/05 00:51:14 by eelhafia         ###   ########.fr       */
+/*   Updated: 2023/10/05 15:07:16 by eelhafia         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,7 +49,7 @@ int main()
         }
         for (std::set<int>::iterator itr = clients.begin(); itr != clients.end(); ) {
             if (FD_ISSET(*itr, &ready_socket)) {
-                std::cout << *itr << std::endl;
+                // std::cout << *itr << std::endl;
                 if (*itr == a.getServerSocket()) {
                     client.setUpAndAccept(a);
                     clients.insert(client.getClientSocket());
