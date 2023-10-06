@@ -29,6 +29,7 @@ class response
             std::ifstream r(url);
             if (!r.is_open())
             {
+                std::cout << url << std::endl;
                 std::cerr << "Error open file1"  << std::endl;
                 exit(1);
             }

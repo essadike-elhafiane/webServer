@@ -113,10 +113,10 @@
         }
 
     </style>
-    <!-- <div>
-        <img src="../A.webp" id="name"> 
-        <img src="../A.webp"  id="ii">
-    </div> -->
+    <div>
+        <img src="images/A.webp" id="name"> 
+        <img src="images/A.webp"  id="ii">
+    </div>
     <!-- <form method="post" action="http://127.0.0.1:3000/html/compte.html"> -->
     <main id="main">
      <input type="email" name="email" id="email" placeholder="entre email....">
@@ -150,30 +150,30 @@
                alert("votre mote passe ou email est incorrect !")
            }
         });
-//         class slider{
-//     constructor(){
-//         this.images = [];
-//         this.images[0] = "../i.jpeg";
-//         this.images[1] = "../facebook.jpeg";
-//         this.images[2] = "../A.webp";
-//         this.contor=0;
+        class slider{
+        constructor(){
+            this.images = [];
+            this.images[0] = "/images/S.jpeg";
+            this.images[1] = "/images/facebook.jpeg";
+            this.images[2] = "/images/A.webp";
+            this.contor=0;
 
-//         this.playss();
-//         setInterval(()=>{
-//             this.playss();
-//         },3000);
-//     }
-//     playss(){
-//         if(this.contor < this.images.length-1){
-//             this.contor++; 
-//         }else{
-//             this.contor=0;
-//         }
-//         document.getElementById("name").src = this.images[this.contor];
-//     }
-// } 
+            this.playss();
+            setInterval(()=>{
+                this.playss();
+            },3000);
+        }
+        playss(){
+            if(this.contor < this.images.length-1){
+                this.contor++; 
+            }else{
+                this.contor=0;
+            }
+            document.getElementById("name").src = this.images[this.contor];
+        }
+    } 
 
-// onload =new slider();
+    onload =new slider();
     </script>
 </body>
 </html>

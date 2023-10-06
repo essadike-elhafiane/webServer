@@ -1,8 +1,7 @@
 #include "request.hpp"
 
-void request::parse_request(int client)
+void request::parse_request()
 {
-    (void)client;
     char* cstr = new char[requests.length() + 1];
     std::strcpy(cstr, requests.c_str());
     char* token = std::strtok(cstr, " ");
@@ -23,13 +22,22 @@ void request::check_request(int client)
 {
     std::string line;
     std::string u = "/Users/eelhafia/Desktop/webServer" + url;
-    
     if (access(u.c_str(), R_OK) && url != "/html/html/app-coder.html")
     {
         error = 404;
         std::string rOK = "HTTP/1.1 404 Not Found\r\nContent-Length: ";
         rsp.sendResponse("/Users/eelhafia/Desktop/webServer/html/404.html", rOK, client);
         return;
+    }
+    else 
+    {
+        if (url == "/")
+            url = "/html/file.html";
+        u = "/Users/eelhafia/Desktop/webServer" + url;
+        std::string rOK = "HTTP/1.1 200 OK\r\nContent-Length: ";
+        rsp.sendResponse(u, rOK, client);
+        return;
+        
     }
 }
 

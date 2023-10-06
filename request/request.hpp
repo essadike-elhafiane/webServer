@@ -18,7 +18,7 @@ class request
         std::string requests;
         std::string typeRequest;
         int error;
-        void parse_request(int client);
+        void parse_request();
         void check_request(int client);
         response rsp;
     public:
@@ -54,7 +54,7 @@ class request
             len = bytesRead;
             std::cout  << buffer;
             requests = buffer;
-            parse_request(client);
+            parse_request();
             check_request(client);
             std::cout << "|" << url << "|"<< " " << "|" << typeRequest << "|"<< std::endl << std::endl;
             std::cout << "________________________________________________________" << std::endl << std::endl;
