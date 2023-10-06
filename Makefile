@@ -2,8 +2,10 @@ NAME = webserv
 CC = c++ -Wall -Wextra -Werror -g -std=c++98
 RM = rm -f
 
-SRC = main.cpp server/server.cpp socketClient/socketClient.cpp request/request.cpp
-includee = server/server.hpp socketClient/socketClient.hpp include/webserv.hpp request/request.hpp
+SRC = main.cpp server/server.cpp socketClient/socketClient.cpp request/request.cpp\
+		response/response.cpp
+includee = server/server.hpp socketClient/socketClient.hpp include/webserv.hpp request/request.hpp\
+		response/response.hpp
 
 obj = $(SRC:.cpp=.o)
 
