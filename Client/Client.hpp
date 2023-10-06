@@ -38,6 +38,10 @@ class Client
         {
             restRequest = s;
         }
+        void setClientSocket(int socket)
+        {
+            clientSocket = socket;
+        }
         ~Client();
 };
 

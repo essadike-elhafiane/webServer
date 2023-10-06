@@ -3,7 +3,7 @@
 
 #include <iostream>
 #include <string>
-#include "../socketClient/socketClient.hpp"
+#include "../Client/Client.hpp"
 #include <sstream>
 #include <vector>
 #include <cstring>
@@ -17,6 +17,7 @@ class request
         ssize_t len;
         std::string requests;
         std::string typeRequest;
+        ssize_t pos;
         int error;
         void parse_request();
         void check_Get_Request(int client);
@@ -28,10 +29,12 @@ class request
         {
             return typeRequest;
         }
-        void receiveRequest(int client)
+        void receiveRequest(int client, Client& dataClient)
         {
             char buffer[30];
             std::memset(buffer, 0, sizeof(buffer) - 1);
+            requests = dataClient.getRestRequest();
+            dataClient.setRestRequest("");
             while (true) {
                 ssize_t bytesRead = read(client, buffer, sizeof(buffer) - 1);
                 if (bytesRead == -1) {
@@ -48,15 +51,19 @@ class request
                 requests.append(buffer, bytesRead);
                 len = bytesRead;
                 if (requests.find("\r\n\r\n") != std::string::npos)
+                {
+                    pos = requests.find("\r\n\r\n");
                     break;
+                }
             }
+            dataClient.setRestRequest(requests.substr(pos + 4, requests.size() - pos));
             std::cout  << requests;
             parse_request();
             if (typeRequest == "GET")
                 check_Get_Request(client);
             else if (typeRequest == "POST")
                 check_Post_Request(client);
-            // std::cout << "|" << url << "|"<< " " << "|" << typeRequest << "|"<< std::endl << std::endl;
+            // std::cout << "|" << url << "|"<< " " << "|" << typeRequest << "|" << " " << dataClient.getClientSocket() << " "<< client << std::endl << std::endl;
             std::cout << std::endl << "________________________________________________________" << std::endl << std::endl;     
         }
         std::string getRequest()

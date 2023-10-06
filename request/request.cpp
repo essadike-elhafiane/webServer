@@ -97,6 +97,8 @@ void    request::check_Post_Request(int client)
 }
 request::request(/* args */)
 {
+    pos = 0;
+    len = 0;
 }
 
 request::~request()

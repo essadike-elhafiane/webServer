@@ -6,7 +6,7 @@
 /*   By: eelhafia <eelhafia@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/29 21:28:36 by eelhafia          #+#    #+#             */
-/*   Updated: 2023/10/06 18:34:59 by eelhafia         ###   ########.fr       */
+/*   Updated: 2023/10/06 18:38:57 by eelhafia         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -60,7 +60,9 @@ int main()
                 perror("Accept error");
                 exit(EXIT_FAILURE);
             }
-
+            Client a;
+            a.setClientSocket(clientSocket);
+            mClients[clientSocket] = a;
             // Add new client socket to the poll descriptor list
             for (i = 1; i <= MAX_CLIENTS; i++) 
             {
@@ -77,7 +79,7 @@ int main()
             if (fds[i].fd != -1 && (fds[i].revents & POLLIN)){
                 clientSocket = fds[i].fd;
                 request request;
-                request.receiveRequest(clientSocket);
+                request.receiveRequest(clientSocket, mClients[clientSocket]);
             }
         }
         
