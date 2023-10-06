@@ -49,37 +49,29 @@ void request::check_Get_Request(int client)
     }
 }
 
-void    request::check_Post_Request(int client)
+void    request::check_Post_Request(int client, Client& dataClient)
 {
-    // char buffer[3000];
     std::string request = requests;
-    // std::memset(buffer, 0, sizeof(buffer) - 1);
-    // while (true) {
-    //     int bytesRead = recv(client, buffer, 3000 - 1, 0);
-    //     if (bytesRead <= 0)
-    //     break;
-    //     request.append(buffer, bytesRead);
-    //     if (request.find("\r\n\r\n") != std::string::npos)
-    //     break;
-    // }
-    
-    // Parse the request to extract the file data
-    std::string boundary;
     std::istringstream requestStream(request);
     std::string line;
     while (std::getline(requestStream, line)) {
-        if (line.substr(0, 19) == "Content-Type: multipart/form-data; boundary=") {
-        boundary = line.substr(39);
-        break;
+        std::cout << "||" << line.substr(0, 44) << "||" << std::endl;
+        if (line.substr(0, 44) == "Content-Type: multipart/form-data; boundary=") {
+            dataClient.setBoundaryRequest(line.substr(44, 39));
+            std::cout << "  |||||||| " <<std::endl;
+            break;
         }
     }
+        std::size_t pos = request.find("filename=", 0) + 14;
+        std::size_t startPos = request.find("\r\n\r\n", pos) + 4;
+        // std::size_t startPos = request.find("filename=", pos);
+        // if(startPos ==  request.npos)
+        //     return;
+         std::size_t endPos = request.find("--" + dataClient.getBoundarytSocket(), startPos) - 2;
+    //  if (endPos == request.npos)
+    //     return;
+        std::string fileData = request.substr(startPos, endPos - startPos);
 
-    std::size_t pos = request.find("name=\"file\"") + 14;
-    std::size_t startPos = request.find("\r\n\r\n", pos) + 4;
-    std::size_t endPos = request.find("--" + boundary, startPos) - 2;
-    std::string fileData = request.substr(startPos, endPos - startPos);
-
-    // Save the file data to a file
     std::ofstream file("uploaded_file.txt", std::ios::out | std::ios::binary);
     if (!file) {
         std::cerr << "Error opening file for writing" << std::endl;

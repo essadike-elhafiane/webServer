@@ -24,6 +24,7 @@ class Client
     private:
         int clientSocket;
         std::string restRequest;
+        std::string boundary;
     public:
         Client(/* args */);
         int getClientSocket()
@@ -41,6 +42,14 @@ class Client
         void setClientSocket(int socket)
         {
             clientSocket = socket;
+        }
+        void setBoundaryRequest(std::string const& s)
+        {
+            boundary = s;
+        }
+        std::string&  getBoundarytSocket()
+        {
+            return boundary;
         }
         ~Client();
 };

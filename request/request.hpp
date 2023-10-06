@@ -21,7 +21,7 @@ class request
         int error;
         void parse_request();
         void check_Get_Request(int client);
-        void check_Post_Request(int client);
+        void check_Post_Request(int client, Client& dataClient);
         response rsp;
     public:
         request(/* args */);
@@ -31,7 +31,7 @@ class request
         }
         void receiveRequest(int client, Client& dataClient)
         {
-            char buffer[30];
+            char buffer[3000];
             std::memset(buffer, 0, sizeof(buffer) - 1);
             requests = dataClient.getRestRequest();
             dataClient.setRestRequest("");
@@ -56,13 +56,13 @@ class request
                     break;
                 }
             }
-            dataClient.setRestRequest(requests.substr(pos + 4, requests.size() - pos));
+            dataClient.setRestRequest(requests.substr(pos, requests.size() - pos));
             std::cout  << requests;
             parse_request();
             if (typeRequest == "GET")
                 check_Get_Request(client);
             else if (typeRequest == "POST")
-                check_Post_Request(client);
+                check_Post_Request(client, dataClient);
             // std::cout << "|" << url << "|"<< " " << "|" << typeRequest << "|" << " " << dataClient.getClientSocket() << " "<< client << std::endl << std::endl;
             std::cout << std::endl << "________________________________________________________" << std::endl << std::endl;     
         }
