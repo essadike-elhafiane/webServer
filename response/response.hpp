@@ -42,6 +42,7 @@ class response
                 close(socketClient);
                 return;
             }
+            std::cout << socketClient << std::endl;
             return;
         }
         response(/* args */);
