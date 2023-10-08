@@ -6,7 +6,7 @@
 /*   By: eelhafia <eelhafia@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/29 21:28:36 by eelhafia          #+#    #+#             */
-/*   Updated: 2023/10/06 18:38:57 by eelhafia         ###   ########.fr       */
+/*   Updated: 2023/10/08 15:24:59 by eelhafia         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,7 +33,7 @@ void sigintHandler(int signal) {
 int main()
 {
     server a("server1");
-    a.runServer(5, 4000);
+    a.runServer(1000, 8000);
     fcntl(a.getServerSocket(), F_SETFL, O_NONBLOCK, FD_CLOEXEC);
     int serverSocket, clientSocket, i;
     serverSocket = a.getServerSocket();
@@ -62,6 +62,7 @@ int main()
             }
             Client a;
             a.setClientSocket(clientSocket);
+            fcntl(clientSocket, F_SETFL, O_NONBLOCK, FD_CLOEXEC);
             mClients[clientSocket] = a;
             // Add new client socket to the poll descriptor list
             for (i = 1; i <= MAX_CLIENTS; i++) 
@@ -80,6 +81,8 @@ int main()
                 clientSocket = fds[i].fd;
                 request request;
                 request.receiveRequest(clientSocket, mClients[clientSocket]);
+                // std::cout << clientSocket << std::endl;
+                // fds[i].events = POLLOUT;
             }
         }
         

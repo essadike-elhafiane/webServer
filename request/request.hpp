@@ -14,62 +14,71 @@ class request
 {
     private:
         std::string url;
-        ssize_t len;
-        std::string requests;
-        std::string typeRequest;
+        std::string Header;
         ssize_t pos;
-        int error;
-        void parse_request();
+        // int error;
+        void parse_request(Client& dataClient);
         void check_Get_Request(int client);
         void check_Post_Request(int client, Client& dataClient);
         response rsp;
     public:
         request(/* args */);
-        std::string getTypeRequest()
-        {
-            return typeRequest;
-        }
+        void read_header(Client& dataClient);
+    
+        // int read_request(Client& dataClient)
+        // {
+        //     // std::cout << client << std::endl;
+        //     int buf = 10000;
+        //     if (dataClient.getContentLength() < 10000)
+        //         buf = dataClient.getContentLength();
+        //     char buffer[buf];
+        //     std::memset(buffer, 0, sizeof(buffer));
+        //     while (true) {
+
+        //         int bytesRead = recv(dataClient.getClientSocket(), buffer,  sizeof(buffer) - 1, 0);
+        //         if (bytesRead <= 0)
+        //             break;
+        //         dataClient.appendRestRequest(buffer, bytesRead);
+        //         dataClient.setReadlen(bytesRead);
+        //         if (bytesRead >= dataClient.getContentLength())
+        //             break;
+        //     }
+        //     // std::cout << "dfhdhdfhdfhdfhdf |||||||||| dfhd " <<std::endl;
+        //     if (dataClient.getContentLength() > dataClient.getReadlen())
+        //         return 1;
+        //     std::cout  << dataClient.getReadlen() << "||||||||||" << dataClient.getTypeRequset() << "|||||||||" << dataClient.getContentLength() << "||||" << dataClient.getReadlen() << "|||||"  << std::cout;
+
+        //     // exit(1);
+        //     return 0;
+        // }
         void receiveRequest(int client, Client& dataClient)
         {
-            char buffer[3000];
-            std::memset(buffer, 0, sizeof(buffer) - 1);
-            requests = dataClient.getRestRequest();
-            dataClient.setRestRequest("");
-            while (true) {
-                ssize_t bytesRead = read(client, buffer, sizeof(buffer) - 1);
-                if (bytesRead == -1) {
-                    std::cerr << "socket read failed" << client;
-                    perror("read");
-                    close(client);
-                    return;
-                }
-                if (bytesRead == 0)
-                {
-                    close(client);
-                    return;
-                }
-                requests.append(buffer, bytesRead);
-                len = bytesRead;
-                if (requests.find("\r\n\r\n") != std::string::npos)
-                {
-                    pos = requests.find("\r\n\r\n");
-                    break;
-                }
-            }
-            dataClient.setRestRequest(requests.substr(pos, requests.size() - pos));
-            std::cout  << requests;
-            parse_request();
-            if (typeRequest == "GET")
+            
+            // dataClient.setRestRequest(requests.substr(pos, requests.size() - pos));
+            // if(dataClient.getHeaderStatus() == false)
+            // {
+                read_header(dataClient);
+                if (dataClient.getReadlen() < dataClient.getContentLength())
+                    return ;
+            // }
+            // if (dataClient.getReadlen() < dataClient.getContentLength() && read_request(dataClient))
+            //     return ;
+            // std::cout << dataClient.getRestRequest() << "| dsgsdgs ||"  << dataClient.getTypeRequset() <<  std::endl;
+            // exit(1);
+            // typeRequest = "POST";
+            if (dataClient.getTypeRequset() == "GET")
                 check_Get_Request(client);
-            else if (typeRequest == "POST")
+            if (dataClient.getTypeRequset() == "POST")
                 check_Post_Request(client, dataClient);
-            // std::cout << "|" << url << "|"<< " " << "|" << typeRequest << "|" << " " << dataClient.getClientSocket() << " "<< client << std::endl << std::endl;
+            close(client);
+            dataClient.resetData();
+            // std::cout << "|" << url << "|"<< " " << "|" << "|" << " " << dataClient.getClientSocket() << " "<< client << std::endl << std::endl;
             std::cout << std::endl << "________________________________________________________" << std::endl << std::endl;     
         }
-        std::string getRequest()
-        {
-            return requests;
-        }
+        // std::string getRequest()
+        // {
+        //     return requests;
+        // }
         ~request();
         std::string getUrl()
         {

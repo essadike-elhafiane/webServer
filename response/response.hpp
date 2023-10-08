@@ -22,16 +22,19 @@ class response
     private:
         /* data */
     public:
-        void sendResponse(std::string const &url, std::string &configResponse, int socketClient)
+        void sendResponse(std::string &url, std::string &configResponse, int socketClient)
         {
             std::string line;
             std::string response;
-            std::ifstream r(url);
+            std::cout << url << std::endl;
+            if (url == "/Users/eelhafia/Desktop/webServer/y.mp4")
+                url = "/Users/eelhafia/Desktop/y.mp4";
+            std::ifstream r(url, std::ios::binary);
             if (!r.is_open())
             {
                 std::cout << url << std::endl;
                 std::cerr << "Error open file1"  << std::endl;
-                exit(1);
+                // exit(1);
             }
             while (!std::getline(r, line).fail())
                 response = response + line + '\n';
