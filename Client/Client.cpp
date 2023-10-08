@@ -4,6 +4,7 @@
 Client::Client(/* args */)
 {
     clientSocket = 0;
+    filename = "";
     typeRequest.clear();
     header = false;
     restRequest = "";

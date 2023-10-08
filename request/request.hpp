@@ -23,6 +23,7 @@ class request
         response rsp;
     public:
         request(/* args */);
+        void download_file(char *buffer , int bytesRead,Client &dataClient);
         void read_header(Client& dataClient);
     
         // int read_request(Client& dataClient)
@@ -68,10 +69,10 @@ class request
             // typeRequest = "POST";
             if (dataClient.getTypeRequset() == "GET")
                 check_Get_Request(client);
-            if (dataClient.getTypeRequset() == "POST")
-                check_Post_Request(client, dataClient);
-            close(client);
-            dataClient.resetData();
+            // if (dataClient.getTypeRequset() == "POST")
+            //     check_Post_Request(client, dataClient);
+            // close(client);
+            // dataClient.resetData();
             // std::cout << "|" << url << "|"<< " " << "|" << "|" << " " << dataClient.getClientSocket() << " "<< client << std::endl << std::endl;
             std::cout << std::endl << "________________________________________________________" << std::endl << std::endl;     
         }

@@ -18,6 +18,7 @@
 #include "../server/server.hpp"
 #include <set>
 #include <fcntl.h>
+#include <vector>
 
 class Client
 {
@@ -26,6 +27,7 @@ class Client
         std::string typeRequest;
         ssize_t readylen;
         ssize_t  Content_Length;
+        std::string filename;
         std::string restRequest;
         std::string boundary;
         bool header;
@@ -34,6 +36,14 @@ class Client
         std::string getTypeRequset()
         {
             return typeRequest;
+        }
+        void setFileName(std::string name)
+        {
+            filename = name;
+        }
+        std::string getFileName()
+        {
+            return filename;
         }
         void setTypeRequset(std::string R)
         {
@@ -62,9 +72,12 @@ class Client
         void appendRestRequest(std::string const& s, ssize_t len)
         {
             (void)len;
-            // if (len > 10000)
-            //     exit(1);
+            if (len > 10000 || len <= 0)
+                return;
+            // std::cout << len << s << std::endl;
+        
             restRequest += s;
+            
         }
         void setClientSocket(int socket)
         {
