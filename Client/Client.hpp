@@ -113,6 +113,7 @@ class Client
             readylen = 0;
             clientSocket = 0;
             Content_Length = 0;
+             filename = "";
             restRequest = "";
             boundary = "";
             typeRequest = "";
