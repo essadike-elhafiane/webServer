@@ -2,9 +2,18 @@
 
 void request::parse_request(Client& dataClient)
 {
-    std::cout << Header << "|" << std::endl;
+    // std::cout << Header << "|" << std::endl;
     if (Header == "")
         return ;
+    if (Header.find("\r\n\r\n") != std::string::npos)
+    {
+        ssize_t poss = Header.find("\r\n\r\n");
+        long int p = Header.size() - poss - 4;
+        if (p < 0)
+            p = 0;
+        dataClient.setReadlen(p);
+        std::cout << "||"<< Header.size() << "||" << p << "||" <<std::endl;
+    }
     char* cstr = new char[Header.length() + 1];
     std::strcpy(cstr, Header.c_str());
     char* token = std::strtok(cstr, " ");
@@ -14,6 +23,15 @@ void request::parse_request(Client& dataClient)
         token = std::strtok(nullptr, " \n");
     }
     delete[] cstr;
+    std::istringstream requestStream(Header);
+    std::string line;
+    while (std::getline(requestStream, line)) {
+        if (line.substr(0, 44) == "Content-Type: multipart/form-data; boundary=") {
+            dataClient.setBoundaryRequest(line.substr(44, 39));
+            // std::cout << "  |||||||| " <<std::endl;
+            break;
+        }
+    }
     // for (std::vector<std::string>::iterator itr = tokens.begin(); itr != tokens.end(); itr++) {
     //     std::cout << *itr << std::endl;
     // }
@@ -53,7 +71,7 @@ void request::check_Get_Request(int client)
         u = "/Users/eelhafia/Desktop/webServer" + url;
         std::string rOK = "HTTP/1.1 200 OK\r\nContent-Length: ";
         rsp.sendResponse(u, rOK, client);
-        close(client);
+        // close(client);
         return;
     // }
 }
@@ -65,15 +83,7 @@ void    request::check_Post_Request(int client, Client& dataClient)
     std::string request = dataClient.getRestRequest();
 
     // std::cout << request << std::endl;
-    // std::istringstream requestStream(request);
-    // std::string line;
-    // while (std::getline(requestStream, line)) {
-    //     if (line.substr(0, 44) == "Content-Type: multipart/form-data; boundary=") {
-    //         dataClient.setBoundaryRequest(line.substr(44, 39));
-    //         // std::cout << "  |||||||| " <<std::endl;
-    //         break;
-    //     }
-    // }
+    
 
     std::size_t pos = request.find("filename=", 0);
     std::size_t startPos = request.find("\r\n\r\n", pos) + 4;
@@ -97,7 +107,7 @@ void    request::check_Post_Request(int client, Client& dataClient)
     send(client, response.c_str(), response.length(), 0);
 
     // Close the connection
-    close(client);
+    // close(client);
 }
 
 request::request(/* args */)
@@ -114,6 +124,7 @@ void request::download_file(char *buffer , int bytesRead,Client &dataClient)
 {
     if(dataClient.getFileName() == "" && dataClient.getHeaderStatus())
     {
+        // std::cout << "||||" << buffer << "||" << std::endl;
         std::string request = buffer;
         std::size_t pos = request.find("filename=", 0);
         std::size_t startPos = request.find("\r\n\r\n", pos) + 4;
@@ -144,70 +155,92 @@ void request::download_file(char *buffer , int bytesRead,Client &dataClient)
             endPos = 0;
         std::ofstream file(dataClient.getFileName(), std::ios::app | std::ios::binary);
         if (endPos == 0)
-            file.write(buffer, bytesRead );
+            file.write(buffer, bytesRead);
         else
         {
             file.write(buffer, endPos);
-            close(dataClient.getClientSocket());
-            dataClient.setClientSocket(0);
+            write(2, buffer, bytesRead);
+            write(2, "\n\n", bytesRead);
+            write(2, dataClient.getBoundarytSocket().c_str(), dataClient.getBoundarytSocket().size());
+            // close(dataClient.getClientSocket());
+            // dataClient.setClientSocket(0);
         }
-        
     }
 }
 
 void    request::read_header(Client& dataClient)
 {
-    std::cout << "after" << std::endl;
-    char buffer[1024];
-    int len_read = 1023;
-    // if (!dataClient.getHeaderStatus())
-    //     len_read = 1;
+    char buffer[3001];
+    int len_read = 3000;
     std::memset(buffer, 0, sizeof(buffer));
+
     while (true) {
         ssize_t bytesRead = recv(dataClient.getClientSocket(), buffer, len_read, 0);
-        if (bytesRead <= 0) {
-            std::cout << "not open " << dataClient.getClientSocket() << "\n";
+        if (bytesRead == 0) {
+            std::cout << "connection closed by client " << dataClient.getClientSocket() << "\n";  
+            close(dataClient.getClientSocket());                
             break;
         }
+        if (bytesRead < 0)
+            break;
+        
         if (dataClient.getHeaderStatus() == true)
             dataClient.setReadlen(bytesRead);
         else
             Header = buffer;
-        // std::cout << "sdg" << std::endl;
-        // if (dataClient.getReadlen() && dataClient.getContentLength() && dataClient.getReadlen() >= dataClient.getContentLength())
-        //     break;
+        if (dataClient.getHeaderStatus() == false && Header != "")
+        {
+            parse_request(dataClient);
+            std::cout << buffer << std::endl;
+            dataClient.setHeaderStatus(true);
+        }
+        // std::ofstream outputFile;
+        // std::string name ="test/f" + std::to_string(dataClient.getClientSocket()) + ".txt";
+        // outputFile.open(name.c_str(), std::ios::app | std::ios::out); // Open file in append mode
+        // if (outputFile.is_open() && dataClient.getTypeRequset() == "POST") {
+        //     outputFile.write(buffer, bytesRead);
+        //     outputFile.close();
+        // }
+        // exit(1);
+        else
+        {
+            if (dataClient.getTypeRequset() == "POST" && dataClient.getHeaderStatus() == true){
+                download_file(buffer , bytesRead, dataClient);
+            }
+        }
+
+        std::memset(buffer, 0, sizeof(buffer));
+        if (dataClient.getReadlen() && dataClient.getContentLength() && dataClient.getReadlen() >= dataClient.getContentLength())
+        {
+            // close(dataClient.getClientSocket());
+        
+            std::string response1 = "HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\nContent-Length: 10 \r\n\r\n donne!!!!!";
+            send(dataClient.getClientSocket(), response1.c_str(), response1.size(),0);
+        }
         // if (Header.find("\r\n\r\n") != std::string::npos && dataClient.getHeaderStatus() == false)
         // {
         //     pos = Header.find("\r\n\r\n");
         //     break;
         // }
-        if (dataClient.getTypeRequset() == "POST" && dataClient.getHeaderStatus() == true){
-            download_file(buffer , bytesRead, dataClient);
-        }
-        std::memset(buffer, 0, sizeof(buffer));
     }
-    if (dataClient.getHeaderStatus() == false)
-    {
-        parse_request(dataClient);
-        std::cout << buffer << std::endl;
-        dataClient.setHeaderStatus(true);
+
+    std::ofstream out("test.txt", std::ios::app | O_NONBLOCK); // Open file in append mode
+    if (out.is_open() && dataClient.getTypeRequset() == "POST") {
+        out << dataClient.getClientSocket() << " | "<< dataClient.getContentLength() << " | " <<dataClient.getReadlen() <<  " | " << dataClient.getHeaderStatus() << std::endl;
+        out.close();
     }
+    // else
+    // {
+    //     std::cout << "nt open file test " << std::endl;
+    // }
+
     std::cout << "sdgsg\n" << std::endl;
-    if (!dataClient.getClientSocket())
-    {
-        dataClient.resetData();
-    }
     if (dataClient.getReadlen() && dataClient.getContentLength() && dataClient.getReadlen() >= dataClient.getContentLength())
     {
         
         close(dataClient.getClientSocket());
-    }
-    std::ofstream outputFile;
-    outputFile.open("test.txt", std::ios::app); // Open file in append mode
-
-    if (outputFile.is_open() && dataClient.getTypeRequset() == "POST") {
-        outputFile << dataClient.getClientSocket() << " | "<< dataClient.getContentLength() << " | " <<dataClient.getReadlen() <<  " | " << dataClient.getHeaderStatus() << std::endl;
-        outputFile.close();
+        write(dataClient.getClientSocket(), "Content-Lenght 4\r\n\rdone" , 23);
+        dataClient.resetData();
     }
     // std::cout << Header << " " << url << " " << typeRequest << " " << dataClient.getContentLength() << std::endl;
     // exit(1);

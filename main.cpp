@@ -6,7 +6,7 @@
 /*   By: eelhafia <eelhafia@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/29 21:28:36 by eelhafia          #+#    #+#             */
-/*   Updated: 2023/10/08 15:24:59 by eelhafia         ###   ########.fr       */
+/*   Updated: 2023/10/10 16:51:31 by eelhafia         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,34 +17,30 @@
 #include <fcntl.h>
 #include <poll.h>
 #include <map>
-// #include <winsock2.h>
 
 void sigintHandler(int signal) {
     std::cout << "Received SIGINT signal. Cleaning up and exiting..." << std::endl;
-
-    // Perform any necessary cleanup tasks here
-
-    // Terminate the program
     exit(signal);
 }
 
-#define MAX_CLIENTS 100
+#define MAX_CLIENTS 1024
 
 int main()
 {
     server a("server1");
-    a.runServer(1000, 8000);
+    a.runServer(5, 8000);
     fcntl(a.getServerSocket(), F_SETFL, O_NONBLOCK, FD_CLOEXEC);
     int serverSocket, clientSocket, i;
     serverSocket = a.getServerSocket();
     struct pollfd fds[MAX_CLIENTS + 1];
+    memset(fds, 0, sizeof(fds));
     fds[0].fd = serverSocket;
     fds[0].events = POLLIN;
+    // fds[0].events = 0;
     std::map<int, Client> mClients;
-    for (i = 1; i <= MAX_CLIENTS; i++) {
-        fds[i].fd = -1;
-    }
-
+    // for (i = 1; i <= MAX_CLIENTS; i++) {
+    //     fds[i].fd = -1;
+    // }
     while (true) 
     {
         int activity = poll(fds, MAX_CLIENTS + 1, -1);
@@ -67,9 +63,10 @@ int main()
             // Add new client socket to the poll descriptor list
             for (i = 1; i <= MAX_CLIENTS; i++) 
             {
-                if (fds[i].fd == -1) {
+                if (fds[i].fd == 0) {
                     fds[i].fd = clientSocket;
                     fds[i].events = POLLIN;
+                    // fds[i].events = 0;
                     break;
                 }
             }
@@ -77,11 +74,13 @@ int main()
 
         // Check for activity on client sockets
         for (i = 1; i <= MAX_CLIENTS; i++) {
-            if (fds[i].fd != -1 && (fds[i].revents & POLLIN)){
+            if (fds[i].fd != 0 && (fds[i].revents & POLLIN)){
                 clientSocket = fds[i].fd;
                 request request;
                 request.receiveRequest(clientSocket, mClients[clientSocket]);
-                // std::cout << clientSocket << std::endl;
+                // fds[i].fd = clientSocket;
+                std::cout << clientSocket << std::endl;
+                // close(clientSocket);
                 // fds[i].events = POLLOUT;
             }
         }

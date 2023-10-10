@@ -28,7 +28,7 @@ class request
         void receiveRequest(int client, Client& dataClient)
         {
             read_header(dataClient);
-            if (dataClient.getReadlen() < dataClient.getContentLength())
+            if (dataClient.getTypeRequset() == "POST" && dataClient.getReadlen() < dataClient.getContentLength())
                 return ;
             if (dataClient.getTypeRequset() == "GET")
                 check_Get_Request(client);
