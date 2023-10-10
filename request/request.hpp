@@ -18,20 +18,20 @@ class request
         ssize_t pos;
         // int error;
         void parse_request(Client& dataClient);
-        void check_Get_Request(int client);
-        void check_Post_Request(int client, Client& dataClient);
+        void check_Get_Request(Client &dataClient);
+        // void check_Post_Request(int client, Client& dataClient);
         response rsp;
     public:
         request(/* args */);
         void download_file(char *buffer , int bytesRead,Client &dataClient);
         void read_header(Client& dataClient);
-        void receiveRequest(int client, Client& dataClient)
+        void receiveRequest(Client& dataClient)
         {
             read_header(dataClient);
             if (dataClient.getTypeRequset() == "POST" && dataClient.getReadlen() < dataClient.getContentLength())
                 return ;
             if (dataClient.getTypeRequset() == "GET")
-                check_Get_Request(client);
+                check_Get_Request(dataClient);
             // if (dataClient.getTypeRequset() == "POST")
             //     check_Post_Request(client, dataClient);
             // close(client);

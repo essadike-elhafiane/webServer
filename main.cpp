@@ -6,7 +6,7 @@
 /*   By: eelhafia <eelhafia@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/29 21:28:36 by eelhafia          #+#    #+#             */
-/*   Updated: 2023/10/10 16:51:31 by eelhafia         ###   ########.fr       */
+/*   Updated: 2023/10/10 22:21:13 by eelhafia         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -77,7 +77,7 @@ int main()
             if (fds[i].fd != 0 && (fds[i].revents & POLLIN)){
                 clientSocket = fds[i].fd;
                 request request;
-                request.receiveRequest(clientSocket, mClients[clientSocket]);
+                request.receiveRequest(mClients[clientSocket]);
                 // fds[i].fd = clientSocket;
                 std::cout << clientSocket << std::endl;
                 // close(clientSocket);

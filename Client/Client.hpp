@@ -30,6 +30,7 @@ class Client
         std::string filename;
         std::string restRequest;
         std::string boundary;
+        std::string Url;
         bool header;
     public:
         Client(/* args */);
@@ -40,6 +41,14 @@ class Client
         void setFileName(std::string name)
         {
             filename = name;
+        }
+        std::string getUrl()
+        {
+            return Url;
+        }
+        void setUrl(std::string url)
+        {
+            Url = url;
         }
         std::string getFileName()
         {
