@@ -22,7 +22,7 @@ void request::parse_request(Client& dataClient, char *buffer, ssize_t& bytRead)
         std::cout << std::endl << "||"<< buffer <<"||" <<std::endl;
         delete[] cstr;
         bytRead = dataClient.getReadlen();
-        std::cout << "||"<< Header.size() << "||"  << poss + 4 << "||" << p << "||" << dataClient.getReadlen() << "||" << bytRead  << "||" << bytRead - poss << "||" <<std::endl;
+        std::cout << "||"<< Header.size() << "||"  << poss + 4 << "||" << p << "||" << dataClient.getReadlen() << "||" << bytRead  << "||" <<std::endl;
     }
     char* cstr = new char[Header.length() + 1];
     std::strcpy(cstr, Header.c_str());
@@ -84,7 +84,10 @@ void request::check_Get_Request(Client &dataClient)
         std::string rOK = "HTTP/1.1 200 OK\r\nContent-Length: ";
         rsp.sendResponse(u, rOK, dataClient.getClientSocket());
         dataClient.setHeaderStatus(false);
-        // close(client);
+        // close(dataClient.getClientSocket());
+        dataClient.setTypeRequset("");
+        dataClient.setHeaderStatus(false);
+        dataClient.setUrl("");
         return;
     }
 }

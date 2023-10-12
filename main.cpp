@@ -6,7 +6,7 @@
 /*   By: eelhafia <eelhafia@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/29 21:28:36 by eelhafia          #+#    #+#             */
-/*   Updated: 2023/10/11 20:45:11 by eelhafia         ###   ########.fr       */
+/*   Updated: 2023/10/12 19:22:43 by eelhafia         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,7 +23,7 @@ void sigintHandler(int signal) {
     exit(signal);
 }
 
-#define MAX_CLIENTS 50
+#define MAX_CLIENTS 500
 
 int main()
 {
@@ -43,7 +43,7 @@ int main()
     // }
     while (true) 
     {
-        int activity = poll(fds, MAX_CLIENTS + 1, 1000);
+        int activity = poll(fds, MAX_CLIENTS + 1, -1);
         if (activity < 0) {
             perror("Poll error");
             exit(EXIT_FAILURE);
@@ -58,7 +58,10 @@ int main()
             }
             Client a;
             a.setClientSocket(clientSocket);
-            fcntl(clientSocket, F_SETFL, O_NONBLOCK, FD_CLOEXEC);
+            if (fcntl(clientSocket, F_SETFL, O_NONBLOCK, FD_CLOEXEC) < 0)
+            {
+                perror("fcnl failed");
+            }
             mClients[clientSocket] = a;
             // Add new client socket to the poll descriptor list
             for (i = 1; i <= MAX_CLIENTS; i++) 
@@ -66,7 +69,6 @@ int main()
                 if (fds[i].fd == 0) {
                     fds[i].fd = clientSocket;
                     fds[i].events = POLLIN;
-                    // fds[i].events = 0;
                     break;
                 }
             }
@@ -79,7 +81,8 @@ int main()
                 request request;
                 request.receiveRequest(mClients[clientSocket]);
                 // fds[i].fd = clientSocket;
-                std::cout << clientSocket << std::endl;
+                fds[i].fd = mClients[clientSocket].getClientSocket();
+                std::cout << clientSocket << "||" << mClients[clientSocket].getClientSocket() << std::endl;
                 // close(clientSocket);
                 // fds[i].events = POLLOUT;
             }
