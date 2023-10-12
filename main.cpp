@@ -6,7 +6,7 @@
 /*   By: eelhafia <eelhafia@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/29 21:28:36 by eelhafia          #+#    #+#             */
-/*   Updated: 2023/10/10 22:21:13 by eelhafia         ###   ########.fr       */
+/*   Updated: 2023/10/11 20:45:11 by eelhafia         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,7 +23,7 @@ void sigintHandler(int signal) {
     exit(signal);
 }
 
-#define MAX_CLIENTS 1024
+#define MAX_CLIENTS 50
 
 int main()
 {
@@ -43,7 +43,7 @@ int main()
     // }
     while (true) 
     {
-        int activity = poll(fds, MAX_CLIENTS + 1, -1);
+        int activity = poll(fds, MAX_CLIENTS + 1, 1000);
         if (activity < 0) {
             perror("Poll error");
             exit(EXIT_FAILURE);

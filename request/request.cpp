@@ -1,18 +1,28 @@
 #include "request.hpp"
 
-void request::parse_request(Client& dataClient)
+void request::parse_request(Client& dataClient, char *buffer, ssize_t& bytRead)
 {
     // std::cout << Header << "|" << std::endl;
+    // (void)buffer;
+    // (void)bytRead;
     if (Header == "")
         return ;
     if (Header.find("\r\n\r\n") != std::string::npos)
     {
-        ssize_t poss = Header.find("\r\n\r\n");
-        long int p = Header.size() - poss - 4;
+        size_t poss = Header.find("\r\n\r\n");
+        long int p = bytRead - poss - 4;
         if (p < 0)
             p = 0;
         dataClient.setReadlen(p);
-        std::cout << "||"<< Header.size() << "||" << p << "||" <<std::endl;
+        char* cstr = new char[bytRead + 1];
+        memset(cstr, 0, bytRead);
+        memcpy(cstr, buffer, bytRead);
+        memset(buffer, 0, 3000);
+        memcpy(buffer, cstr + poss + 4, dataClient.getReadlen());
+        std::cout << std::endl << "||"<< buffer <<"||" <<std::endl;
+        delete[] cstr;
+        bytRead = dataClient.getReadlen();
+        std::cout << "||"<< Header.size() << "||"  << poss + 4 << "||" << p << "||" << dataClient.getReadlen() << "||" << bytRead  << "||" << bytRead - poss << "||" <<std::endl;
     }
     char* cstr = new char[Header.length() + 1];
     std::strcpy(cstr, Header.c_str());
@@ -97,9 +107,11 @@ void request::download_file(char *buffer , int bytesRead,Client &dataClient)
         // std::cout << "||||" << buffer << "||" << std::endl;
         std::string request = buffer;
         std::size_t pos = request.find("filename=", 0);
+        if (pos == request.npos)
+            std::cout << "ddd |" << bytesRead << " " << buffer<< std::endl;
         std::size_t startPos = request.find("\r\n\r\n", pos) + 4;
-        std::size_t endPos = request.find("--" + dataClient.getBoundarytSocket(), startPos) - 2;
-        std::string fileData = request.substr(startPos, endPos - startPos + 1);
+        if (startPos == request.npos)
+            std::cout << "AAA |" << bytesRead << std::endl;
         size_t p = request.find("filename=", 0) + 9;
         size_t po = request.find("\n", p);
         std::string namefile1 = request.substr(p, po - p + 1);
@@ -129,16 +141,16 @@ void request::download_file(char *buffer , int bytesRead,Client &dataClient)
         else
         {
             file.write(buffer, endPos);
-            write(2, buffer, bytesRead);
-            write(2, "\n\n", bytesRead);
-            write(2, dataClient.getBoundarytSocket().c_str(), dataClient.getBoundarytSocket().size());
+            // write(2, buffer, bytesRead);
+            // write(2, "\n\n", bytesRead);
+            // write(2, dataClient.getBoundarytSocket().c_str(), dataClient.getBoundarytSocket().size());
             // close(dataClient.getClientSocket());
             // dataClient.setClientSocket(0);
         }
     }
 }
 
-void    request::read_header(Client& dataClient)
+void    request::read_request(Client& dataClient)
 {
     char buffer[3001];
     int len_read = 3000;
@@ -148,7 +160,8 @@ void    request::read_header(Client& dataClient)
         ssize_t bytesRead = recv(dataClient.getClientSocket(), buffer, len_read, 0);
         if (bytesRead == 0) {
             std::cout << "connection closed by client " << dataClient.getClientSocket() << "\n";  
-            close(dataClient.getClientSocket());                
+            close(dataClient.getClientSocket());   
+            dataClient.resetData();             
             break;
         }
         if (bytesRead < 0)
@@ -161,8 +174,9 @@ void    request::read_header(Client& dataClient)
         // std::cout << buffer << std::endl;
         if (dataClient.getHeaderStatus() == false && Header != "")
         {
-            parse_request(dataClient);
-            // std::cout << buffer << std::endl;
+            // std::cout << buffer << "||" << std::endl;
+            parse_request(dataClient, buffer, bytesRead);
+            std::cout << bytesRead << std::endl;
             dataClient.setHeaderStatus(true);
         }
         // std::ofstream outputFile;
@@ -173,10 +187,13 @@ void    request::read_header(Client& dataClient)
         //     outputFile.close();
         // }
         // exit(1);
-        else
+    
+        if (dataClient.getReadlen())
         {
+            // std::cout << "|||||" << buffer << "|||||" << std::endl;
             if (dataClient.getTypeRequset() == "POST" && dataClient.getHeaderStatus() == true){
-                download_file(buffer , bytesRead, dataClient);
+                
+                    download_file(buffer , bytesRead, dataClient);
             }
         }
 
@@ -187,6 +204,9 @@ void    request::read_header(Client& dataClient)
         
             std::string response1 = "HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\nContent-Length: 10 \r\n\r\n donne!!!!!";
             send(dataClient.getClientSocket(), response1.c_str(), response1.size(),0);
+            close(dataClient.getClientSocket());   
+            dataClient.resetData();
+            // dataClient.resetData();
         }
         if (Header.find("\r\n\r\n") != std::string::npos && dataClient.getTypeRequset() == "GET")
             break;

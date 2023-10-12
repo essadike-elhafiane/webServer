@@ -17,17 +17,17 @@ class request
         std::string Header;
         ssize_t pos;
         // int error;
-        void parse_request(Client& dataClient);
+        void parse_request(Client& dataClient, char *buffer, ssize_t& bytRead);
         void check_Get_Request(Client &dataClient);
         // void check_Post_Request(int client, Client& dataClient);
         response rsp;
     public:
         request(/* args */);
         void download_file(char *buffer , int bytesRead,Client &dataClient);
-        void read_header(Client& dataClient);
+        void read_request(Client& dataClient);
         void receiveRequest(Client& dataClient)
         {
-            read_header(dataClient);
+            read_request(dataClient);
             if (dataClient.getTypeRequset() == "POST" && dataClient.getReadlen() < dataClient.getContentLength())
                 return ;
             if (dataClient.getTypeRequset() == "GET")
