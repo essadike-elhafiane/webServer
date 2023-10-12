@@ -473,6 +473,34 @@ void clean_element(std::vector<std::string> line,std::vector<std::string> &line1
     }
 }
 
+
+void chek_line(std::vector<std::string> line){
+
+    size_t last;
+    size_t first;
+    std::string tmp;
+    for(std::vector<std::string>::iterator ptr = line.begin() ; ptr != line.end(); ptr++)
+    {
+        std::cout << "|"<< *ptr << "|"<<  std::endl;
+        if(std::string::npos != (*ptr).find("location"))
+            ptr++;
+        else if(*ptr != "{" && *ptr != "}" && std::string::npos == (*ptr).find("server"))
+        {
+            last = (*ptr).find_last_not_of(" \t");
+            first = (*ptr).find_first_not_of(" \t");
+            if(std::string::npos == first)
+                tmp = "";
+            else
+                tmp = (*ptr).substr(first , last - first +  1);
+            if(!tmp.empty() && tmp[tmp.length() - 1] != ';')
+            {
+                std::cout << tmp << "||"<<  std::endl;
+                error_message("error ;");
+            }
+        }
+    }
+}
+
 int main (int argc , char **argv)
 {
     char *file = argv[1];
@@ -499,6 +527,7 @@ int main (int argc , char **argv)
         obj.line.push_back("");
     token_elemet(obj.line , obj.line1 ,"{" , 0);
     token_elemet(obj.line1 , obj.line2 ,"}" , 1);
+    chek_line(obj.line2);
     token_elemet(obj.line2 , obj.line3 ,";", 2);
     clean_element(obj.line3 , obj.line4);
     std::map<std::string , std::string> map[s];
