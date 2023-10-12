@@ -6,6 +6,10 @@
 #include<iostream>
 #include <vector>
 #include<cstring>
+#include<map>
+
+#define     iter       std::vector<std::string>::iterator
+#define     conf_data  std::map::<std::string , std::string>
 
 class Mycfg
 {

@@ -6,16 +6,23 @@
 /*   By: mserrouk <mserrouk@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/29 21:28:36 by eelhafia          #+#    #+#             */
-/*   Updated: 2023/10/02 21:57:08 by mserrouk         ###   ########.fr       */
+/*   Updated: 2023/10/03 22:51:01 by mserrouk         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "include/webserv.hpp"
-
+#include "config/parsing.hpp"
 
 // ??????
 
-int main() {
+int main(int argc , char **argv) {
+
+    if(argc != 2)
+    {
+        std::cout << "error in argument" << std::endl;
+        return;
+    }
+    pars(argv[1]);
     int serverSocket, clientSocket;
     socklen_t clientLength;
     // char buffer[256];
