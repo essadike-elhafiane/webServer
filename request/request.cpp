@@ -221,7 +221,7 @@ void    request::read_request(Client& dataClient)
             // std::cout << "|||||" << buffer << "|||||" << std::endl;
             if (dataClient.getTypeRequset() == "POST" && dataClient.getHeaderStatus() == true){
                 
-                    download_file(buffer , bytesRead, dataClient);
+                download_file(buffer , bytesRead, dataClient);
             }
         }
 

@@ -139,6 +139,17 @@
         <input type="file" name="fileToUpload" id="fileToUpload">
         <input type="submit" value="Upload" name="submit">
       </form>
+      <h1>Delete Request Example</h1>
+
+        <form action="http://example.com/resource" method="DELETE">
+            <input type="submit" value="Delete">
+        </form>
+        <form action="delete.php" method="POST">
+            <label for="file">File to delete:</label>
+            <input type="text" id="file" name="file">
+            <input type="submit" value="Delete">
+          </form>
+        
      <!-- <div style="margin: 20px;">
 
          <input type="file" />
