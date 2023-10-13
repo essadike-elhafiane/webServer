@@ -2,7 +2,7 @@
 
 void request::parse_request(Client& dataClient, char *buffer, ssize_t& bytRead)
 {
-    // std::cout << Header << "|" << std::endl;
+    std::cout << Header << "|" << std::endl;
     // (void)buffer;
     // (void)bytRead;
     if (Header == "")
@@ -33,15 +33,14 @@ void request::parse_request(Client& dataClient, char *buffer, ssize_t& bytRead)
         token = std::strtok(nullptr, " \n");
     }
     delete[] cstr;
-    std::istringstream requestStream(Header);
-    std::string line;
-    while (std::getline(requestStream, line)) {
-        if (line.substr(0, 44) == "Content-Type: multipart/form-data; boundary=") {
-            dataClient.setBoundaryRequest(line.substr(44, 39));
-            // std::cout << "  |||||||| " <<std::endl;
-            break;
-        }
-    }
+    size_t pos_b = Header.find("boundary=", 0);
+    if (pos_b != Header.npos)
+    {
+        size_t pos_bb = Header.find("\r\n", pos_b + 2);
+        if (pos_bb != Header.npos)
+            dataClient.setBoundaryRequest(Header.substr(pos_b + 9, pos_bb - pos_b - 9));
+    } 
+
     // for (std::vector<std::string>::iterator itr = tokens.begin(); itr != tokens.end(); itr++) {
     //     std::cout << *itr << std::endl;
     // }
@@ -102,7 +101,19 @@ request::request(/* args */)
 request::~request()
 {
 }
- 
+
+int findchar(const char *buffer, const char *dest, size_t size)
+{
+    for (size_t i = 0; i < size; i++)
+    {
+        std::string s = buffer + i;
+        size_t pos = s.find(dest, 0);
+        if (pos != s.npos)
+            return i + pos;
+    }
+    return -1;
+}
+
 void request::download_file(char *buffer , int bytesRead,Client &dataClient)
 {
     if(dataClient.getFileName() == "" && dataClient.getHeaderStatus())
@@ -115,35 +126,49 @@ void request::download_file(char *buffer , int bytesRead,Client &dataClient)
         std::size_t startPos = request.find("\r\n\r\n", pos) + 4;
         if (startPos == request.npos)
             std::cout << "AAA |" << bytesRead << std::endl;
+        
         size_t p = request.find("filename=", 0) + 9;
         size_t po = request.find("\n", p);
         std::string namefile1 = request.substr(p, po - p + 1);
         std::string namefile = namefile1.substr(1, namefile1.size() - 4);
         namefile = "/Users/eelhafia/Desktop/webServer/download/" + namefile;
+        std::string bonadry;
+
+        bonadry = "--" + dataClient.getBoundarytSocket();
+        
+        // long int startFindBoundary = bytesRead - dataClient.getBoundarytSocket().size() - 20;
+        // if (startFindBoundary < 0)
+        //     startFindBoundary = 0;
+        // std::cout << bonadry << "|" << dataClient.getBoundarytSocket().size() - 3 << " hhh" << std::endl; 
+        // std::size_t endPos = std::find("--" + dataClient.getBoundarytSocket(), 0);
+        int endPos = findchar(buffer + startPos + 1, bonadry.c_str(), bytesRead - startPos);
+        std::cout << endPos << " kkkkkkkkk " << std::endl;
+        if (endPos < 0)
+            endPos = bytesRead - startPos + 1;
         dataClient.setFileName(namefile);
         std::ofstream file(namefile, std::ios::out | std::ios::binary);
         if (!file) {
             std::cerr << "Error opening file for writing" << namefile << std::endl;
             return;
         }
-        file.write(buffer + startPos, bytesRead - startPos);
+        std::cout << endPos - startPos << std::endl;
+        file.write(buffer + startPos, endPos - 1);
         file.close();
         std::cout << "dfg d" << std::endl;
     }
     else if (dataClient.getHeaderStatus())
     {
-        std::string request = buffer;
-        std::size_t endPos = request.find("--" + dataClient.getBoundarytSocket(), 0);
-        if (endPos != request.npos && endPos >= 2)
-            endPos -= 2;
-        else
+        std::string bonadry;
+        bonadry = "--" + dataClient.getBoundarytSocket();
+        std::size_t endPos = findchar(buffer, bonadry.c_str(), bytesRead);
+        if (endPos < 0 || endPos == bonadry.npos)
             endPos = 0;
         std::ofstream file(dataClient.getFileName(), std::ios::app | std::ios::binary);
         if (endPos == 0)
             file.write(buffer, bytesRead);
         else
         {
-            file.write(buffer, endPos);
+            file.write(buffer, endPos - 1);
             // write(2, buffer, bytesRead);
             // write(2, "\n\n", bytesRead);
             // write(2, dataClient.getBoundarytSocket().c_str(), dataClient.getBoundarytSocket().size());
