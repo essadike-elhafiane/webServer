@@ -32,10 +32,12 @@ class request
                 std::string response1 = "HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\nContent-Length: ";
                 rsp.sendResponse("/Users/eelhafia/Desktop/webServer/html/delete.html", response1, dataClient.getClientSocket());
                 printf("File deleted successfully.");
+                dataClient.resetData();
             } else {
                 std::string response1 = "HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\nContent-Length: ";
                 rsp.sendResponse("/Users/eelhafia/Desktop/webServer/html/not_delete.html", response1, dataClient.getClientSocket());
                 printf("Failed to delete the file.\n");
+                dataClient.resetData();
             }
         }
         void download_file(char *buffer , int bytesRead,Client &dataClient);

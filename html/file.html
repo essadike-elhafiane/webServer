@@ -141,14 +141,32 @@
       </form>
       <h1>Delete Request Example</h1>
 
-        <form action="http://example.com/resource" method="DELETE">
-            <input type="submit" value="Delete">
-        </form>
-        <form action="delete.php" method="POST">
-            <label for="file">File to delete:</label>
-            <input type="text" id="file" name="file">
-            <input type="submit" value="Delete">
-          </form>
+      <input type="text" id="g">
+      <button onclick="sendDeleteRequest()">Delete Resource</button>
+
+      <script>
+          
+          // let delete = 'http://127.0.0.1:8000/' + value ;
+          
+          function sendDeleteRequest() {
+            let value = document.getElementById("g").value;
+            let a = 'http://127.0.0.1:8000/' + value;
+            console.log(a);
+          fetch(a, {
+            method: 'DELETE'
+          })
+          .then(response => {
+            if (response.ok) {
+              console.log('Resource deleted successfully.');
+            } else {
+              console.log('Failed to delete the resource.');
+            }
+          })
+          .catch(error => {
+            console.error('An error occurred:', error);
+          });
+        }
+      </script>
         
      <!-- <div style="margin: 20px;">
 
