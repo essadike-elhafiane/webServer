@@ -54,9 +54,10 @@ void listen_port(std::vector<std::string>::iterator &ptr , HTTP_SERVER &m , std:
                 std::cout << "error1 listen" << "\n";
                 exit(0);
             }
+        }
         if (i == 1)
             m.port.push_back(atoi((*ptr).c_str()));
-        }
+        
         if(i == 2 && (*ptr) == ";")
         {
             if(m.port[0] > 65536)
@@ -574,10 +575,11 @@ int main (int argc , char **argv)
         }
         // s++;
     }
+    // exit(0);
 
 
-    // for(std::vector<std::string>::iterator ptr =obj.line4.begin() ; ptr !=obj.line4.end(); ptr++ )
-    //     std::cout << *ptr << std::endl;
+    for(std::vector<HTTP_SERVER>::iterator ptr =data.begin() ; ptr != data.end(); ptr++ )
+        std::cout << *ptr << std::endl;
 
     return 0;
 }
