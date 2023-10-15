@@ -142,7 +142,7 @@
       <h1>Delete Request Example</h1>
 
       <input type="text" id="g">
-      <button onclick="sendDeleteRequest()">Delete Resource</button>
+      <button onclick="sendDeleteRequest()"> Delete Resource </button>
 
       <script>
           
@@ -150,7 +150,7 @@
           
           function sendDeleteRequest() {
             let value = document.getElementById("g").value;
-            let a = 'http://10.11.8.8:8000/' + value;
+            let a = 'http://10.11.8.10:8000/' + value;
             console.log(a);
           fetch(a, {
             method: 'DELETE'

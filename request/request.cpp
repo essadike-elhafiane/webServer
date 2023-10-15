@@ -116,17 +116,13 @@ int findchar(const char *buffer, const char *dest, size_t size)
 
 void request::download_file(char *buffer , int bytesRead,Client &dataClient)
 {
+    std::size_t startPos = 0;
+
     if(dataClient.getFileName() == "" && dataClient.getHeaderStatus())
     {
-        // std::cout << "||||" << buffer << "||" << std::endl;
         std::string request = buffer;
-        std::size_t pos = request.find("filename=", 0);
-        if (pos == request.npos)
-        {
-            std::cout << "ddd |" << bytesRead << " " << buffer<< std::endl;
-            return ;
-        }
-        std::size_t startPos = request.find("\r\n\r\n", pos) + 4;
+
+        startPos = request.find("\r\n\r\n", pos) + 4;
         if (startPos == request.npos)
             std::cout << "AAA |" << bytesRead << std::endl;
         size_t p = request.find("filename=", 0) + 9;
@@ -134,51 +130,55 @@ void request::download_file(char *buffer , int bytesRead,Client &dataClient)
         std::string namefile1 = request.substr(p, po - p + 1);
         std::string namefile = namefile1.substr(1, namefile1.size() - 4);
         namefile = "/Users/eelhafia/Desktop/webServer/download/" + namefile;
-        std::string bonadry;
+        // std::string bonadry;
 
-        bonadry = "--" + dataClient.getBoundarytSocket();
-        int endPos = findchar(buffer + startPos + 1, bonadry.c_str(), bytesRead - startPos);
-        std::cout << endPos << " kkkkkkkkk " << std::endl;
-        if (endPos < 0)
-            endPos = bytesRead - startPos + 1;
+        // bonadry = "--" + dataClient.getBoundarytSocket();
+        // int endPos = findchar(buffer + startPos + 1, bonadry.c_str(), bytesRead - startPos);
+        // std::cout << endPos << " kkkkkkkkk " << std::endl;
+        // if (endPos < 0)
+        //     endPos = bytesRead - startPos + 1;
         dataClient.setFileName(namefile);
         std::ofstream file(namefile, std::ios::out | std::ios::binary);
         if (!file) {
             std::cerr << "Error opening file for writing" << namefile << std::endl;
             return;
         }
-        std::cout << endPos - startPos << std::endl;
-        file.write(buffer + startPos, endPos - 1);
-        file.close();
-        std::string restR = buffer + endPos;
-        bonadry = bonadry + "--";
-        std::cout << "|||" << bonadry << "|||" << std::endl;
-        size_t posss = restR.find(bonadry);
-        if (restR.find("\r\n\r\n") != restR.npos && posss == restR.npos)
-        { 
-            std::cout << "gg" << std::endl;
-            dataClient.setFileName("");
-            download_file(buffer + endPos, bytesRead - endPos ,dataClient);
-        }
-        std::cout << buffer +  endPos << std::endl;
-        std::cout << "dfg d" << std::endl;
+        // std::cout << endPos - startPos << std::endl;
+        // file.write(buffer + startPos, endPos - 1);
+        // file.close();
+        // std::string restR = buffer + endPos;
+        // bonadry = bonadry + "--";
+        // std::cout << "|||" << bonadry << "|||" << std::endl;
+        // size_t posss = restR.find(bonadry);
+        // if (restR.find("\r\n\r\n") != restR.npos && posss == restR.npos)
+        // { 
+        //     std::cout << "gg" << std::endl;
+        //     dataClient.setFileName("");
+        //     download_file(buffer + endPos, bytesRead - endPos ,dataClient);
+        // }
+        // std::cout << buffer +  endPos << std::endl;
+        // std::cout << "dfg d" << std::endl;
     }
-    else if (dataClient.getHeaderStatus())
+    if (dataClient.getFileName() != "")
     {
-        std::cout << "dfghhhh d" << std::endl;
+        // std::cout << "dfghhhh d" << std::endl;
         std::string bonadry;
         bonadry = "--" + dataClient.getBoundarytSocket();
-        std::size_t endPos = findchar(buffer, bonadry.c_str(), bytesRead);
+        std::size_t endPos = findchar(buffer + startPos + 1, bonadry.c_str(), bytesRead - startPos);
         if (endPos < 0 || endPos == bonadry.npos)
             endPos = 0;
         std::ofstream file(dataClient.getFileName(), std::ios::app | std::ios::binary);
         if (endPos == 0)
-            {file.write(buffer, bytesRead);
-            std::cout << buffer +  endPos << std::endl;}
+        {
+            file.write(buffer + startPos, bytesRead - startPos);
+            file.close();
+            std::cout << buffer +  endPos << std::endl;
+        }
         else
         {
-            std::cout << buffer << std::endl;
-            file.write(buffer, endPos - 2);
+            // std::cout << buffer << std::endl;
+            file.write(buffer + startPos, endPos - 1);
+            file.close();
             std::string restR = buffer + endPos;
             bonadry = bonadry + "--";
             size_t pos = restR.find(bonadry);
@@ -186,7 +186,7 @@ void request::download_file(char *buffer , int bytesRead,Client &dataClient)
             { 
                 std::cout << "gg" << std::endl;
                 dataClient.setFileName("");
-                download_file(buffer + endPos, bytesRead - endPos ,dataClient);
+                download_file(buffer + endPos, bytesRead - endPos, dataClient);
             }
             else
             {
@@ -195,15 +195,9 @@ void request::download_file(char *buffer , int bytesRead,Client &dataClient)
                 if (ppos != restR.npos && pom != restR.npos)
                 {
                     dataClient.setFileName("");
-                    download_file(buffer + endPos, bytesRead - endPos ,dataClient);
+                    download_file(buffer + endPos, bytesRead - endPos, dataClient);
                 }
             }
-            // dataClient.resetData();
-            // write(2, buffer, bytesRead);
-            // write(2, "\n\n", bytesRead);
-            // write(2, dataClient.getBoundarytSocket().c_str(), dataClient.getBoundarytSocket().size());
-            // close(dataClient.getClientSocket());
-            // dataClient.setClientSocket(0);
         }
     }
 }

@@ -49,7 +49,7 @@ class request
                 return ;
             if (dataClient.getTypeRequset() == "GET")
                 check_Get_Request(dataClient);
-            if (dataClient.getTypeRequset() == "DELETE")
+            if (dataClient.getTypeRequset() == "DELETE" ||dataClient.getTypeRequset() == "OPTIONS")
                 delete_request(dataClient);
             // std::cout << "|" << url << "|"<< " " << "|" << "|" << " " << dataClient.getClientSocket() << " "<< client << std::endl << std::endl;
             std::cout << std::endl << "________________________________________________________" << std::endl << std::endl;     
