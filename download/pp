@@ -1,0 +1,27 @@
+"RPN.hpp"
+Content-Type: application/octet-stream
+
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   RPN.hpp                                            :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: edraidry <edraidry@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2023/09/27 10:07:38 by edraidry          #+#    #+#             */
+/*   Updated: 2023/10/06 12:46:46 by edraidry         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
+#ifndef RPN_HPP
+#define RPN_HPP
+#include<iostream>
+#include<string>
+#include<list>
+#include<sstream>
+#include<cctype>
+// #include<vector>÷
+void evaluateRPN(std::string &tokens);
+void split( std::string &input ,char delimiter,std::string &token);
+// bool isnumandOper(std::string &token);
+#endif
