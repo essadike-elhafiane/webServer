@@ -170,7 +170,7 @@ void pars_redirection(std::vector<std::string>::iterator &ptr, std::string &m, s
     while(ptr != l && i < 3)
     {
         if(i == 1 && ((*ptr) == ";" || (*ptr) =="{" || (*ptr) == "}"))
-            std::cout << "error2 " << str <<  "\n";
+            error_message(str);
         if (i == 1)
             m = *ptr;
         if (i == 2 && (*ptr) == ";")
@@ -178,8 +178,7 @@ void pars_redirection(std::vector<std::string>::iterator &ptr, std::string &m, s
         ptr++;
         i++;
     }
-    std::cout << "error2" << str <<  "\n";
-    exit(0);
+   error_message(str);
 }
 
 void index_pars(std::vector<std::string>::iterator &ptr, std::map<std::string,std::string> &m, std::vector<std::string>::iterator l)
@@ -215,17 +214,17 @@ void parc_cgi(std::vector<std::string>::iterator &ptr, std::map<std::string,std:
     while(ptr != l && i < 3)
     {
         if(i == 1 && ((*ptr) == ";" || (*ptr) =="{" || (*ptr) == "}"))
-            std::cout << "error2 redirection" <<  "\n";
+            std::cout << "error2 cgi" <<  "\n";
         if (i == 1)
             m["fastcgi.index"] = *ptr;
         if (i == 2 && (*ptr) != ";" )
-            std::cout << "error2 redirection" <<  "\n";
+            std::cout << "error2 cgi" <<  "\n";
         else if (i == 2)
             return ;
         ptr++;
         i++;
     }
-    std::cout << "error2 redirection" <<  "\n";
+    std::cout << "error2 cgi" <<  "\n";
     exit(0);
 }
 
@@ -323,30 +322,23 @@ void error_page(std::vector<std::string>::iterator &ptr, HTTP_SERVER &m, std::ve
 
 void pars_methods(std::vector<std::string>::iterator &ptr, HTTP_SERVER &m, std::vector<std::string>::iterator l)
 {
-    int i = 0;
-    while(ptr != l )
+    ptr++;
+       
+    while(( (*ptr) == "GET" || (*ptr) == "POST" || (*ptr) == "DELETE") && ptr != l)
     {
-        if(i == 1)
-            
-        while(i >= 1 && ( (*ptr) == "GET" || (*ptr) == "POST" || (*ptr) == "DELETE"))
+        for(std::vector<std::string>::iterator itr = m.allow_methods.begin() ; itr !=   m.allow_methods.end() ; itr++)
         {
-            for(std::vector<std::string>::iterator itr = m.allow_methods.begin() ; itr !=   m.allow_methods.end() ; itr++)
-            {
-                *itr = *ptr;
+            if (*itr == *ptr)
                 error_message("error duplicate method");
-            }
-            m.allow_methods.push_back(*ptr);
-            ptr++;
         }
-        if ((*ptr) == ";" && !m.allow_methods.empty())
-            return;
-        else
-            std::cout << "error2 limit" <<  "\n";
+        m.allow_methods.push_back(*ptr);
         ptr++;
-        i++;
     }
-    std::cout << "error2 limit" <<  "\n";
-    exit(0);
+    if ((*ptr) == ";" && !m.allow_methods.empty())
+    {
+        return;
+    }
+    error_message("error allow methods");
 }
 
 
@@ -356,23 +348,23 @@ void  pars_auto(std::vector<std::string>::iterator &ptr, int &m, std::vector<std
     
     while(ptr != l && i < 3)
     {
-        if (i == 1 && (*ptr) != "on" && (*ptr) != "of")
-            std::cout << "error2 redirection" <<  "\n";
+        if (i == 1 && (*ptr) != "on" && (*ptr) != "off")
+            std::cout << "error1 auto" <<  "\n";
         if (i == 1)
         {
-            if(*ptr == "of")
+            if(*ptr == "off")
                 m = 0;
             else
                 m = 1;
         }
         if (i == 2 && (*ptr) != ";" )
-            std::cout << "error2 redirection" <<  "\n";
+            std::cout << "error2 outo" <<  "\n";
         else if (i == 2 )
             return ;
         ptr++;
         i++;
     }
-    std::cout << "error2 redirection" <<  "\n";
+    std::cout << "error2 outo" <<  "\n";
     exit(0);
 }
 
@@ -411,18 +403,21 @@ void location_pars(std::vector<std::string>::iterator &ptr, HTTP_SERVER &m, std:
                 pars_redirection(ptr,m.pages.back().root,l2 , "root" );
             else if((*ptr) == "index")
                 pars_redirection(ptr,m.pages.back().index,l ,"index");
-            // else if ((*ptr) == "error_page")
-            //     pars_redirection(ptr,m.pages.back().er ,l2 , "error_page_path");
+            else if ((*ptr) == "error_page")
+                pars_redirection(ptr,m.error_page_path ,l2 , "error_page_path");
             else if((*ptr) == "allow_methods")
                 pars_methods(ptr,m ,l2);
             else if((*ptr) == "return")
-                pars_redirection(ptr,m.pages.back().redection,l2 , "return");
+                pars_redirection(ptr,m.pages.back().redirection,l2 , "return");
             else if ((*ptr) == "autoindex")
                 pars_auto(ptr,m.pages.back().autoindex ,l2);
             else if ( (*ptr) == "cgi_data")
                 pars_redirection(ptr,m.pages.back().cgi ,l2 , "cgi_data");
             else 
+            {
+                std::cout << *ptr;
                 error_message("error ");
+            }
         }
         ptr++;
         i++;
@@ -431,12 +426,14 @@ void location_pars(std::vector<std::string>::iterator &ptr, HTTP_SERVER &m, std:
     // exit(0);
 }
 
+
+
 void server_pars(std::vector<std::string>::iterator &ptr , Mycfg &obj, HTTP_SERVER &m)
 {
     std::vector<std::string>::iterator l;
     l = ptr;
     bracket_part(l , obj);
-
+    ptr++;
     while(ptr != l)
     {
         // std::cout << (*ptr) <<  std::endl;
@@ -450,10 +447,15 @@ void server_pars(std::vector<std::string>::iterator &ptr , Mycfg &obj, HTTP_SERV
             error_page(ptr,m,l);
         else if ((*ptr) == "client_max_body_size")
             size_pars(ptr,m,l);
+        else if((*ptr) == "allow_methods")
+                pars_methods(ptr,m ,l);
         else if ((*ptr) == "location")
             location_pars(ptr,m,l);
-        else if ((*ptr) != ";" || (*ptr) != "{" || (*ptr) != "}")
+        else if ((*ptr) != ";" && (*ptr) != "{" && (*ptr) != "}")
+        {
+            std::cout  << "|"<< (*ptr) << "|"<< std::endl;
             error_message("error in valide data");
+        }
         ptr++;
     }
 }
@@ -483,26 +485,6 @@ void token_elemet(std::vector<std::string> line,std::vector<std::string> &line1 
     }
     line1.push_back("");
 }
-
-
-
-// void clean_element(std::vector<std::string> line,std::vector<std::string> &line1)
-// {
-//     char *token;
-//     int i = 0;
-//     while(!line[i].empty())
-//     {
-//         token = std::strtok( (char*)line[i].c_str(), " \t\n\r");
-//         while (token != nullptr)
-//         {
-//             line1.push_back(token);
-//             token = std::strtok( nullptr, " \t\n\r");
-//         }
-//         i++;      
-//     }
-// }
-
-#include <sstream>
 
 void clean_element(std::vector<std::string> line, std::vector<std::string> &line1)
 {
@@ -537,6 +519,7 @@ void chek_line(std::vector<std::string> line)
                 tmp = (*ptr).substr(first , last - first +  1);
             if(!tmp.empty() && tmp[tmp.length() - 1] != ';')
             {
+                std:: cout << *ptr << std::endl;
                 error_message("error ;");
             }
         }
@@ -572,25 +555,29 @@ int main (int argc , char **argv)
     chek_line(obj.line2);
     token_elemet(obj.line2 , obj.line3 ,";");
     clean_element(obj.line3 , obj.line4);
-    std::vector<int , HTTP_SERVER> data ;
-    s = 0;
+
+
+    std::vector< HTTP_SERVER> data ;
+    // s = 0;
     for(std::vector<std::string>::iterator ptr = obj.line4.begin() ; ptr < obj.line4.end() ;ptr++)
     {
         if(std::string::npos != (*ptr).find("server") && (*ptr).length() == 6)
-            server_pars(ptr ,obj , data[s]);
+        {
+            data.push_back(HTTP_SERVER()) ;
+            server_pars(ptr ,obj , data.back());
+        }
         else
         {
             // std::cout << (*ptr) << "|" << std::endl;
             std::cout << "error in server prototype";
             exit(0);
         }
-        s++;
+        // s++;
     }
 
-// for(int i = 0 ; i < s; i++)
-// {
-//     for(std::map<std::string , std::string>::iterator ptr =map[i].begin() ; ptr !=map[i].end(); ptr++ )
-//         std::cout << ptr->first <<  "  "  << ptr->second << std::endl;
-// }
+
+    // for(std::vector<std::string>::iterator ptr =obj.line4.begin() ; ptr !=obj.line4.end(); ptr++ )
+    //     std::cout << *ptr << std::endl;
+
     return 0;
 }

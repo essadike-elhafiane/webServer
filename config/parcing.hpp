@@ -7,6 +7,7 @@
 #include <vector>
 #include<cstring>
 #include<map>
+#include <sstream>
 
 #define     iter       std::vector<std::string>::iterator
 #define     conf_data  std::map::<std::string , std::string>
@@ -26,8 +27,6 @@ class Mycfg
         std::string server_name;
 };
 
-
-
 class LOCATION
 {
     public:
@@ -35,7 +34,7 @@ class LOCATION
         std::string root ;
         std::string index ;
         int autoindex;
-        std::string redection;
+        std::string redirection;
         std::string cgi;
         LOCATION()
         {
@@ -44,9 +43,10 @@ class LOCATION
             index = "";
             autoindex = -1;
             cgi = "";
+            redirection = "";
         }
+        
 };
-
 
 class HTTP_SERVER
 {
@@ -56,23 +56,25 @@ class HTTP_SERVER
         long long int client_max_body_size ;
         std::string error_page_path;
         std::map<int , std::string> error_page;
-        std::vector<int , int> port;
+        std::vector<int> port;
         std::vector<std::string> allow_methods;
         std::vector<LOCATION> pages;
 
     HTTP_SERVER()
     {
-        std::string server_name = "";
-        std::string root = "";
-        long long int client_max_body_size = -1;
+        server_name = "";
+        root = "";
+        client_max_body_size = -1;
+        error_page_path = "";
     }
-    HTTP_SERVER & operator = (const HTTP_SERVER & other)
-    {
-        if(this->server_name.empty())
-            this->server_name = other.server_name;
-        if(this->root.empty())
-            this->root = other.root;
-    }
+    // HTTP_SERVER & operator = (const HTTP_SERVER & other)
+    // {
+    //     if(this->server_name.empty())
+    //         this->server_name = other.server_name;
+    //     if(this->root.empty())
+    //         this->root = other.root;
+    // }
+    
 
 };
 
