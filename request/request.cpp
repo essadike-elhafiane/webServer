@@ -122,11 +122,13 @@ void request::download_file(char *buffer , int bytesRead,Client &dataClient)
         std::string request = buffer;
         std::size_t pos = request.find("filename=", 0);
         if (pos == request.npos)
+        {
             std::cout << "ddd |" << bytesRead << " " << buffer<< std::endl;
+            return ;
+        }
         std::size_t startPos = request.find("\r\n\r\n", pos) + 4;
         if (startPos == request.npos)
             std::cout << "AAA |" << bytesRead << std::endl;
-        
         size_t p = request.find("filename=", 0) + 9;
         size_t po = request.find("\n", p);
         std::string namefile1 = request.substr(p, po - p + 1);
@@ -147,15 +149,18 @@ void request::download_file(char *buffer , int bytesRead,Client &dataClient)
         }
         std::cout << endPos - startPos << std::endl;
         file.write(buffer + startPos, endPos - 1);
+        file.close();
         std::string restR = buffer + endPos;
-        if (restR.find("\r\n\r\n") != restR.npos)
+        bonadry = bonadry + "--";
+        std::cout << "|||" << bonadry << "|||" << std::endl;
+        size_t posss = restR.find(bonadry);
+        if (restR.find("\r\n\r\n") != restR.npos && posss == restR.npos)
         { 
             std::cout << "gg" << std::endl;
             dataClient.setFileName("");
             download_file(buffer + endPos, bytesRead - endPos ,dataClient);
         }
         std::cout << buffer +  endPos << std::endl;
-        file.close();
         std::cout << "dfg d" << std::endl;
     }
     else if (dataClient.getHeaderStatus())
@@ -175,11 +180,23 @@ void request::download_file(char *buffer , int bytesRead,Client &dataClient)
             std::cout << buffer << std::endl;
             file.write(buffer, endPos - 2);
             std::string restR = buffer + endPos;
-            if (restR.find("\r\n\r\n") != restR.npos)
+            bonadry = bonadry + "--";
+            size_t pos = restR.find(bonadry);
+            if (restR.find("\r\n\r\n") != restR.npos && pos == restR.npos)
             { 
                 std::cout << "gg" << std::endl;
                 dataClient.setFileName("");
                 download_file(buffer + endPos, bytesRead - endPos ,dataClient);
+            }
+            else
+            {
+                size_t ppos = restR.find("\r\n\r\n");
+                size_t pom = restR.find("\r\n\r\n", ppos + 4);
+                if (ppos != restR.npos && pom != restR.npos)
+                {
+                    dataClient.setFileName("");
+                    download_file(buffer + endPos, bytesRead - endPos ,dataClient);
+                }
             }
             // dataClient.resetData();
             // write(2, buffer, bytesRead);
