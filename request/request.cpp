@@ -135,12 +135,6 @@ void request::download_file(char *buffer , int bytesRead,Client &dataClient)
         std::string bonadry;
 
         bonadry = "--" + dataClient.getBoundarytSocket();
-        
-        // long int startFindBoundary = bytesRead - dataClient.getBoundarytSocket().size() - 20;
-        // if (startFindBoundary < 0)
-        //     startFindBoundary = 0;
-        // std::cout << bonadry << "|" << dataClient.getBoundarytSocket().size() - 3 << " hhh" << std::endl; 
-        // std::size_t endPos = std::find("--" + dataClient.getBoundarytSocket(), 0);
         int endPos = findchar(buffer + startPos + 1, bonadry.c_str(), bytesRead - startPos);
         std::cout << endPos << " kkkkkkkkk " << std::endl;
         if (endPos < 0)
@@ -153,11 +147,20 @@ void request::download_file(char *buffer , int bytesRead,Client &dataClient)
         }
         std::cout << endPos - startPos << std::endl;
         file.write(buffer + startPos, endPos - 1);
+        std::string restR = buffer + endPos;
+        if (restR.find("\r\n\r\n") != restR.npos)
+        { 
+            std::cout << "gg" << std::endl;
+            dataClient.setFileName("");
+            download_file(buffer + endPos, bytesRead - endPos ,dataClient);
+        }
+        std::cout << buffer +  endPos << std::endl;
         file.close();
         std::cout << "dfg d" << std::endl;
     }
     else if (dataClient.getHeaderStatus())
     {
+        std::cout << "dfghhhh d" << std::endl;
         std::string bonadry;
         bonadry = "--" + dataClient.getBoundarytSocket();
         std::size_t endPos = findchar(buffer, bonadry.c_str(), bytesRead);
@@ -165,10 +168,20 @@ void request::download_file(char *buffer , int bytesRead,Client &dataClient)
             endPos = 0;
         std::ofstream file(dataClient.getFileName(), std::ios::app | std::ios::binary);
         if (endPos == 0)
-            file.write(buffer, bytesRead);
+            {file.write(buffer, bytesRead);
+            std::cout << buffer +  endPos << std::endl;}
         else
         {
-            file.write(buffer, endPos - 1);
+            std::cout << buffer << std::endl;
+            file.write(buffer, endPos - 2);
+            std::string restR = buffer + endPos;
+            if (restR.find("\r\n\r\n") != restR.npos)
+            { 
+                std::cout << "gg" << std::endl;
+                dataClient.setFileName("");
+                download_file(buffer + endPos, bytesRead - endPos ,dataClient);
+            }
+            // dataClient.resetData();
             // write(2, buffer, bytesRead);
             // write(2, "\n\n", bytesRead);
             // write(2, dataClient.getBoundarytSocket().c_str(), dataClient.getBoundarytSocket().size());
@@ -234,7 +247,6 @@ void    request::read_request(Client& dataClient)
             send(dataClient.getClientSocket(), response1.c_str(), response1.size(),0);
             close(dataClient.getClientSocket());   
             dataClient.resetData();
-            // dataClient.resetData();
         }
         if (Header.find("\r\n\r\n") != std::string::npos && dataClient.getTypeRequset() == "GET")
             break;

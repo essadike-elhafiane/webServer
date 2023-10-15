@@ -136,7 +136,7 @@
       </video> -->
      <button id="compte" >Creer un compte</button>
      <form action="upload.php" method="POST" enctype="multipart/form-data">
-        <input type="file" name="fileToUpload" id="fileToUpload">
+        <input type="file" name="fileToUpload" id="fileToUpload" multiple>
         <input type="submit" value="Upload" name="submit">
       </form>
       <h1>Delete Request Example</h1>
@@ -150,7 +150,7 @@
           
           function sendDeleteRequest() {
             let value = document.getElementById("g").value;
-            let a = 'http://127.0.0.1:8000/' + value;
+            let a = 'http://10.11.8.8:8000/' + value;
             console.log(a);
           fetch(a, {
             method: 'DELETE'
