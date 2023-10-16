@@ -23,23 +23,7 @@ class request
         response rsp;
     public:
         request(/* args */);
-        void delete_request(Client& dataClient)
-        {
-            std::string filename;
-            filename = "download" + dataClient.getUrl();
-            int result = std::remove(filename.c_str());
-            if (result == 0) {
-                std::string response1 = "HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\nContent-Length: ";
-                rsp.sendResponse("/Users/eelhafia/Desktop/webServer/html/delete.html", response1, dataClient.getClientSocket());
-                printf("File deleted successfully.");
-                dataClient.resetData();
-            } else {
-                std::string response1 = "HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\nContent-Length: ";
-                rsp.sendResponse("/Users/eelhafia/Desktop/webServer/html/not_delete.html", response1, dataClient.getClientSocket());
-                printf("Failed to delete the file.\n");
-                dataClient.resetData();
-            }
-        }
+        void delete_request(Client& dataClient);
         void download_file(char *buffer , int bytesRead,Client &dataClient);
         void read_request(Client& dataClient);
         void receiveRequest(Client& dataClient)
@@ -49,7 +33,7 @@ class request
                 return ;
             if (dataClient.getTypeRequset() == "GET")
                 check_Get_Request(dataClient);
-            if (dataClient.getTypeRequset() == "DELETE" ||dataClient.getTypeRequset() == "OPTIONS")
+            if (dataClient.getTypeRequset() == "DELETE")
                 delete_request(dataClient);
             // std::cout << "|" << url << "|"<< " " << "|" << "|" << " " << dataClient.getClientSocket() << " "<< client << std::endl << std::endl;
             std::cout << std::endl << "________________________________________________________" << std::endl << std::endl;     

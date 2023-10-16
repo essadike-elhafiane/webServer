@@ -2,7 +2,7 @@
 
 void request::parse_request(Client& dataClient, char *buffer, ssize_t& bytRead)
 {
-    std::cout << Header << "|" << std::endl;
+    // std::cout << Header << "|" << std::endl;
     // (void)buffer;
     // (void)bytRead;
     if (Header == "")
@@ -19,10 +19,10 @@ void request::parse_request(Client& dataClient, char *buffer, ssize_t& bytRead)
         memcpy(cstr, buffer, bytRead);
         memset(buffer, 0, 3000);
         memcpy(buffer, cstr + poss + 4, dataClient.getReadlen());
-        std::cout << std::endl << "||"<< buffer <<"||" <<std::endl;
+        // std::cout << std::endl << "||"<< buffer <<"||" <<std::endl;
         delete[] cstr;
         bytRead = dataClient.getReadlen();
-        std::cout << "||"<< Header.size() << "||"  << poss + 4 << "||" << p << "||" << dataClient.getReadlen() << "||" << bytRead  << "||" <<std::endl;
+        // std::cout << "||"<< Header.size() << "||"  << poss + 4 << "||" << p << "||" << dataClient.getReadlen() << "||" << bytRead  << "||" <<std::endl;
     }
     char* cstr = new char[Header.length() + 1];
     std::strcpy(cstr, Header.c_str());
@@ -130,34 +130,13 @@ void request::download_file(char *buffer , int bytesRead,Client &dataClient)
         std::string namefile1 = request.substr(p, po - p + 1);
         std::string namefile = namefile1.substr(1, namefile1.size() - 4);
         namefile = "/Users/eelhafia/Desktop/webServer/download/" + namefile;
-        // std::string bonadry;
-
-        // bonadry = "--" + dataClient.getBoundarytSocket();
-        // int endPos = findchar(buffer + startPos + 1, bonadry.c_str(), bytesRead - startPos);
-        // std::cout << endPos << " kkkkkkkkk " << std::endl;
-        // if (endPos < 0)
-        //     endPos = bytesRead - startPos + 1;
         dataClient.setFileName(namefile);
         std::ofstream file(namefile, std::ios::out | std::ios::binary);
         if (!file) {
             std::cerr << "Error opening file for writing" << namefile << std::endl;
             return;
         }
-        // std::cout << endPos - startPos << std::endl;
-        // file.write(buffer + startPos, endPos - 1);
-        // file.close();
-        // std::string restR = buffer + endPos;
-        // bonadry = bonadry + "--";
-        // std::cout << "|||" << bonadry << "|||" << std::endl;
-        // size_t posss = restR.find(bonadry);
-        // if (restR.find("\r\n\r\n") != restR.npos && posss == restR.npos)
-        // { 
-        //     std::cout << "gg" << std::endl;
-        //     dataClient.setFileName("");
-        //     download_file(buffer + endPos, bytesRead - endPos ,dataClient);
-        // }
-        // std::cout << buffer +  endPos << std::endl;
-        // std::cout << "dfg d" << std::endl;
+    
     }
     if (dataClient.getFileName() != "")
     {
@@ -172,7 +151,7 @@ void request::download_file(char *buffer , int bytesRead,Client &dataClient)
         {
             file.write(buffer + startPos, bytesRead - startPos);
             file.close();
-            std::cout << buffer +  endPos << std::endl;
+            // std::cout << buffer +  endPos << std::endl;
         }
         else
         {
@@ -184,7 +163,7 @@ void request::download_file(char *buffer , int bytesRead,Client &dataClient)
             size_t pos = restR.find(bonadry);
             if (restR.find("\r\n\r\n") != restR.npos && pos == restR.npos)
             { 
-                std::cout << "gg" << std::endl;
+                // std::cout << "gg" << std::endl;
                 dataClient.setFileName("");
                 download_file(buffer + endPos, bytesRead - endPos, dataClient);
             }
@@ -200,6 +179,26 @@ void request::download_file(char *buffer , int bytesRead,Client &dataClient)
             }
         }
     }
+    
+}
+
+void printLoadingBar(int percentage, int barWidth) {
+    std::cout << "Loading: [";
+    
+    int progress = (percentage * barWidth) / 100;
+    
+    for (int i = 0; i < barWidth; ++i) {
+        if (i < progress) {
+            std::cout << "=";
+        } else if (i == progress) {
+            std::cout << ">";
+        } else {
+            std::cout << " ";
+        }
+    }
+    
+    std::cout << "] " << percentage << "%";
+    std::cout.flush();
 }
 
 void    request::read_request(Client& dataClient)
@@ -231,6 +230,8 @@ void    request::read_request(Client& dataClient)
             std::cout << bytesRead << std::endl;
             dataClient.setHeaderStatus(true);
         }
+        // std::cout << "|\r" << (double)(dataClient.getReadlen()) / dataClient.getContentLength() * 100 << "%" << std::endl;
+        
         // std::ofstream outputFile;
         // std::string name ="test/f" + std::to_string(dataClient.getClientSocket()) + ".txt";
         // outputFile.open(name.c_str(), std::ios::app | std::ios::out); // Open file in append mode
@@ -244,7 +245,8 @@ void    request::read_request(Client& dataClient)
         {
             // std::cout << "|||||" << buffer << "|||||" << std::endl;
             if (dataClient.getTypeRequset() == "POST" && dataClient.getHeaderStatus() == true){
-                
+                printLoadingBar((double)(dataClient.getReadlen()) / dataClient.getContentLength() * 100, 40);
+                std::cout << "\r";
                 download_file(buffer , bytesRead, dataClient);
             }
         }
@@ -263,17 +265,7 @@ void    request::read_request(Client& dataClient)
             break;
     }
 
-    // std::ofstream out("test.txt", std::ios::app | O_NONBLOCK); // Open file in append mode
-    // if (out.is_open() && dataClient.getTypeRequset() == "POST") {
-    //     out << dataClient.getClientSocket() << " | "<< dataClient.getContentLength() << " | " <<dataClient.getReadlen() <<  " | " << dataClient.getHeaderStatus() << std::endl;
-    //     out.close();
-    // }
-    // else
-    // {
-    //     std::cout << "nt open file test " << std::endl;
-    // }
-
-    // std::cout << "sdgsg\n" << std::endl;
+    
     if (dataClient.getReadlen() && dataClient.getContentLength() && dataClient.getReadlen() >= dataClient.getContentLength())
     {
         
@@ -281,41 +273,23 @@ void    request::read_request(Client& dataClient)
         write(dataClient.getClientSocket(), "Content-Lenght 4\r\n\rdone" , 23);
         dataClient.resetData();
     }
-    // std::cout << Header << " " << url << " " << typeRequest << " " << dataClient.getContentLength() << std::endl;
-    // exit(1);
-    // exit(1);
+    
 }
 
-// void    request::check_Post_Request(int client, Client& dataClient)
-// {
-//     (void)client;
-//     (void)dataClient;
-//     std::string request = dataClient.getRestRequest();
-
-//     // std::cout << request << std::endl;
-    
-
-//     std::size_t pos = request.find("filename=", 0);
-//     std::size_t startPos = request.find("\r\n\r\n", pos) + 4;
-//     std::size_t endPos = request.find("--" + dataClient.getBoundarytSocket(), startPos) - 2;
-//     std::string fileData = request.substr(startPos, endPos - startPos + 1);
-//     size_t p = request.find("filename=", 0) + 9;
-//     size_t po = request.find("\n", p);
-//     std::string namefile1 = request.substr(p, po - p + 1);
-//     std::string namefile = namefile1.substr(1, namefile1.size() - 4);
-//     namefile = "/Users/eelhafia/Desktop/webServer/download/" + namefile;
-//     std::ofstream file(namefile, std::ios::out | std::ios::binary);
-//     if (!file) {
-//         std::cerr << "Error opening file for writing" << namefile << std::endl;
-//         return;
-//     }
-//     file.write(fileData.c_str(), fileData.length() - 1);
-//     file.close();
-
-//     // Send the response
-//     std::string response = "HTTP/1.1 200 OK\r\nContent-Length: 6\r\n\r\n dooone";
-//     send(client, response.c_str(), response.length(), 0);
-
-//     // Close the connection
-//     // close(client);
-// }
+void request::delete_request(Client& dataClient)
+{
+    std::string filename;
+    filename = "download" + dataClient.getUrl();
+    int result = std::remove(filename.c_str());
+    if (result == 0) {
+        std::string response1 = "HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\nContent-Length: ";
+        rsp.sendResponse("/Users/eelhafia/Desktop/webServer/html/delete.html", response1, dataClient.getClientSocket());
+        printf("File deleted successfully.");
+        dataClient.resetData();
+    } else {
+        std::string response1 = "HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\nContent-Length: ";
+        rsp.sendResponse("/Users/eelhafia/Desktop/webServer/html/not_delete.html", response1, dataClient.getClientSocket());
+        printf("Failed to delete the file.\n");
+        dataClient.resetData();
+    }
+}
