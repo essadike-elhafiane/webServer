@@ -36,8 +36,8 @@ class request
             {
                 download_file(dataClient, 0);
             }
-            if (dataClient.getTypeRequset() == "GET")
-                check_Get_Request(dataClient);
+            // if (dataClient.getTypeRequset() == "GET")
+            //     check_Get_Request(dataClient);
             if (dataClient.getTypeRequset() == "DELETE")
                 delete_request(dataClient);
             // std::cout << "|" << url << "|"<< " " << "|" << "|" << " " << dataClient.getClientSocket() << " "<< client << std::endl << std::endl;

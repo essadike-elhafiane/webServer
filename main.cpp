@@ -6,7 +6,7 @@
 /*   By: eelhafia <eelhafia@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/29 21:28:36 by eelhafia          #+#    #+#             */
-/*   Updated: 2023/10/17 04:29:33 by eelhafia         ###   ########.fr       */
+/*   Updated: 2023/10/17 04:58:38 by eelhafia         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,7 +23,7 @@ void sigintHandler(int signal) {
     exit(signal);
 }
 
-#define MAX_CLIENTS 3
+#define MAX_CLIENTS 30
 void v()
 {
     system("leaks webserv");
@@ -85,13 +85,32 @@ int main()
                 request request;
                 request.receiveRequest(mClients[clientSocket]);
                 // fds[i].fd = clientSocket;
-                fds[i].fd = mClients[clientSocket].getClientSocket();
+                // fds[i].fd = mClients[clientSocket].getClientSocket();
                 // std::cout << clientSocket << "||" << mClients[clientSocket].getClientSocket() << std::endl;
                 // close(clientSocket);
-                // fds[i].events = POLLOUT;
+                fds[i].events = POLLOUT;
             }
+            if (fds[i].fd != 0 && (fds[i].revents & POLLOUT))
+            {
+                std::cout << "1\n";
+                response resp;
+                std::string u;
+                Client &dataClient = mClients[clientSocket];
+                if (dataClient.getUrl() == "/")
+                    dataClient.setUrl("/html/file.html");
+                u = "/Users/eelhafia/Desktop/webServer" + dataClient.getUrl();
+                std::cout << dataClient.getUrl() << std::endl;
+                std::string rOK = "HTTP/1.1 200 OK\r\nContent-Length: ";
+                resp.sendResponse(u, rOK, dataClient.getClientSocket());
+                dataClient.setTypeRequset("");
+                dataClient.setHeaderStatus(false);
+                dataClient.setUrl("");
+                dataClient.resetRestRequest();
+                fds[i].events = POLLIN;
+            }
+            
         }
-        
+        std::cout << "2\n";
     }
 
     close(a.getServerSocket());
