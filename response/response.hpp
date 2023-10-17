@@ -38,14 +38,21 @@ class response
             }
             while (!std::getline(r, line).fail())
                 response = response + line + '\n';
-                configResponse = configResponse + std::to_string(response.length()) + "\r\n\r\n" + response;
-            if (send(socketClient, configResponse.c_str(), configResponse.length(), 0) < 0)
+            configResponse = configResponse + std::to_string(response.length()) + "\r\n\r\n" + response;
+            size_t sendd = 0;
+            while (sendd < configResponse.length())
             {
-                std::cerr << "Failed to send response." << std::endl;
-                close(socketClient);
-                return;
+                size_t len = send(socketClient, configResponse.c_str(), configResponse.length(), 0);
+                if (len < 0)
+                {
+                    std::cerr << "Failed to send response." << std::endl;
+                    // close(socketClient);
+                    continue;
+                    // return;
+                }
+                sendd  += len;
             }
-            // std::cout << socketClient << std::endl;
+            std::cout << "send success" << std::endl;
             return;
         }
         response(/* args */);

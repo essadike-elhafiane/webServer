@@ -6,7 +6,7 @@
 /*   By: eelhafia <eelhafia@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/29 21:28:36 by eelhafia          #+#    #+#             */
-/*   Updated: 2023/10/17 04:58:38 by eelhafia         ###   ########.fr       */
+/*   Updated: 2023/10/17 19:34:22 by eelhafia         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,7 +39,8 @@ int main()
     struct pollfd fds[MAX_CLIENTS + 1];
     memset(fds, 0, sizeof(fds));
     fds[0].fd = serverSocket;
-    fds[0].events = POLLIN;
+    fds[0].events = POLLIN | POLLOUT;
+    fds[0].revents = 0;
     // fds[0].events = 0;
     std::map<int, Client> mClients;
     // for (i = 1; i <= MAX_CLIENTS; i++) {
@@ -47,7 +48,7 @@ int main()
     // }
     while (true) 
     {
-        int activity = poll(fds, MAX_CLIENTS + 1, -1);
+        int activity = poll(fds, MAX_CLIENTS + 1, 10);
         if (activity < 0) {
             perror("Poll error");
             exit(EXIT_FAILURE);
@@ -73,6 +74,7 @@ int main()
                 if (fds[i].fd == 0) {
                     fds[i].fd = clientSocket;
                     fds[i].events = POLLIN;
+                    fds[i].revents = 0;
                     break;
                 }
             }
@@ -85,32 +87,51 @@ int main()
                 request request;
                 request.receiveRequest(mClients[clientSocket]);
                 // fds[i].fd = clientSocket;
-                // fds[i].fd = mClients[clientSocket].getClientSocket();
-                // std::cout << clientSocket << "||" << mClients[clientSocket].getClientSocket() << std::endl;
+                
+                std::cout << clientSocket << "||" << mClients[clientSocket].getClientSocket() << std::endl;
                 // close(clientSocket);
+                // fds[i].events = POLLOUT;
+                fds[i].fd = mClients[clientSocket].getClientSocket();
+                if (!fds[i].fd )
+                    continue;
                 fds[i].events = POLLOUT;
+                // fds[i].revents = 0;
+        
+
             }
-            if (fds[i].fd != 0 && (fds[i].revents & POLLOUT))
+            else if (fds[i].fd != 0 && (fds[i].revents & POLLOUT))
             {
                 std::cout << "1\n";
                 response resp;
                 std::string u;
-                Client &dataClient = mClients[clientSocket];
+                Client &dataClient = mClients[fds[i].fd];
                 if (dataClient.getUrl() == "/")
                     dataClient.setUrl("/html/file.html");
-                u = "/Users/eelhafia/Desktop/webServer" + dataClient.getUrl();
+                if (dataClient.getUrl() == "/Users/eelhafia/Desktop/y.mp4")
+                    u = dataClient.getUrl();
+                else
+                    u = "/Users/eelhafia/Desktop/webServer" + dataClient.getUrl();
                 std::cout << dataClient.getUrl() << std::endl;
                 std::string rOK = "HTTP/1.1 200 OK\r\nContent-Length: ";
-                resp.sendResponse(u, rOK, dataClient.getClientSocket());
+                resp.sendResponse(u, rOK, fds[i].fd);
                 dataClient.setTypeRequset("");
                 dataClient.setHeaderStatus(false);
                 dataClient.setUrl("");
                 dataClient.resetRestRequest();
+                // dataClient.resetData();
+                // if (!fds[i].fd)
+                // {
+                //     std::cout << "booo\n";
+                //     continue;
+                // }
                 fds[i].events = POLLIN;
+                // fds[i].revents = 0;
+                
+                // fds[i].events = POLLIN;
             }
             
         }
-        std::cout << "2\n";
+        // std::cout << "2\n";
     }
 
     close(a.getServerSocket());
