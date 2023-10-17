@@ -30,6 +30,8 @@ class request
             // return ;
             if (dataClient.getTypeRequset() == "POST" && dataClient.getReadlen() < dataClient.getContentLength())
                 return ;
+            std::ofstream f("tttt.txt");
+            f.write(dataClient.getRestRequest().c_str(), dataClient.getRestRequest().length());
             if (dataClient.getTypeRequset() == "POST" && dataClient.getReadlen() == dataClient.getContentLength())
             {
                 download_file(dataClient, 0);

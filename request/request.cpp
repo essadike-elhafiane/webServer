@@ -28,17 +28,17 @@ void request::parse_request(Client& dataClient)
         }
         size_t pos_rn = dataClient.getRestRequest().find("\r\n", pos_boundary);
         dataClient.setBoundaryRequest(dataClient.getRestRequest().substr(pos_boundary + 9, pos_rn - pos_boundary - 7));
-        std::cout << dataClient.getBoundarytSocket() << std::endl;
+        // std::cout << dataClient.getBoundarytSocket() << std::endl;
         size_t pos_Content = dataClient.getRestRequest().find("Content-Length:", 0) + 16;
         if (pos_Content == std::string::npos)
         {
-            std::cout << "ERROR BONDARY NOT FOND\n"; // chould be send response bad requrest; 
+            std::cout << "ERROR Content-Length NOT FOND\n"; // chould be send response bad requrest; 
             return ;
         }
         size_t poss_end = dataClient.getRestRequest().find("\r\n", pos_Content);
         dataClient.setContentLength((ssize_t)std::atof(dataClient.getRestRequest().substr(pos_Content,poss_end - pos_Content).c_str()));
         // std::string k = Header.substr(pos, poss - pos + 1);
-        std::cout << dataClient.getContentLength() << std::endl;
+        // std::cout << dataClient.getContentLength() << std::endl;
     }
     if (tokens[0] == "" ||  (tokens[0] != "GET" && tokens[0] != "POST" && tokens[0] != "DELETE"))
     {
@@ -139,6 +139,12 @@ void request::download_file(Client &dataClient, ssize_t pos_start)
 
         bonadry = "--" + dataClient.getBoundarytSocket();
         size_t endPos = dataClient.getRestRequest().find(bonadry, startPos + bonadry.length() - 2);
+        if (endPos == std::string::npos)
+        {
+            endPos = dataClient.getRestRequest().find(bonadry.substr(0, bonadry.length() - 2) + "--");
+            if (endPos == std::string::npos)
+                std::cout << "bad request\n";
+        }
         size_t start = dataClient.getRestRequest().find("\r\n\r\n", startPos);
         if (start != std::string::npos)
             start += 4;
@@ -204,14 +210,12 @@ void    request::read_request(Client& dataClient)
         if (!dataClient.getHeaderStatus() && dataClient.getRestRequest().find("\r\n\r\n") != std::string::npos)
             parse_request(dataClient);
         
-        std::cout <<"|"<< dataClient.getReadlen() <<"|"<< std::endl;
+        // std::cout <<"|"<< dataClient.getReadlen() <<"|"<< std::endl;
     
     
         if (dataClient.getReadlen() && dataClient.getTypeRequset() == "POST" && dataClient.getHeaderStatus() == true)
-        {
             printLoadingBar((double)(dataClient.getReadlen()) / dataClient.getContentLength() * 100, 40);
-            
-        }
+ 
 
         std::memset(buffer, 0, sizeof(buffer));
         // if (dataClient.getReadlen() && dataClient.getTypeRequset() == "POST" && dataClient.getReadlen() >= dataClient.getContentLength())
@@ -226,9 +230,7 @@ void    request::read_request(Client& dataClient)
         // if (Header.find("\r\n\r\n") != std::string::npos && dataClient.getTypeRequset() == "GET")
         //     break;
     }
-    // std::ofstream f("tttt.txt");
-    // f.write(dataClient.getRestRequest().c_str(), dataClient.getReadlen());
-    // return ;
+    
     // if (dataClient.getReadlen() && dataClient.getContentLength() && dataClient.getReadlen() >= dataClient.getContentLength())
     // {
         

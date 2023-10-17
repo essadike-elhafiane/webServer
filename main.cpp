@@ -6,7 +6,7 @@
 /*   By: eelhafia <eelhafia@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/29 21:28:36 by eelhafia          #+#    #+#             */
-/*   Updated: 2023/10/16 23:31:40 by eelhafia         ###   ########.fr       */
+/*   Updated: 2023/10/17 04:29:33 by eelhafia         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,9 +24,13 @@ void sigintHandler(int signal) {
 }
 
 #define MAX_CLIENTS 3
-
+void v()
+{
+    system("leaks webserv");
+}
 int main()
 {
+    atexit(v);
     server a("server1");
     a.runServer(5, 8000);
     fcntl(a.getServerSocket(), F_SETFL, O_NONBLOCK, FD_CLOEXEC);
@@ -82,7 +86,7 @@ int main()
                 request.receiveRequest(mClients[clientSocket]);
                 // fds[i].fd = clientSocket;
                 fds[i].fd = mClients[clientSocket].getClientSocket();
-                std::cout << clientSocket << "||" << mClients[clientSocket].getClientSocket() << std::endl;
+                // std::cout << clientSocket << "||" << mClients[clientSocket].getClientSocket() << std::endl;
                 // close(clientSocket);
                 // fds[i].events = POLLOUT;
             }
