@@ -74,19 +74,14 @@ class Client
         {
             return restRequest;
         }
-        void setRestRequest(std::string const& s)
+        void setRestRequest(char *buffer, ssize_t size)
         {
-            restRequest = s;
+            for (ssize_t i = 0; i < size; i++)
+                restRequest.push_back(buffer[i]);
         }
-        void appendRestRequest(std::string const& s, ssize_t len)
+        void resetRestRequest()
         {
-            (void)len;
-            if (len > 10000 || len <= 0)
-                return;
-            // std::cout << len << s << std::endl;
-        
-            restRequest += s;
-            
+            restRequest.clear();    
         }
         void setClientSocket(int socket)
         {
@@ -122,7 +117,7 @@ class Client
             readylen = 0;
             clientSocket = 0;
             Content_Length = 0;
-             filename = "";
+            filename = "";
             restRequest = "";
             boundary = "";
             typeRequest = "";

@@ -1,3 +1,30 @@
+--------------------------885029824190469989531268
+--------------------------885029824190469989531268
+POST /upload.php HTTP/1.1
+Host: 127.0.0.1:8000
+Connection: keep-alive
+Content-Length: 3642
+Cache-Control: max-age=0
+sec-ch-ua: "Chromium";v="118", "Google Chrome";v="118", "Not=A?Brand";v="99"
+sec-ch-ua-mobile: ?0
+sec-ch-ua-platform: "macOS"
+Upgrade-Insecure-Requests: 1
+Origin: http://127.0.0.1:8000
+Content-Type: multipart/form-data; boundary=----WebKitFormBoundaryZTQbzwH9HbBmiT6B
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/118.0.0.0 Safari/537.36
+Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7
+Sec-Fetch-Site: same-origin
+Sec-Fetch-Mode: navigate
+Sec-Fetch-User: ?1
+Sec-Fetch-Dest: document
+Referer: http://127.0.0.1:8000/
+Accept-Encoding: gzip, deflate, br
+Accept-Language: en-US,en;q=0.9,fr;q=0.8
+
+------WebKitFormBoundaryZTQbzwH9HbBmiT6B
+Content-Disposition: form-data; name="fileToUpload"; filename="main.cpp"
+Content-Type: application/octet-stream
+
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
@@ -6,7 +33,7 @@
 /*   By: eelhafia <eelhafia@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/29 21:28:36 by eelhafia          #+#    #+#             */
-/*   Updated: 2023/10/16 23:31:40 by eelhafia         ###   ########.fr       */
+/*   Updated: 2023/10/08 15:24:59 by eelhafia         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,30 +44,34 @@
 #include <fcntl.h>
 #include <poll.h>
 #include <map>
+// #include <winsock2.h>
 
 void sigintHandler(int signal) {
     std::cout << "Received SIGINT signal. Cleaning up and exiting..." << std::endl;
+
+    // Perform any necessary cleanup tasks here
+
+    // Terminate the program
     exit(signal);
 }
 
-#define MAX_CLIENTS 3
+#define MAX_CLIENTS 100
 
 int main()
 {
     server a("server1");
-    a.runServer(5, 8000);
+    a.runServer(1000, 8000);
     fcntl(a.getServerSocket(), F_SETFL, O_NONBLOCK, FD_CLOEXEC);
     int serverSocket, clientSocket, i;
     serverSocket = a.getServerSocket();
     struct pollfd fds[MAX_CLIENTS + 1];
-    memset(fds, 0, sizeof(fds));
     fds[0].fd = serverSocket;
     fds[0].events = POLLIN;
-    // fds[0].events = 0;
     std::map<int, Client> mClients;
-    // for (i = 1; i <= MAX_CLIENTS; i++) {
-    //     fds[i].fd = -1;
-    // }
+    for (i = 1; i <= MAX_CLIENTS; i++) {
+        fds[i].fd = -1;
+    }
+
     while (true) 
     {
         int activity = poll(fds, MAX_CLIENTS + 1, -1);
@@ -58,15 +89,12 @@ int main()
             }
             Client a;
             a.setClientSocket(clientSocket);
-            if (fcntl(clientSocket, F_SETFL, O_NONBLOCK, FD_CLOEXEC) < 0)
-            {
-                perror("fcnl failed");
-            }
+            fcntl(clientSocket, F_SETFL, O_NONBLOCK, FD_CLOEXEC);
             mClients[clientSocket] = a;
             // Add new client socket to the poll descriptor list
             for (i = 1; i <= MAX_CLIENTS; i++) 
             {
-                if (fds[i].fd == 0) {
+                if (fds[i].fd == -1) {
                     fds[i].fd = clientSocket;
                     fds[i].events = POLLIN;
                     break;
@@ -76,14 +104,11 @@ int main()
 
         // Check for activity on client sockets
         for (i = 1; i <= MAX_CLIENTS; i++) {
-            if (fds[i].fd != 0 && (fds[i].revents & POLLIN)){
+            if (fds[i].fd != -1 && (fds[i].revents & POLLIN)){
                 clientSocket = fds[i].fd;
                 request request;
-                request.receiveRequest(mClients[clientSocket]);
-                // fds[i].fd = clientSocket;
-                fds[i].fd = mClients[clientSocket].getClientSocket();
-                std::cout << clientSocket << "||" << mClients[clientSocket].getClientSocket() << std::endl;
-                // close(clientSocket);
+                request.receiveRequest(clientSocket, mClients[clientSocket]);
+                // std::cout << clientSocket << std::endl;
                 // fds[i].events = POLLOUT;
             }
         }
@@ -93,3 +118,14 @@ int main()
     close(a.getServerSocket());
     return 0;
 }
+
+------WebKitFormBoundaryZTQbzwH9HbBmiT6B
+Content-Disposition: form-data; name="fileToUpload"; filename="t.txt"
+Content-Type: text/plain
+
+AA
+------WebKitFormBoundaryZTQbzwH9HbBmiT6B
+Content-Disposition: form-data; name="submit"
+
+Upload
+------WebKitFormBoundaryZTQbzwH9HbBmiT6B--

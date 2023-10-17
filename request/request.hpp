@@ -13,24 +13,27 @@ class response;
 class request
 {
     private:
-        std::string url;
-        std::string Header;
-        ssize_t pos;
         // int error;
-        void parse_request(Client& dataClient, char *buffer, ssize_t& bytRead);
+        void parse_request(Client& dataClient);
         void check_Get_Request(Client &dataClient);
         // void check_Post_Request(int client, Client& dataClient);
         response rsp;
     public:
         request(/* args */);
         void delete_request(Client& dataClient);
-        void download_file(char *buffer , int bytesRead,Client &dataClient);
+        void download_file(Client &dataClient, ssize_t pos_start);
         void read_request(Client& dataClient);
         void receiveRequest(Client& dataClient)
         {
             read_request(dataClient);
+            // std::cout << dataClient.getReadlen() << " | " << dataClient.getRestRequest().length() << std::endl;
+            // return ;
             if (dataClient.getTypeRequset() == "POST" && dataClient.getReadlen() < dataClient.getContentLength())
                 return ;
+            if (dataClient.getTypeRequset() == "POST" && dataClient.getReadlen() == dataClient.getContentLength())
+            {
+                download_file(dataClient, 0);
+            }
             if (dataClient.getTypeRequset() == "GET")
                 check_Get_Request(dataClient);
             if (dataClient.getTypeRequset() == "DELETE")
@@ -43,10 +46,10 @@ class request
         //     return requests;
         // }
         ~request();
-        std::string getUrl()
-        {
-            return url;
-        }
+        // std::string getUrl()
+        // {
+        //     return url;
+        // }
 };
  
 
