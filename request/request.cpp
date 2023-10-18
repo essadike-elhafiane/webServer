@@ -60,7 +60,7 @@ void request::check_Get_Request(Client &dataClient)
     {
         // error = 404;
         std::string rOK = "HTTP/1.1 404 Not Found\r\nContent-Length: ";
-        rsp.sendResponse("/Users/eelhafia/Desktop/webServer/html/404.html", rOK, dataClient.getClientSocket());
+        rsp.sendResponse("/Users/eelhafia/Desktop/webServer/html/404.html", rOK, dataClient.getClientSocket(), dataClient);
         dataClient.setHeaderStatus(false);
         dataClient.resetRestRequest();
         return;
@@ -80,7 +80,7 @@ void request::check_Get_Request(Client &dataClient)
         u = "/Users/eelhafia/Desktop/webServer" + dataClient.getUrl();
         std::cout << dataClient.getUrl() << std::endl;
         std::string rOK = "HTTP/1.1 200 OK\r\nContent-Length: ";
-        rsp.sendResponse(u, rOK, dataClient.getClientSocket());
+        rsp.sendResponse(u, rOK, dataClient.getClientSocket(), dataClient);
         dataClient.setTypeRequset("");
         dataClient.setHeaderStatus(false);
         dataClient.setUrl("");
@@ -248,12 +248,12 @@ void request::delete_request(Client& dataClient)
     int result = std::remove(filename.c_str());
     if (result == 0) {
         std::string response1 = "HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\nContent-Length: ";
-        rsp.sendResponse("/Users/eelhafia/Desktop/webServer/html/delete.html", response1, dataClient.getClientSocket());
+        rsp.sendResponse("/Users/eelhafia/Desktop/webServer/html/delete.html", response1, dataClient.getClientSocket(), dataClient);
         printf("File deleted successfully.");
         dataClient.resetData();
     } else {
         std::string response1 = "HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\nContent-Length: ";
-        rsp.sendResponse("/Users/eelhafia/Desktop/webServer/html/not_delete.html", response1, dataClient.getClientSocket());
+        rsp.sendResponse("/Users/eelhafia/Desktop/webServer/html/not_delete.html", response1, dataClient.getClientSocket(), dataClient);
         printf("Failed to delete the file.\n");
         dataClient.resetData();
     }

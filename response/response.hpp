@@ -16,44 +16,46 @@
 #include <netdb.h>
 #include <arpa/inet.h> 
 #include <fcntl.h>
-
+#include "../Client/Client.hpp"
 class response
 {
     private:
         /* data */
     public:
-        void sendResponse(std::string url, std::string &configResponse, int socketClient)
+        int sendResponse(std::string url, std::string &configResponse, int socketClient, Client & dataClient)
         {
             std::string line;
             std::string response;
             // std::cout << url << std::endl;
             // if (url == "/Users/eelhafia/Desktop/webServer/y.mp4")
             //     url = "/Users/eelhafia/Desktop/y.mp4";
-            std::ifstream r(url, std::ios::binary);
-            if (!r.is_open())
+            if(dataClient.getdataResponse() == "")
             {
-                std::cout << url << std::endl;
-                std::cerr << "Error open file1"  << std::endl;
-                // exit(1);
-            }
-            while (!std::getline(r, line).fail())
-                response = response + line + '\n';
-            configResponse = configResponse + std::to_string(response.length()) + "\r\n\r\n" + response;
-            size_t sendd = 0;
-            while (sendd < configResponse.length())
-            {
-                size_t len = send(socketClient, configResponse.c_str(), configResponse.length(), 0);
-                if (len < 0)
+                std::ifstream r(url, std::ios::binary);
+                if (!r.is_open())
                 {
-                    std::cerr << "Failed to send response." << std::endl;
-                    // close(socketClient);
-                    continue;
-                    // return;
+                    std::cout << url << std::endl;
+                    std::cerr << "Error open file1"  << std::endl;
                 }
-                sendd  += len;
+                while (!std::getline(r, line).fail())
+                    response = response + line + '\n';
+                configResponse = configResponse + std::to_string(response.length()) + "\r\n\r\n" + response;
+                dataClient.setdataResponse(configResponse);
             }
+            std::cout << "h\n";
+            size_t len = write(socketClient, dataClient.getdataResponse().c_str() + dataClient.getLenSend(), dataClient.getdataResponse().length() - dataClient.getLenSend());
+            if (len < 0)
+            {
+                std::cerr << "Failed to send response." << std::endl;
+                return 1;
+            }
+            dataClient.setLenSend(len);
+            if (dataClient.getLenSend() < dataClient.getdataResponse().length())
+                return 1;
+            dataClient.clearLenSend();
+            dataClient.resetdataResponse();
             std::cout << "send success" << std::endl;
-            return;
+            return 0;
         }
         response(/* args */);
         ~response();

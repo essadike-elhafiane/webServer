@@ -32,8 +32,23 @@ class Client
         std::string boundary;
         std::string Url;
         bool header;
+        // response variables
+        ssize_t lenSend;
+        std::string dataResponse;
     public:
         Client(/* args */);
+        size_t getLenSend()
+        {
+            return lenSend;
+        }
+        void setLenSend(ssize_t len)
+        {
+            lenSend += len;
+        }
+        void clearLenSend()
+        {
+            lenSend = 0;
+        }
         std::string getTypeRequset()
         {
             return typeRequest;
@@ -83,6 +98,18 @@ class Client
         {
             restRequest.clear();    
         }
+        std::string&  getdataResponse()
+        {
+            return dataResponse;
+        }
+        void setdataResponse(std::string s)
+        {
+           dataResponse = s;
+        }
+        void resetdataResponse()
+        {
+            dataResponse.clear();    
+        }
         void setClientSocket(int socket)
         {
             clientSocket = socket;
@@ -115,12 +142,15 @@ class Client
         {
             header = false;
             readylen = 0;
+            lenSend = 0;
             clientSocket = 0;
             Content_Length = 0;
             filename = "";
             restRequest = "";
             boundary = "";
             typeRequest = "";
+            lenSend = 0;
+            dataResponse = "";
         }
         ~Client();
 };

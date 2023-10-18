@@ -35,6 +35,10 @@ class request
             if (dataClient.getTypeRequset() == "POST" && dataClient.getReadlen() == dataClient.getContentLength())
             {
                 download_file(dataClient, 0);
+                int s = dataClient.getClientSocket();
+                dataClient.resetData();
+                dataClient.setUrl("/html/delete.html");
+                dataClient.setClientSocket(s);
             }
             // if (dataClient.getTypeRequset() == "GET")
             //     check_Get_Request(dataClient);
