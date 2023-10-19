@@ -35,12 +35,13 @@ class Client
         std::string Url;
         bool header;
         // response variables
-        ssize_t lenSend;
+        std::streampos lenSend;
         std::string dataResponse;
     public:
         Client(/* args */);
         int fd;
-        size_t getLenSend()
+        std::streampos lengthFile; 
+        std::streampos getLenSend()
         {
             return lenSend;
         }
@@ -154,6 +155,7 @@ class Client
             typeRequest = "";
             lenSend = 0;
             dataResponse = "";
+            lengthFile = 0;
         }
         ~Client();
 };

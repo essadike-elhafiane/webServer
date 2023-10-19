@@ -54,13 +54,13 @@ void request::parse_request(Client& dataClient)
 void request::check_Get_Request(Client &dataClient)
 {
     std::string line;
-    std::string u = "/Users/eelhafia/Desktop/webServer" + dataClient.getUrl();
+    std::string u = "/Users/mserrouk/Desktop/webServer" + dataClient.getUrl();
     std::cout << "|" << u << "|" << std::endl;
     if (access(u.c_str(), R_OK) && dataClient.getUrl() != "/html/html/app-coder.html")
     {
         // error = 404;
         std::string rOK = "HTTP/1.1 404 Not Found\r\nContent-Length: ";
-        rsp.sendResponse("/Users/eelhafia/Desktop/webServer/html/404.html", rOK, dataClient.getClientSocket(), dataClient);
+        rsp.sendResponse("/Users/mserrouk/Desktop/webServer/html/404.html", rOK, dataClient.getClientSocket(), dataClient);
         dataClient.setHeaderStatus(false);
         dataClient.resetRestRequest();
         return;
@@ -69,7 +69,7 @@ void request::check_Get_Request(Client &dataClient)
     // {
     //     error = 414;
     //     std::string rOK = "HTTP/1.1 414 Not Found\r\nCache-Control: no-cache\r\nContent-Length: ";
-    //     rsp.sendResponse("/Users/eelhafia/Desktop/webServer/html/414.html", rOK, client);
+    //     rsp.sendResponse("/Users/mserrouk/Desktop/webServer/html/414.html", rOK, client);
     //     close(client);
     //     return;
     // }
@@ -77,7 +77,7 @@ void request::check_Get_Request(Client &dataClient)
     {
         if (dataClient.getUrl() == "/")
             dataClient.setUrl("/html/file.html");
-        u = "/Users/eelhafia/Desktop/webServer" + dataClient.getUrl();
+        u = "/Users/mserrouk/Desktop/webServer" + dataClient.getUrl();
         std::cout << dataClient.getUrl() << std::endl;
         std::string rOK = "HTTP/1.1 200 OK\r\nContent-Length: ";
         rsp.sendResponse(u, rOK, dataClient.getClientSocket(), dataClient);
@@ -124,7 +124,7 @@ void request::download_file(Client &dataClient, ssize_t pos_start)
         p += 9;
         size_t po = dataClient.getRestRequest().find("\r\n", p); // bad request if not fond
         std::string namefile = dataClient.getRestRequest().substr(p + 1, po - p - 2);
-        namefile = "/goinfre/eelhafia/download/" + namefile;
+        namefile = "/goinfre/mserrouk/download/" + namefile;
         std::cout << namefile << std::endl;
         dataClient.setFileName(namefile);
         std::ofstream file(namefile, std::ios::out | std::ios::binary);
@@ -158,7 +158,7 @@ void request::download_file(Client &dataClient, ssize_t pos_start)
             download_file(dataClient, endPos);
         }
     }
-    // /goinfre/eelhafia/download/
+    // /goinfre/mserrouk/download/
 }
 
 void printLoadingBar(int percentage, int barWidth) {
@@ -248,12 +248,12 @@ void request::delete_request(Client& dataClient)
     int result = std::remove(filename.c_str());
     if (result == 0) {
         std::string response1 = "HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\nContent-Length: ";
-        rsp.sendResponse("/Users/eelhafia/Desktop/webServer/html/delete.html", response1, dataClient.getClientSocket(), dataClient);
+        rsp.sendResponse("/Users/mserrouk/Desktop/webServer/html/delete.html", response1, dataClient.getClientSocket(), dataClient);
         printf("File deleted successfully.");
         dataClient.resetData();
     } else {
         std::string response1 = "HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\nContent-Length: ";
-        rsp.sendResponse("/Users/eelhafia/Desktop/webServer/html/not_delete.html", response1, dataClient.getClientSocket(), dataClient);
+        rsp.sendResponse("/Users/mserrouk/Desktop/webServer/html/not_delete.html", response1, dataClient.getClientSocket(), dataClient);
         printf("Failed to delete the file.\n");
         dataClient.resetData();
     }

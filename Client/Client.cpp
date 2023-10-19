@@ -13,6 +13,7 @@ Client::Client(/* args */)
     readylen = 0;
     boundary = "";
     dataResponse = "";
+    lengthFile = 0;
 }
 
 Client::~Client()
