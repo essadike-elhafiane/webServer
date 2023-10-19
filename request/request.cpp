@@ -124,7 +124,7 @@ void request::download_file(Client &dataClient, ssize_t pos_start)
         p += 9;
         size_t po = dataClient.getRestRequest().find("\r\n", p); // bad request if not fond
         std::string namefile = dataClient.getRestRequest().substr(p + 1, po - p - 2);
-        namefile = "/Users/eelhafia/Desktop/webServer/download/" + namefile;
+        namefile = "/goinfre/eelhafia/download/" + namefile;
         std::cout << namefile << std::endl;
         dataClient.setFileName(namefile);
         std::ofstream file(namefile, std::ios::out | std::ios::binary);
@@ -158,7 +158,7 @@ void request::download_file(Client &dataClient, ssize_t pos_start)
             download_file(dataClient, endPos);
         }
     }
-    
+    // /goinfre/eelhafia/download/
 }
 
 void printLoadingBar(int percentage, int barWidth) {
