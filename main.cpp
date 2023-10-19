@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.cpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mserrouk <mserrouk@student.42.fr>          +#+  +:+       +#+        */
+/*   By: eelhafia <eelhafia@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/09/29 21:28:36 by mserrouk          #+#    #+#             */
-/*   Updated: 2023/10/19 23:20:57 by mserrouk         ###   ########.fr       */
+/*   Created: 2023/09/29 21:28:36 by eelhafia          #+#    #+#             */
+/*   Updated: 2023/10/20 00:04:31 by eelhafia         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -108,10 +108,10 @@ int main()
                 Client &dataClient = mClients[fds[i].fd];
                 if (dataClient.getUrl() == "/")
                     dataClient.setUrl("/html/file.html");
-                if (dataClient.getUrl() == "/Users/mserrouk/Desktop/y.mp4")
+                if (dataClient.getUrl() == "/Users/eelhafia/Desktop/y.mp4")
                     u = dataClient.getUrl();
                 else
-                    u = "/Users/mserrouk/Desktop/webServer" + dataClient.getUrl();
+                    u = "/Users/eelhafia/Desktop/webServer" + dataClient.getUrl();
                 std::cout << dataClient.getUrl() << std::endl;
                 std::string rOK = "HTTP/1.1 200 OK\r\nContent-Length: ";
                 // if (dataClient.get)
