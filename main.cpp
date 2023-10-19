@@ -6,7 +6,7 @@
 /*   By: eelhafia <eelhafia@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/29 21:28:36 by eelhafia          #+#    #+#             */
-/*   Updated: 2023/10/19 19:59:10 by eelhafia         ###   ########.fr       */
+/*   Updated: 2023/10/19 21:33:47 by eelhafia         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,12 +40,7 @@ int main()
     memset(fds, 0, sizeof(fds));
     fds[0].fd = serverSocket;
     fds[0].events = POLLIN ;
-    fds[0].revents = 0;
-    // fds[0].events = 0;
     std::map<int, Client> mClients;
-    // for (i = 1; i <= MAX_CLIENTS; i++) {
-    //     fds[i].fd = -1;
-    // }
     while (true) 
     {
         int activity = poll(fds, MAX_CLIENTS + 1, 1000);

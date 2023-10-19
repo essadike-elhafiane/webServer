@@ -31,12 +31,19 @@ class response
                 url = "/Users/eelhafia/Desktop/y.mp4";
             if(dataClient.getdataResponse() == "")
             {
-                std::ifstream r(url, std::ios::binary);
+                std::ifstream r(url, std::ios::binary | std::ios::ate);
                 if (!r.is_open())
                 {
                     std::cout << url << std::endl;
                     std::cerr << "Error open file1"  << std::endl;
                 }
+                if (url == "/Users/eelhafia/Desktop/y.mp4")
+                {
+                    std::cout << "|" << r.tellg() << "|" << std::endl;
+                    exit(1);
+                }
+                r.seekg(0);
+                
                 while (!std::getline(r, line).fail())
                     response = response + line + '\n';
                 configResponse = configResponse + std::to_string(response.length()) + "\r\n\r\n" + response;

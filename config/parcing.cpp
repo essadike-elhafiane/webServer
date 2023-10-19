@@ -580,6 +580,6 @@ int main (int argc , char **argv)
 
     for(std::vector<HTTP_SERVER>::iterator ptr =data.begin() ; ptr != data.end(); ptr++ )
         std::cout << *ptr << std::endl;
-
+    
     return 0;
 }
