@@ -6,7 +6,7 @@
 /*   By: eelhafia <eelhafia@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/29 21:28:36 by eelhafia          #+#    #+#             */
-/*   Updated: 2023/10/18 17:47:23 by eelhafia         ###   ########.fr       */
+/*   Updated: 2023/10/19 19:59:10 by eelhafia         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,7 +48,7 @@ int main()
     // }
     while (true) 
     {
-        int activity = poll(fds, MAX_CLIENTS + 1, -1);
+        int activity = poll(fds, MAX_CLIENTS + 1, 1000);
         if (activity < 0) {
             perror("Poll error");
             exit(EXIT_FAILURE);
@@ -67,6 +67,7 @@ int main()
             {
                 perror("fcnl failed");
             }
+            mClients.erase(clientSocket);
             mClients[clientSocket] = a;
             // Add new client socket to the poll descriptor list
             for (i = 1; i <= MAX_CLIENTS; i++) 
@@ -91,21 +92,22 @@ int main()
                 // close(clientSocket);
                 // fds[i].events = POLLOUT;
                 std::cout << clientSocket << "||" << mClients[clientSocket].getClientSocket() << std::endl;
-                fds[i].fd = mClients[clientSocket].getClientSocket();
-                if (!fds[i].fd )
+                if (!mClients[clientSocket].getClientSocket())
                 {
+                    mClients.erase(fds[i].fd);
+                    fds[i].fd = 0;
                     fds[i].events = 0;
                     fds[i].revents = 0;
-                    break;
+                    continue;
                 }
+                if (mClients[clientSocket].getTypeRequset() == "POST" && mClients[clientSocket].getReadlen() < mClients[clientSocket].getContentLength())
+                    continue;
                 fds[i].events = POLLOUT;
                 fds[i].revents = 0;
-        
-
             }
             else if (fds[i].fd != 0 && (fds[i].revents & POLLOUT))
             {
-                std::cout << "1\n";
+                std::cout << "\n1\n";
                 response resp;
                 std::string u;
                 Client &dataClient = mClients[fds[i].fd];

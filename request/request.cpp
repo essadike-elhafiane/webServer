@@ -213,8 +213,8 @@ void    request::read_request(Client& dataClient)
         // std::cout <<"|"<< dataClient.getReadlen() <<"|"<< std::endl;
     
     
-        if (dataClient.getReadlen() && dataClient.getTypeRequset() == "POST" && dataClient.getHeaderStatus() == true)
-            printLoadingBar((double)(dataClient.getReadlen()) / dataClient.getContentLength() * 100, 40);
+        // if (dataClient.getReadlen() && dataClient.getTypeRequset() == "POST" && dataClient.getHeaderStatus() == true)
+        //     printLoadingBar((double)(dataClient.getReadlen()) / dataClient.getContentLength() * 100, 40);
  
 
         std::memset(buffer, 0, sizeof(buffer));

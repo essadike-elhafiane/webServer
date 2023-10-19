@@ -18,6 +18,8 @@
 #include "../server/server.hpp"
 #include <set>
 #include <fcntl.h>
+#include <sys/stat.h>
+#include <unistd.h>
 #include <vector>
 
 class Client
@@ -37,6 +39,7 @@ class Client
         std::string dataResponse;
     public:
         Client(/* args */);
+        int fd;
         size_t getLenSend()
         {
             return lenSend;
