@@ -131,7 +131,7 @@ std::ostream& operator<<(std::ostream& output_stream, const  HTTP_SERVER  &serve
     return output_stream;
 }
 
-std::vector<HTTP_SERVER>& configFile (int argc , char **argv);
+int configFile (int argc , char **argv);
 
 
 #endif

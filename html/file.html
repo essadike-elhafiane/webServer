@@ -143,17 +143,18 @@
 
       <input type="text" id="g">
       <button onclick="sendDeleteRequest()"> Delete Resource </button>
+      <hr>
       <video width="640" height="360" controls>
-        <source src="/Users/eelhafia/goinfre/send/u.mp4" type="video/mp4">
+        <source src="/goinfre/m.mp4" type="video/mp4">
         Your browser does not support the video tag.
-    </video>
+        </video>
       <script>
           
           // let delete = 'http://127.0.0.1:8000/' + value ;
           
           function sendDeleteRequest() {
             let value = document.getElementById("g").value;
-            let a = 'http://10.11.8.10:8000/' + value;
+            let a = 'http://127.0.0.1:8000/' + value;
             console.log(a);
           fetch(a, {
             method: 'DELETE'

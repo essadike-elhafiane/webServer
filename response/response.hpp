@@ -31,6 +31,8 @@ class response
                 url = "/Users/eelhafia/Desktop/y.mp4";
             if (url == "/Users/eelhafia/Desktop/webServer/Users/eelhafia/goinfre/send/u.mp4")
                 url = "/Users/eelhafia/goinfre/send/u.mp4";
+            if (url == "/Users/eelhafia/Desktop/webServer/goinfre/m.mp4")
+                url = "/goinfre/m.mp4";
             if(!dataClient.getLenSend())
             {
                 std::ifstream r(url, std::ios::binary | std::ios::ate);
@@ -55,15 +57,15 @@ class response
             }
             
             std::ifstream input(url, std::ios::binary);
-            char buffer[300001];
+            char buffer[30001];
             // memset(buffer, 0 ,3001);
             if(!input.is_open())
             {
                 std::cout << "error on file" << url << std::endl;
             }
             input.seekg(dataClient.getLenSend());
-            size_t lenRead = 300000;
-            if (dataClient.lengthFile - dataClient.getLenSend() < 300000)
+            size_t lenRead = 30000;
+            if (dataClient.lengthFile - dataClient.getLenSend() < 30000)
                 lenRead = dataClient.lengthFile - dataClient.getLenSend();
             input.read(buffer, lenRead);
             if ((input.tellg() <= 0))

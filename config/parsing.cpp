@@ -527,7 +527,7 @@ void chek_line(std::vector<std::string> line)
     }
 }
 
-std::vector<HTTP_SERVER>& configFile (int argc , char **argv)
+int configFile (int argc , char **argv)
 {
     if (argc != 2)
         error_message("error invalide argument");
@@ -577,7 +577,7 @@ std::vector<HTTP_SERVER>& configFile (int argc , char **argv)
     }
     // exit(0);
 
-    return data;
+    return 0;
     // for(std::vector<HTTP_SERVER>::iterator ptr =data.begin() ; ptr != data.end(); ptr++ )
     //     std::cout << *ptr << std::endl;
     

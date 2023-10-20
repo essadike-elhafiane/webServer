@@ -6,7 +6,7 @@
 /*   By: eelhafia <eelhafia@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/29 21:28:36 by eelhafia          #+#    #+#             */
-/*   Updated: 2023/10/20 01:47:14 by eelhafia         ###   ########.fr       */
+/*   Updated: 2023/10/20 13:02:00 by eelhafia         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,26 +24,31 @@ void sigintHandler(int signal) {
     exit(signal);
 }
 
-#define MAX_CLIENTS 30
+#define MAX_CLIENTS 300
+#define NUMBER_SERVER 5;
 void v()
 {
     system("leaks webserv");
 }
-int main(int ac, char **av)
+int main()
 {
     atexit(v);
-    std::vector<HTTP_SERVER>& configData = configFile(ac, av);
-    
-    server a(configData[0].server_name);
-    a.runServer(MAX_CLIENTS, configData[0].port[0]);
-    fcntl(a.getServerSocket(), F_SETFL, O_NONBLOCK, FD_CLOEXEC);
-    int serverSocket, clientSocket, i;
-    serverSocket = a.getServerSocket();
+    // std::vector<HTTP_SERVER>& configData = configFile(ac, av);
+    std::vector<server> servers;
     struct pollfd fds[MAX_CLIENTS + 1];
     memset(fds, 0, sizeof(fds));
-    fds[0].fd = serverSocket;
-    fds[0].events = POLLIN ;
+    for (int i = 0; i < 5; i++)
+    {
+        server a("name");
+        a.runServer(MAX_CLIENTS, 8000 + i);
+        fcntl(a.getServerSocket(), F_SETFL, O_NONBLOCK, FD_CLOEXEC);
+        fds[i].fd = a.getServerSocket();
+        fds[i].events = POLLIN ;
+        servers.push_back(a); 
+    }
+    int clientSocket, i;
     std::map<int, Client> mClients;
+    
     while (true) 
     {
         int activity = poll(fds, MAX_CLIENTS + 1, 1000);
@@ -53,34 +58,36 @@ int main(int ac, char **av)
         }
 
         // Check for activity on the server socket
-        if (fds[0].revents & POLLIN) 
+        for (size_t i = 0; i < 5; i++)
         {
-            if ((clientSocket = accept(serverSocket, NULL, NULL)) < 0) {
-                perror("Accept error");
-                exit(EXIT_FAILURE);
-            }
-            Client a;
-            a.setClientSocket(clientSocket);
-            if (fcntl(clientSocket, F_SETFL, O_NONBLOCK, FD_CLOEXEC) < 0)
+            if (fds[i].fd != 0 && fds[i].revents & POLLIN) 
             {
-                perror("fcnl failed");
-            }
-            mClients.erase(clientSocket);
-            mClients[clientSocket] = a;
-            // Add new client socket to the poll descriptor list
-            for (i = 1; i <= MAX_CLIENTS; i++) 
-            {
-                if (fds[i].fd == 0) {
-                    fds[i].fd = clientSocket;
-                    fds[i].events = POLLIN;
-                    fds[i].revents = 0;
-                    break;
+                if ((clientSocket = accept(servers[i].getServerSocket(), NULL, NULL)) < 0) {
+                    perror("Accept error");
+                    exit(EXIT_FAILURE);
+                }
+                Client a;
+                a.setClientSocket(clientSocket);
+                if (fcntl(clientSocket, F_SETFL, O_NONBLOCK, FD_CLOEXEC) < 0)
+                {
+                    perror("fcnl failed");
+                }
+                mClients.erase(clientSocket);
+                mClients[clientSocket] = a;
+                // Add new client socket to the poll descriptor list
+                for (i = 5; i <= MAX_CLIENTS; i++) 
+                {
+                    if (fds[i].fd == 0) {
+                        fds[i].fd = clientSocket;
+                        fds[i].events = POLLIN;
+                        fds[i].revents = 0;
+                        break;
+                    }
                 }
             }
         }
-
         // Check for activity on client sockets
-        for (i = 1; i <= MAX_CLIENTS; i++) {
+        for (i = 5; i <= MAX_CLIENTS; i++) {
             if (fds[i].fd != 0 && (fds[i].revents & POLLIN)){
                 clientSocket = fds[i].fd;
                 request request;
@@ -148,7 +155,7 @@ int main(int ac, char **av)
         }
         // std::cout << "2\n";
     }
-
-    close(a.getServerSocket());
+    for (size_t i = 0; i < 5; i++)
+        close(servers[i].getServerSocket());
     return 0;
 }
