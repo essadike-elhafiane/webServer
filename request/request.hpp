@@ -26,6 +26,8 @@ class request
         void receiveRequest(Client& dataClient)
         {
             read_request(dataClient);
+            if (dataClient.error)
+                return ;
             // std::cout << dataClient.getReadlen() << " | " << dataClient.getRestRequest().length() << std::endl;
             // return ;
             if (dataClient.getTypeRequset() == "POST" && dataClient.getReadlen() < dataClient.getContentLength())

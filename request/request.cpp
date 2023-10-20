@@ -3,6 +3,11 @@
 void request::parse_request(Client& dataClient)
 {
     size_t poss = dataClient.getRestRequest().find("\r\n\r\n");
+    if (poss == std::string::npos)
+    {
+        dataClient.error = 400;
+        return ;
+    }
     long int p = dataClient.getRestRequest().length() - poss - 4;
     if (p < 0)
         p = 0;
@@ -23,7 +28,7 @@ void request::parse_request(Client& dataClient)
         size_t pos_boundary = dataClient.getRestRequest().find("boundary=");
         if (pos_boundary == std::string::npos)
         {
-            std::cout << "ERROR BONDARY NOT FOND\n"; // chould be send response bad requrest; 
+            dataClient.error = 400;
             return ;
         }
         size_t pos_rn = dataClient.getRestRequest().find("\r\n", pos_boundary);
@@ -32,7 +37,7 @@ void request::parse_request(Client& dataClient)
         size_t pos_Content = dataClient.getRestRequest().find("Content-Length:", 0) + 16;
         if (pos_Content == std::string::npos)
         {
-            std::cout << "ERROR Content-Length NOT FOND\n"; // chould be send response bad requrest; 
+            dataClient.error = 400;
             return ;
         }
         size_t poss_end = dataClient.getRestRequest().find("\r\n", pos_Content);
@@ -42,7 +47,8 @@ void request::parse_request(Client& dataClient)
     }
     if (tokens[0] == "" ||  (tokens[0] != "GET" && tokens[0] != "POST" && tokens[0] != "DELETE"))
     {
-        return;
+        dataClient.error = 400;
+        return ;
     }
     dataClient.setHeaderStatus(true);
     // exit(1);
@@ -209,7 +215,8 @@ void    request::read_request(Client& dataClient)
             dataClient.setReadlen(bytesRead);
         if (!dataClient.getHeaderStatus() && dataClient.getRestRequest().find("\r\n\r\n") != std::string::npos)
             parse_request(dataClient);
-        
+        if (dataClient.error)
+            return ;
         // std::cout <<"|"<< dataClient.getReadlen() <<"|"<< std::endl;
     
     

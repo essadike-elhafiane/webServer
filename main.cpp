@@ -6,7 +6,7 @@
 /*   By: eelhafia <eelhafia@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/29 21:28:36 by eelhafia          #+#    #+#             */
-/*   Updated: 2023/10/20 01:27:28 by eelhafia         ###   ########.fr       */
+/*   Updated: 2023/10/20 01:47:14 by eelhafia         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -85,6 +85,12 @@ int main(int ac, char **av)
                 clientSocket = fds[i].fd;
                 request request;
                 request.receiveRequest(mClients[clientSocket]);
+                if (mClients[clientSocket].error)
+                {
+                    fds[i].events = POLLOUT;
+                    fds[i].revents = 0;
+                    continue;
+                }
                 // fds[i].fd = clientSocket;
                 
                 // close(clientSocket);

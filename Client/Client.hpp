@@ -38,8 +38,9 @@ class Client
         std::streampos lenSend;
         std::string dataResponse;
     public:
+
         Client(/* args */);
-        int fd;
+        int error;
         std::streampos lengthFile; 
         std::streampos getLenSend()
         {
@@ -156,6 +157,7 @@ class Client
             lenSend = 0;
             dataResponse = "";
             lengthFile = 0;
+            error = 0;
         }
         ~Client();
 };

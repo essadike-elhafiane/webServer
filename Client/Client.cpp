@@ -14,6 +14,7 @@ Client::Client(/* args */)
     boundary = "";
     dataResponse = "";
     lengthFile = 0;
+    error = 0;
 }
 
 Client::~Client()
