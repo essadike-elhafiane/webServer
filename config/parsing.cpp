@@ -1,4 +1,4 @@
-#include"parcing.hpp"
+#include"parsing.hpp"
 
 void error_message(std::string str)
 {
@@ -527,7 +527,7 @@ void chek_line(std::vector<std::string> line)
     }
 }
 
-int main (int argc , char **argv)
+std::vector<HTTP_SERVER>& configFile (int argc , char **argv)
 {
     if (argc != 2)
         error_message("error invalide argument");
@@ -540,7 +540,7 @@ int main (int argc , char **argv)
     int s = 0;
 
     if (!readcofg.is_open())
-        return (std::cout << "error in file\n" ,readcofg.close() , 0);
+        error_message("error open cpnfig file");
     while(getline(readcofg,tmp))
     {
         if (std::string::npos != tmp.find("server"))
@@ -577,9 +577,8 @@ int main (int argc , char **argv)
     }
     // exit(0);
 
-
-    for(std::vector<HTTP_SERVER>::iterator ptr =data.begin() ; ptr != data.end(); ptr++ )
-        std::cout << *ptr << std::endl;
+    return data;
+    // for(std::vector<HTTP_SERVER>::iterator ptr =data.begin() ; ptr != data.end(); ptr++ )
+    //     std::cout << *ptr << std::endl;
     
-    return 0;
 }

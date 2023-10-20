@@ -6,7 +6,7 @@
 /*   By: eelhafia <eelhafia@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/29 21:28:36 by eelhafia          #+#    #+#             */
-/*   Updated: 2023/10/20 00:04:31 by eelhafia         ###   ########.fr       */
+/*   Updated: 2023/10/20 01:27:28 by eelhafia         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,6 +17,7 @@
 #include <fcntl.h>
 #include <poll.h>
 #include <map>
+#include "config/parsing.hpp"
 
 void sigintHandler(int signal) {
     std::cout << "Received SIGINT signal. Cleaning up and exiting..." << std::endl;
@@ -28,11 +29,13 @@ void v()
 {
     system("leaks webserv");
 }
-int main()
+int main(int ac, char **av)
 {
     atexit(v);
-    server a("server1");
-    a.runServer(MAX_CLIENTS, 8000);
+    std::vector<HTTP_SERVER>& configData = configFile(ac, av);
+    
+    server a(configData[0].server_name);
+    a.runServer(MAX_CLIENTS, configData[0].port[0]);
     fcntl(a.getServerSocket(), F_SETFL, O_NONBLOCK, FD_CLOEXEC);
     int serverSocket, clientSocket, i;
     serverSocket = a.getServerSocket();

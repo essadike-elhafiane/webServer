@@ -1,5 +1,5 @@
-#ifndef PARCING_HPP
-#define PARCING_HPP
+#ifndef PARSING_HPP
+#define PARSING_HPP
 
 #include <fstream>
 #include <string>
@@ -131,7 +131,7 @@ std::ostream& operator<<(std::ostream& output_stream, const  HTTP_SERVER  &serve
     return output_stream;
 }
 
-
+std::vector<HTTP_SERVER>& configFile (int argc , char **argv);
 
 
 #endif
