@@ -6,7 +6,7 @@
 /*   By: eelhafia <eelhafia@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/29 21:28:36 by eelhafia          #+#    #+#             */
-/*   Updated: 2023/10/20 13:02:00 by eelhafia         ###   ########.fr       */
+/*   Updated: 2023/10/21 15:32:02 by eelhafia         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,12 +39,12 @@ int main()
     memset(fds, 0, sizeof(fds));
     for (int i = 0; i < 5; i++)
     {
-        server a("name");
+        server a("name_" + std::to_string(i));
         a.runServer(MAX_CLIENTS, 8000 + i);
         fcntl(a.getServerSocket(), F_SETFL, O_NONBLOCK, FD_CLOEXEC);
         fds[i].fd = a.getServerSocket();
-        fds[i].events = POLLIN ;
-        servers.push_back(a); 
+        fds[i].events = POLLIN;
+        servers.push_back(a);
     }
     int clientSocket, i;
     std::map<int, Client> mClients;
@@ -68,6 +68,7 @@ int main()
                 }
                 Client a;
                 a.setClientSocket(clientSocket);
+                a.nameServer = servers[i].getName();
                 if (fcntl(clientSocket, F_SETFL, O_NONBLOCK, FD_CLOEXEC) < 0)
                 {
                     perror("fcnl failed");

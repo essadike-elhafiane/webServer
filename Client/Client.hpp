@@ -42,6 +42,9 @@ class Client
         Client(/* args */);
         int error;
         std::streampos lengthFile; 
+        std::string nameServer;
+        int  port;
+        std::string HostName;
         std::streampos getLenSend()
         {
             return lenSend;

@@ -1,5 +1,76 @@
 #include "request.hpp"
 
+int isdigits(std::string Host)
+{
+    for (size_t i = 0; Host[i]; i++)
+    {
+        if(!isdigit(Host[i]))
+            return 0;
+    }
+    return 1;
+}
+
+int    getHost(std::string& requests,size_t posHost, Client& dataClient)
+{
+    size_t endPosHost = requests.find("\r\n", posHost);
+    std::string Host = requests.substr(posHost + 6, endPosHost - posHost - 6);
+    size_t posPort = Host.find(":");
+    if( !isdigits(Host))
+    {
+        if (posPort == std::string::npos)
+        {
+            dataClient.HostName = Host;
+            dataClient.port = 0;
+            return 0;
+        }
+    }
+    dataClient.HostName = Host.substr(0, posPort);
+    dataClient.port = std::atoi(Host.substr(posPort + 1, Host.size() - posPort - 1).c_str());
+    return 0;
+}
+
+int checkValidRequest(std::string &requests, size_t poss, Client& dataClient)
+{
+    std::stringstream s(requests.substr(0, poss + 2));
+    std::string line;
+    int i = 0;
+    
+    while (!std::getline(s, line, '\n').fail())
+    {
+        if(i == 0)
+        {
+            int count = std::count(line.begin(), line.end(), ' ');
+            if (count != 2)
+                return 1;    
+            if (line[line.size() - 1] != '\r')
+                return 1;   
+            i++; 
+            std::cout << "1111\n";                                                                     
+        }
+        else
+        {
+            std::cout << line<< "\n";                         
+
+            if (line[line.size() - 1] != '\r')
+                return 1;
+            size_t posSpace = line.find(" ");
+            if (posSpace == std::string::npos)
+                return 1;
+            if (line.substr(0, posSpace)[line.substr(0, posSpace).size() - 1] != ':')
+                return 1;
+        }
+    }
+    size_t posHost = requests.find("Host:");
+    if (posHost == std::string::npos)
+        return 1;
+    if (getHost(requests, posHost, dataClient))
+        return 1;
+    std::cout << "|" << dataClient.HostName << "|" << dataClient.port << "|";
+    exit(1);
+    return 0;
+}
+
+
 void request::parse_request(Client& dataClient)
 {
     size_t poss = dataClient.getRestRequest().find("\r\n\r\n");
@@ -12,6 +83,11 @@ void request::parse_request(Client& dataClient)
     if (p < 0)
         p = 0;
     dataClient.setReadlen(p);
+    if (checkValidRequest(dataClient.getRestRequest(), poss, dataClient))
+    { 
+        dataClient.error = 400;
+        exit(1) ;
+    }
     std::stringstream ss(dataClient.getRestRequest().substr(0, poss));
     std::vector<std::string> tokens;
     std::string token;
@@ -19,6 +95,12 @@ void request::parse_request(Client& dataClient)
         tokens.push_back(token);
         if (tokens.size() > 2)
             break;
+    }
+    if (tokens[2].substr(0,tokens[2].find("\r\n")) != "HTTP/1.1")
+    {
+        dataClient.error = 400;
+        std::cout << "Error http1.1 not fond\n";
+        return ;
     }
     // std::cout << "hhh |" << dataClient.getRestRequest() << "|" << std::endl;
     dataClient.setTypeRequset(tokens[0]);
