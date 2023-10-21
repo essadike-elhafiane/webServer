@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.cpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mserrouk <mserrouk@student.42.fr>          +#+  +:+       +#+        */
+/*   By: eelhafia <eelhafia@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/29 21:28:36 by eelhafia          #+#    #+#             */
-/*   Updated: 2023/10/21 19:51:25 by mserrouk         ###   ########.fr       */
+/*   Updated: 2023/10/21 23:53:57 by eelhafia         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,32 +24,38 @@ void sigintHandler(int signal) {
     exit(signal);
 }
 
-#define MAX_CLIENTS 300
-#define NUMBER_SERVER 5;
-void v()
-{
-    system("leaks webserv");
-}
+#define MAX_CLIENTS 1000
+
+// void v()
+// {
+//     system("leaks webserv");
+// }
 int main(int ac , char **av)
 {
-    atexit(v);
-    std::vector<HTTP_SERVER> configData ;
+    // atexit(v);
+    std::vector<HTTP_SERVER> configData;
     configFile(ac, av ,configData);
     std::vector<server> servers;
     struct pollfd fds[MAX_CLIENTS + 1];
+    size_t numberServer = 0;
     memset(fds, 0, sizeof(fds));
-    for (int i = 0; i < 5; i++)
+    for (size_t i = 0; i < configData.size(); i++)
     {
-        server a("name_" + std::to_string(i));
-        a.runServer(MAX_CLIENTS, 8000 + i);
-        fcntl(a.getServerSocket(), F_SETFL, O_NONBLOCK, FD_CLOEXEC);
-        fds[i].fd = a.getServerSocket();
-        fds[i].events = POLLIN;
-        servers.push_back(a);
+        for (size_t j = 0; j < configData[i].port.size(); j++)
+        {
+            server a(configData[i].server_name);
+            if (a.runServer(MAX_CLIENTS, configData[i].port[j]))
+                continue;
+            fcntl(a.getServerSocket(), F_SETFL, O_NONBLOCK, FD_CLOEXEC);
+            fds[numberServer].fd = a.getServerSocket();
+            fds[numberServer].events = POLLIN;
+            servers.push_back(a);
+            numberServer++;
+        }
     }
     int clientSocket, i;
     std::map<int, Client> mClients;
-    
+    std::cout<< "number servers: " << numberServer << std::endl;
     while (true) 
     {
         int activity = poll(fds, MAX_CLIENTS + 1, 1000);
@@ -59,10 +65,11 @@ int main(int ac , char **av)
         }
 
         // Check for activity on the server socket
-        for (size_t i = 0; i < 5; i++)
+        for (size_t i = 0; i < numberServer; i++)
         {
             if (fds[i].fd != 0 && fds[i].revents & POLLIN) 
             {
+                std::cout << servers[i].getName() << "|" << servers[i].port << std::endl;
                 if ((clientSocket = accept(servers[i].getServerSocket(), NULL, NULL)) < 0) {
                     perror("Accept error");
                     exit(EXIT_FAILURE);
@@ -70,6 +77,7 @@ int main(int ac , char **av)
                 Client a;
                 a.setClientSocket(clientSocket);
                 a.nameServer = servers[i].getName();
+                a.configData = configData;
                 if (fcntl(clientSocket, F_SETFL, O_NONBLOCK, FD_CLOEXEC) < 0)
                 {
                     perror("fcnl failed");
@@ -77,7 +85,7 @@ int main(int ac , char **av)
                 mClients.erase(clientSocket);
                 mClients[clientSocket] = a;
                 // Add new client socket to the poll descriptor list
-                for (i = 5; i <= MAX_CLIENTS; i++) 
+                for (i = numberServer; i <= MAX_CLIENTS; i++) 
                 {
                     if (fds[i].fd == 0) {
                         fds[i].fd = clientSocket;
@@ -88,8 +96,9 @@ int main(int ac , char **av)
                 }
             }
         }
+        
         // Check for activity on client sockets
-        for (i = 5; i <= MAX_CLIENTS; i++) {
+        for (i = numberServer; i <= MAX_CLIENTS; i++) {
             if (fds[i].fd != 0 && (fds[i].revents & POLLIN)){
                 clientSocket = fds[i].fd;
                 request request;
@@ -124,13 +133,13 @@ int main(int ac , char **av)
                 response resp;
                 std::string u;
                 Client &dataClient = mClients[fds[i].fd];
-                if (dataClient.getUrl() == "/")
-                    dataClient.setUrl("/html/file.html");
-                if (dataClient.getUrl() == "/Users/eelhafia/Desktop/y.mp4")
+                // if (dataClient.getUrl() == "/")
+                //     dataClient.setUrl("/html/file.html");
+                // if (dataClient.getUrl() == "/Users/eelhafia/Desktop/y.mp4")
                     u = dataClient.getUrl();
-                else
-                    u = "/Users/eelhafia/Desktop/webServer" + dataClient.getUrl();
-                std::cout << dataClient.getUrl() << std::endl;
+                // else
+                //     u = "/Users/eelhafia/Desktop/webServer" + dataClient.getUrl();
+                // std::cout << dataClient.getUrl() << std::endl;
                 std::string rOK = "HTTP/1.1 200 OK\r\nContent-Length: ";
                 // if (dataClient.get)
                 if (!resp.sendResponse(u, rOK, fds[i].fd, dataClient))

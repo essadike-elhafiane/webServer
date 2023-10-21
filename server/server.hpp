@@ -22,22 +22,23 @@ class server
         std::string name;
         int serverSocket;
         struct sockaddr_in serverAddress;
-        int port;
     public:
+        int port;
         server(std::string name);
         std::string getName()
         {
            return name;
         }
-        void createSocketServer()
+        int createSocketServer()
         {
             serverSocket = socket(AF_INET, SOCK_STREAM, 0);
             if (serverSocket < 0) {
                 std::cerr << "Error opening socket." << std::endl;
-                exit(1);
+                return 1;
             }
+            return 0;
         }
-        void setUpServer()
+        int setUpServer()
         {
             std::memset((char*)&serverAddress, 0, sizeof(serverAddress));
             serverAddress.sin_family = AF_INET;
@@ -48,29 +49,37 @@ class server
             int opt = 1;
             if (setsockopt(serverSocket, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt)) == -1) {
                 std::cerr << "Failed to set socket options." << std::endl;
-                return ;
+                return 1;
             }
 
             if (bind(serverSocket, (struct sockaddr*)&serverAddress, sizeof(serverAddress)) < 0) {
                 std::cerr << "Error binding socket." << std::endl;
-                exit(1);
+                return 1;
             }
+            return 0;
         }
         int getServerSocket()
         {
             return serverSocket;
         }
-        void runServer(int numberClient, int _port)
+        int runServer(int numberClient, int _port)
         {
             port = _port;
-            createSocketServer();
-            setUpServer();
+            if (createSocketServer())
+                return 1;
+            if (setUpServer())
+            {
+                close(serverSocket);
+                return 1;
+            }
             if (listen(serverSocket, numberClient) < 0)
             {
                 std::cerr << "Failed to listen on socket\n";
-                exit(1);
+                return 1;
             }
-            std::cout << "Server listening on " << port << " ..." << std::endl;
+            
+            std::cout << "Server " << name <<" listening on " << port << " ..." << std::endl;
+            return 0;
         }
         ~server();
 };

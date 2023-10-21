@@ -83,11 +83,11 @@ void request::parse_request(Client& dataClient)
     if (p < 0)
         p = 0;
     dataClient.setReadlen(p);
-    if (checkValidRequest(dataClient.getRestRequest(), poss, dataClient))
-    { 
-        dataClient.error = 400;
-        exit(1) ;
-    }
+    // if (checkValidRequest(dataClient.getRestRequest(), poss, dataClient))
+    // { 
+    //     dataClient.error = 400;
+    //     exit(1) ;
+    // }
     std::stringstream ss(dataClient.getRestRequest().substr(0, poss));
     std::vector<std::string> tokens;
     std::string token;
@@ -141,18 +141,18 @@ void request::parse_request(Client& dataClient)
 
 void request::check_Get_Request(Client &dataClient)
 {
-    std::string line;
-    std::string u = "/Users/eelhafia/Desktop/webServer" + dataClient.getUrl();
-    std::cout << "|" << u << "|" << std::endl;
-    if (access(u.c_str(), R_OK) && dataClient.getUrl() != "/html/html/app-coder.html")
-    {
-        // error = 404;
-        std::string rOK = "HTTP/1.1 404 Not Found\r\nContent-Length: ";
-        rsp.sendResponse("/Users/eelhafia/Desktop/webServer/html/404.html", rOK, dataClient.getClientSocket(), dataClient);
-        dataClient.setHeaderStatus(false);
-        dataClient.resetRestRequest();
-        return;
-    }
+    // std::string line;
+    // std::string u = "/Users/eelhafia/Desktop/webServer" + dataClient.getUrl();
+    // std::cout << "|" << u << "|" << std::endl;
+    // if (access(u.c_str(), R_OK) && dataClient.getUrl() != "/html/html/app-coder.html")
+    // {
+    //     // error = 404;
+    //     std::string rOK = "HTTP/1.1 404 Not Found\r\nContent-Length: ";
+    //     rsp.sendResponse("/Users/eelhafia/Desktop/webServer/html/404.html", rOK, dataClient.getClientSocket(), dataClient);
+    //     dataClient.setHeaderStatus(false);
+    //     dataClient.resetRestRequest();
+    //     return;
+    // }
     // if (len > 2048 && typeRequest != "POST")
     // {
     //     error = 414;
@@ -161,20 +161,34 @@ void request::check_Get_Request(Client &dataClient)
     //     close(client);
     //     return;
     // }
-    else 
-    {
+    // else
+    std::cout << "||||||\n"; 
+    // {
         if (dataClient.getUrl() == "/")
-            dataClient.setUrl("/html/file.html");
-        u = "/Users/eelhafia/Desktop/webServer" + dataClient.getUrl();
-        std::cout << dataClient.getUrl() << std::endl;
-        std::string rOK = "HTTP/1.1 200 OK\r\nContent-Length: ";
-        rsp.sendResponse(u, rOK, dataClient.getClientSocket(), dataClient);
-        dataClient.setTypeRequset("");
-        dataClient.setHeaderStatus(false);
-        dataClient.setUrl("");
-        dataClient.resetRestRequest();
-        return;
-    }
+        {
+            size_t serverPos = 0;
+            for (size_t i = 0; i < dataClient.configData.size(); i++)
+            {
+                serverPos = i;
+                if (dataClient.configData[i].server_name == dataClient.nameServer)
+                    break;
+            }
+            if (serverPos == dataClient.configData.size())
+                std::cout << "Error \n";
+            dataClient.setUrl(dataClient.configData[serverPos].pages[0].index);
+            std::cout << dataClient.getUrl() << std::endl;
+        }
+            // dataClient.setUrl("/html/file.html");
+        // u = "/Users/eelhafia/Desktop/webServer" + dataClient.getUrl();
+        // std::cout << dataClient.getUrl() << std::endl;
+    //     std::string rOK = "HTTP/1.1 200 OK\r\nContent-Length: ";
+    //     rsp.sendResponse(dataClient.getUrl(), rOK, dataClient.getClientSocket(), dataClient);
+    //     dataClient.setTypeRequset("");
+    //     dataClient.setHeaderStatus(false);
+    //     dataClient.setUrl("");
+    //     dataClient.resetRestRequest();
+    //     return;
+    // }
 }
 
 

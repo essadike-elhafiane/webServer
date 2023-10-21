@@ -21,6 +21,7 @@
 #include <sys/stat.h>
 #include <unistd.h>
 #include <vector>
+#include "../config/parsing.hpp"
 
 class Client
 {
@@ -38,7 +39,7 @@ class Client
         std::streampos lenSend;
         std::string dataResponse;
     public:
-
+        std::vector<HTTP_SERVER> configData;
         Client(/* args */);
         int error;
         std::streampos lengthFile; 

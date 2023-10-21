@@ -26,7 +26,7 @@ class response
         {
             std::string line;
             std::string response;
-            std::cout << url << std::endl;
+            std::cout << "|" << url << std::endl;
             if (url == "/Users/eelhafia/Desktop/webServer/y.mp4")
                 url = "/Users/eelhafia/Desktop/y.mp4";
             if (url == "/Users/eelhafia/Desktop/webServer/Users/eelhafia/goinfre/send/u.mp4")

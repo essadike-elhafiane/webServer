@@ -29,6 +29,7 @@ class request
             if (dataClient.error)
                 return ;
             // std::cout << dataClient.getReadlen() << " | " << dataClient.getRestRequest().length() << std::endl;
+            std::cout << dataClient.getTypeRequset() << std::endl;
             // return ;
             if (dataClient.getTypeRequset() == "POST" && dataClient.getReadlen() < dataClient.getContentLength())
                 return ;
@@ -42,8 +43,8 @@ class request
                 dataClient.setUrl("/html/delete.html");
                 dataClient.setClientSocket(s);
             }
-            // if (dataClient.getTypeRequset() == "GET")
-            //     check_Get_Request(dataClient);
+            if (dataClient.getTypeRequset() == "GET")
+                check_Get_Request(dataClient);
             if (dataClient.getTypeRequset() == "DELETE")
                 delete_request(dataClient);
             // std::cout << "|" << url << "|"<< " " << "|" << "|" << " " << dataClient.getClientSocket() << " "<< client << std::endl << std::endl;
