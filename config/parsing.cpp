@@ -369,8 +369,6 @@ void  pars_auto(std::vector<std::string>::iterator &ptr, int &m, std::vector<std
     exit(0);
 }
 
-
-
 void location_pars(std::vector<std::string>::iterator &ptr, HTTP_SERVER &m, std::vector<std::string>::iterator l)
 {
      int i = 0;
@@ -527,7 +525,7 @@ void chek_line(std::vector<std::string> line)
     }
 }
 
-int configFile (int argc , char **argv)
+std::vector<HTTP_SERVER>& configFile (int argc , char **argv,std::vector< HTTP_SERVER> &data)
 {
     if (argc != 2)
         error_message("error invalide argument");
@@ -557,8 +555,6 @@ int configFile (int argc , char **argv)
     token_elemet(obj.line2 , obj.line3 ,";");
     clean_element(obj.line3 , obj.line4);
 
-
-    std::vector< HTTP_SERVER> data ;
     // s = 0;
     for(std::vector<std::string>::iterator ptr = obj.line4.begin() ; ptr < obj.line4.end() ;ptr++)
     {
@@ -577,8 +573,14 @@ int configFile (int argc , char **argv)
     }
     // exit(0);
 
-    return 0;
+    return data;
     // for(std::vector<HTTP_SERVER>::iterator ptr =data.begin() ; ptr != data.end(); ptr++ )
     //     std::cout << *ptr << std::endl;
-    
+
+    // std::vector< HTTP_SERVER> ata  = data;
+    // std::cout << "\n\n\n\n";
+    // for(std::vector<HTTP_SERVER>::iterator ptr =ata.begin() ; ptr != ata.end(); ptr++ )
+    //     std::cout << *ptr << std::endl;
+
+    // return 0;
 }

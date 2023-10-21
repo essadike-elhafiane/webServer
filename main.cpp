@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.cpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: eelhafia <eelhafia@student.42.fr>          +#+  +:+       +#+        */
+/*   By: mserrouk <mserrouk@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/29 21:28:36 by eelhafia          #+#    #+#             */
-/*   Updated: 2023/10/21 15:32:02 by eelhafia         ###   ########.fr       */
+/*   Updated: 2023/10/21 19:51:25 by mserrouk         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,10 +30,11 @@ void v()
 {
     system("leaks webserv");
 }
-int main()
+int main(int ac , char **av)
 {
     atexit(v);
-    // std::vector<HTTP_SERVER>& configData = configFile(ac, av);
+    std::vector<HTTP_SERVER> configData ;
+    configFile(ac, av ,configData);
     std::vector<server> servers;
     struct pollfd fds[MAX_CLIENTS + 1];
     memset(fds, 0, sizeof(fds));

@@ -45,6 +45,19 @@ class LOCATION
             cgi = "";
             redirection = "";
         }
+        LOCATION & operator = (const LOCATION & other)
+        {
+            if (this != &other)
+            {
+                this->path = other.path;
+                this->root = other.root;
+                this->index = other.index;
+                this->autoindex = other.autoindex;
+                this->redirection = other.redirection;
+                this->cgi = other.cgi;
+            }
+            return *this;
+        }
 
 };
 
@@ -59,7 +72,6 @@ class HTTP_SERVER
         std::vector<int> port;
         std::vector<std::string> allow_methods;
         std::vector<LOCATION> pages;
-
     HTTP_SERVER()
     {
         server_name = "";
@@ -67,71 +79,76 @@ class HTTP_SERVER
         client_max_body_size = -1;
         error_page_path = "";
     }
-    // HTTP_SERVER & operator = (const HTTP_SERVER & other)
-    // {
-    //     if(this->server_name.empty())
-    //         this->server_name = other.server_name;
-    //     if(this->root.empty())
-    //         this->root = other.root;
-    // }
-    
 
+    HTTP_SERVER & operator = (const HTTP_SERVER & other)
+    {
+            if (this != &other)
+            {
+                this->server_name = other.server_name;
+                this->root = other.root;
+                this->client_max_body_size = other.client_max_body_size;
+                this->error_page_path = other.error_page_path;
+                this->error_page = other.error_page;
+                this->port = other.port;
+                this->allow_methods = other.allow_methods;
+                this->pages = other.pages;   
+            }
+        return *this;
+    }
 };
 
+// std::ostream& operator<<(std::ostream& output_stream, const  LOCATION  &location)
+// {
+//     output_stream <<   "location \n";
+//     output_stream << "path : "; 
+//     output_stream << location.path + "\n";
+//     output_stream << "index : ";  
+//     output_stream << location.index + "\n" ;
+//     output_stream << "autoindex : ";  
+//     output_stream << location.autoindex ;
+//     output_stream << " \nredirection : ";  
+//     output_stream << location.redirection + "\n" ;
+//     output_stream << "cgi : ";  
+//     output_stream << location.cgi + "\n" ;
+//     return output_stream;
+// }
 
 
-std::ostream& operator<<(std::ostream& output_stream, const  LOCATION  &location)
-{
-    output_stream <<   "location \n";
-    output_stream << "path : "; 
-    output_stream << location.path + "\n";
-    output_stream << "index : ";  
-    output_stream << location.index + "\n" ;
-    output_stream << "autoindex : ";  
-    output_stream << location.autoindex ;
-    output_stream << " \nredirection : ";  
-    output_stream << location.redirection + "\n" ;
-    output_stream << "cgi : ";  
-    output_stream << location.cgi + "\n" ;
-    return output_stream;
-}
+// std::ostream& operator<<(std::ostream& output_stream, const  HTTP_SERVER  &server)
+// {
+//     output_stream <<   "server_name " ;
+//     output_stream <<   server.server_name + "\n" ;
+//     output_stream <<   "root" ;
+//     output_stream <<   server.root + "\n" ;
+//     output_stream <<   "client_max_body_size " ;
+//     output_stream <<   server.client_max_body_size ;
+//     output_stream <<   "\n error_page_path " ;
+//     output_stream <<   server.error_page_path + "\n" ;
+//     output_stream <<   "port \n";
 
+//     for(std::vector<int>::const_iterator ptr =  server.port.begin() ; ptr != server.port.end() ; ptr++)
+//     {
+//         output_stream << *ptr ;
+//         output_stream << "\n";
+//     }
+//     output_stream <<   "error_page ";
+//     for(std::map<int , std::string >::const_iterator ptr = server.error_page.begin() ; ptr != server.error_page.end() ; ptr++)
+//     {
+//         output_stream << ptr->first ;
+//         output_stream <<  " "  + ptr->second + "\n";
+//     }
+//     output_stream <<   "allow_methods";
+//     for(std::vector<std::string>::const_iterator ptr = server.allow_methods.begin() ; ptr != server.allow_methods.end() ; ptr++)
+//         output_stream << *ptr + "\n";
+//     // output_stream <<   "location \n";
+//     for(std::vector<LOCATION>::const_iterator ptr = server.pages.begin() ; ptr != server.pages.end() ; ptr++)
+//         output_stream << *ptr ;
+//         output_stream << "\n";
 
-std::ostream& operator<<(std::ostream& output_stream, const  HTTP_SERVER  &server)
-{
-    output_stream <<   "server_name " ;
-    output_stream <<   server.server_name + "\n" ;
-    output_stream <<   "root" ;
-    output_stream <<   server.root + "\n" ;
-    output_stream <<   "client_max_body_size " ;
-    output_stream <<   server.client_max_body_size ;
-    output_stream <<   "\n error_page_path " ;
-    output_stream <<   server.error_page_path + "\n" ;
-    output_stream <<   "port \n";
+//     return output_stream;
+// }
 
-    for(std::vector<int>::const_iterator ptr =  server.port.begin() ; ptr != server.port.end() ; ptr++)
-    {
-        output_stream << *ptr ;
-        output_stream << "\n";
-    }
-    output_stream <<   "error_page ";
-    for(std::map<int , std::string >::const_iterator ptr = server.error_page.begin() ; ptr != server.error_page.end() ; ptr++)
-    {
-        output_stream << ptr->first ;
-        output_stream <<  " "  + ptr->second + "\n";
-    }
-    output_stream <<   "allow_methods";
-    for(std::vector<std::string>::const_iterator ptr = server.allow_methods.begin() ; ptr != server.allow_methods.end() ; ptr++)
-        output_stream << *ptr + "\n";
-    // output_stream <<   "location \n";
-    for(std::vector<LOCATION>::const_iterator ptr = server.pages.begin() ; ptr != server.pages.end() ; ptr++)
-        output_stream << *ptr ;
-        output_stream << "\n";
-
-    return output_stream;
-}
-
-int configFile (int argc , char **argv);
+std::vector<HTTP_SERVER>& configFile (int argc , char **argv,std::vector< HTTP_SERVER> &data);
 
 
 #endif
