@@ -15,7 +15,7 @@ int    getHost(std::string& requests,size_t posHost, Client& dataClient)
     size_t endPosHost = requests.find("\r\n", posHost);
     std::string Host = requests.substr(posHost + 6, endPosHost - posHost - 6);
     size_t posPort = Host.find(":");
-    if( !isdigits(Host))
+    if(!isdigits(Host))
     {
         if (posPort == std::string::npos)
         {
@@ -66,10 +66,8 @@ int checkValidRequest(std::string &requests, size_t poss, Client& dataClient)
     if (getHost(requests, posHost, dataClient))
         return 1;
     std::cout << "|" << dataClient.HostName << "|" << dataClient.port << "|";
-    exit(1);
     return 0;
 }
-
 
 void request::parse_request(Client& dataClient)
 {
@@ -83,11 +81,11 @@ void request::parse_request(Client& dataClient)
     if (p < 0)
         p = 0;
     dataClient.setReadlen(p);
-    // if (checkValidRequest(dataClient.getRestRequest(), poss, dataClient))
-    // { 
-    //     dataClient.error = 400;
-    //     exit(1) ;
-    // }
+    if (checkValidRequest(dataClient.getRestRequest(), poss, dataClient))
+    { 
+        dataClient.error = 400;
+        exit(1) ;
+    }
     std::stringstream ss(dataClient.getRestRequest().substr(0, poss));
     std::vector<std::string> tokens;
     std::string token;
