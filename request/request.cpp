@@ -164,16 +164,7 @@ void request::check_Get_Request(Client &dataClient)
     // {
         if (dataClient.getUrl() == "/")
         {
-            size_t serverPos = 0;
-            for (size_t i = 0; i < dataClient.configData.size(); i++)
-            {
-                serverPos = i;
-                if (dataClient.configData[i].server_name == dataClient.nameServer)
-                    break;
-            }
-            if (serverPos == dataClient.configData.size())
-                std::cout << "Error \n";
-            dataClient.setUrl(dataClient.configData[serverPos].pages[0].index);
+            dataClient.setUrl(dataClient.configData.pages[0].index);
             std::cout << dataClient.getUrl() << std::endl;
         }
             // dataClient.setUrl("/html/file.html");
@@ -309,6 +300,8 @@ void    request::read_request(Client& dataClient)
             dataClient.setReadlen(bytesRead);
         if (!dataClient.getHeaderStatus() && dataClient.getRestRequest().find("\r\n\r\n") != std::string::npos)
             parse_request(dataClient);
+        if (dataClient.getContentLength() > dataClient.configData.client_max_body_size * 1000000)
+            dataClient.error = 413;
         if (dataClient.error)
             return ;
         // std::cout <<"|"<< dataClient.getReadlen() <<"|"<< std::endl;

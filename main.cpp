@@ -6,7 +6,7 @@
 /*   By: eelhafia <eelhafia@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/29 21:28:36 by eelhafia          #+#    #+#             */
-/*   Updated: 2023/10/21 23:53:57 by eelhafia         ###   ########.fr       */
+/*   Updated: 2023/10/22 20:02:29 by eelhafia         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -77,7 +77,7 @@ int main(int ac , char **av)
                 Client a;
                 a.setClientSocket(clientSocket);
                 a.nameServer = servers[i].getName();
-                a.configData = configData;
+                a.configData = configData[i];
                 if (fcntl(clientSocket, F_SETFL, O_NONBLOCK, FD_CLOEXEC) < 0)
                 {
                     perror("fcnl failed");

@@ -39,7 +39,7 @@ class Client
         std::streampos lenSend;
         std::string dataResponse;
     public:
-        std::vector<HTTP_SERVER> configData;
+        HTTP_SERVER configData;
         Client(/* args */);
         int error;
         std::streampos lengthFile; 
