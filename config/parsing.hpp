@@ -8,9 +8,9 @@
 #include<cstring>
 #include<map>
 #include <sstream>
+#include <dirent.h>
 
-#define     iter       std::vector<std::string>::iterator
-#define     conf_data  std::map::<std::string , std::string>
+
 
 class Mycfg
 {
@@ -58,7 +58,6 @@ class LOCATION
             }
             return *this;
         }
-
 };
 
 class HTTP_SERVER
@@ -95,6 +94,10 @@ class HTTP_SERVER
             }
         return *this;
     }
+    // void find(HTTP_SERVER configData ,std::vector<int , std::string>::iterator &it)
+    // {
+        
+    // }
 };
 
 // std::ostream& operator<<(std::ostream& output_stream, const  LOCATION  &location)

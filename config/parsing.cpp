@@ -191,15 +191,11 @@ void index_pars(std::vector<std::string>::iterator &ptr, std::map<std::string,st
     while(ptr != l && i < 3)
     {
         if(i == 1 && ((*ptr) == ";" || (*ptr) =="{" || (*ptr) == "}"))
-        {
-            std::cout << "error2 index" <<  "\n";
-        }
+            error_message("error index");
         if (i == 1)
             m["index"] = *ptr; 
         if (i == 2 && (*ptr) == ";")
-        {
             return;
-        }
         ptr++;
         i++;
     }
@@ -276,14 +272,21 @@ int is_digit(std::string str)
 
 void assigne_element(HTTP_SERVER &m , std::string str)
 {
+    std::fstream open(str);
+    if (!open.is_open())
+    {
+        std::cout << str;
+        error_message("error open file 2");
+    }
    for( std::map<int , std::string>::iterator  ptr = m.error_page.begin() ; ptr != m.error_page.end() ; ptr++)
    {
         if((*ptr).second.empty())
-            (*ptr).second = str;
+        {
+            (*ptr).second = str;        
+        }
    }
 
 }
-
 
 void error_page(std::vector<std::string>::iterator &ptr, HTTP_SERVER &m, std::vector<std::string>::iterator l)
 {
@@ -525,6 +528,23 @@ void chek_line(std::vector<std::string> line)
     }
 }
 
+void ValidData(HTTP_SERVER data)
+{
+    if(data.error_page.empty() || data.port.empty() || data.client_max_body_size == -1 || data.root.empty())
+        error_message("error not enough data");
+}
+
+
+void valid_location(HTTP_SERVER data)
+{
+    for(std::vector<LOCATION>::iterator ptr = data.pages.begin() ; ptr != data.pages.end() ; ptr++)
+    {
+        if(ptr->root.empty() || ptr->index.empty())
+            error_message("error location not enough data");
+    }
+    
+}
+
 std::vector<HTTP_SERVER>& configFile (int argc , char **argv,std::vector< HTTP_SERVER> &data)
 {
     if (argc != 2)
@@ -573,14 +593,27 @@ std::vector<HTTP_SERVER>& configFile (int argc , char **argv,std::vector< HTTP_S
     }
     // exit(0);
 
-    return data;
-    // for(std::vector<HTTP_SERVER>::iterator ptr =data.begin() ; ptr != data.end(); ptr++ )
-    //     std::cout << *ptr << std::endl;
 
+    std::vector<HTTP_SERVER>::iterator ptr = data.begin();
+    ValidData(*ptr);
+    ptr++;
+    while(ptr != data.end())
+    {
+        ValidData(*ptr);
+        for(std::vector<HTTP_SERVER>::iterator ptr1 = ptr + 1 ; ptr1 != data.end(); ptr1++)
+        {
+            if((!ptr->server_name.empty() && !ptr1->server_name.empty() &&  ptr->server_name == ptr1->server_name))
+                error_message("error ");
+        } 
+        ptr++;
+    }
+
+    // exit(0);
+    //     std::cout << *ptr << std::endl;
+    return data;
     // std::vector< HTTP_SERVER> ata  = data;
     // std::cout << "\n\n\n\n";
     // for(std::vector<HTTP_SERVER>::iterator ptr =ata.begin() ; ptr != ata.end(); ptr++ )
     //     std::cout << *ptr << std::endl;
-
     // return 0;
 }

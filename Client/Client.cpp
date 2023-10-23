@@ -15,6 +15,7 @@ Client::Client(/* args */)
     dataResponse = "";
     lengthFile = 0;
     error = 0;
+    cgi = "";
 }
 
 Client::~Client()

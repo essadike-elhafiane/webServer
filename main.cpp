@@ -6,7 +6,7 @@
 /*   By: eelhafia <eelhafia@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/29 21:28:36 by eelhafia          #+#    #+#             */
-/*   Updated: 2023/10/22 21:43:05 by eelhafia         ###   ########.fr       */
+/*   Updated: 2023/10/23 22:25:04 by eelhafia         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -118,10 +118,6 @@ int main(int ac , char **av)
                     fds[i].revents = 0;
                     continue;
                 }
-                // fds[i].fd = clientSocket;
-                
-                // close(clientSocket);
-                // fds[i].events = POLLOUT;
                 std::cout << clientSocket << "||" << mClients[clientSocket].getClientSocket() << std::endl;
                 if (!mClients[clientSocket].getClientSocket())
                 {
@@ -135,47 +131,41 @@ int main(int ac , char **av)
                     continue;
                 fds[i].events = POLLOUT;
                 fds[i].revents = 0;
+                std::cout << "fdfdfgdfg\n";
             }
             else if (fds[i].fd != 0 && (fds[i].revents & POLLOUT))
             {
-                std::cout << "\n1\n";
                 response resp;
                 std::string u;
                 Client &dataClient = mClients[fds[i].fd];
-                // if (dataClient.getUrl() == "/")
-                //     dataClient.setUrl("/html/file.html");
-                // if (dataClient.getUrl() == "/Users/eelhafia/Desktop/y.mp4")
-                    u = dataClient.getUrl();
-                // else
-                //     u = "/Users/eelhafia/Desktop/webServer" + dataClient.getUrl();
-                // std::cout << dataClient.getUrl() << std::endl;
-                std::string rOK = "HTTP/1.1 200 OK\r\nContent-Length: ";
-                // if (dataClient.get)
-                if (!resp.sendResponse(u, rOK, fds[i].fd, dataClient))
+                std::cout <<"|"<< dataClient.getCgi();
+                if (dataClient.getCgi() != "")
+                {
+                    resp.sendStringResponse(dataClient);
+                    close(dataClient.getClientSocket());
+                    dataClient.resetData();
+                    std::cout << "CGI\n"; 
+                    continue;
+                }
+                else if (!resp.sendResponse(dataClient))
                 {
                     dataClient.setTypeRequset("");
                     dataClient.setHeaderStatus(false);
                     dataClient.setUrl("");
                     dataClient.resetRestRequest();
-                    // dataClient.resetData();
-                    // dataClient.resetData();
-                    // if (!fds[i].fd)
-                    // {
-                    //     std::cout << "booo\n";
-                    //     continue;
-                    // }
-                    // if (datac)
+                   
                     fds[i].events = POLLIN;
                     fds[i].revents = 0;
                 }
                 
-                // fds[i].events = POLLIN;
             }
             
         }
-        // std::cout << "2\n";
     }
     for (size_t i = 0; i < 5; i++)
         close(servers[i].getServerSocket());
     return 0;
 }
+
+
+// i need to handle multi severs whit hostName and port because sever orignal must virual

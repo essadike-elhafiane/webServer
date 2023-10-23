@@ -45,7 +45,8 @@ int checkValidRequest(std::string &requests, size_t poss, Client& dataClient)
             if (line[line.size() - 1] != '\r')
                 return 1;   
             i++; 
-            std::cout << "1111\n";                                                                     
+            std::cout << "1111\n"; 
+            std::cout << line<< "\n";
         }
         else
         {
@@ -65,7 +66,7 @@ int checkValidRequest(std::string &requests, size_t poss, Client& dataClient)
         return 1;
     if (getHost(requests, posHost, dataClient))
         return 1;
-    std::cout << "|" << dataClient.HostName << "|" << dataClient.port << "|";
+    std::cout << "|" << dataClient.HostName << "|" << dataClient.port << "|" << dataClient.getTypeRequset() << "\n";
     return 0;
 }
 
@@ -84,7 +85,7 @@ void request::parse_request(Client& dataClient)
     if (checkValidRequest(dataClient.getRestRequest(), poss, dataClient))
     { 
         dataClient.error = 400;
-        exit(1) ;
+        return ;
     }
     std::stringstream ss(dataClient.getRestRequest().substr(0, poss));
     std::vector<std::string> tokens;
@@ -166,6 +167,10 @@ void request::check_Get_Request(Client &dataClient)
         {
             dataClient.setUrl(dataClient.configData.pages[0].index);
             std::cout << dataClient.getUrl() << std::endl;
+        }
+        else
+        {
+            dataClient.setUrl(dataClient.configData.pages[0].root + dataClient.getUrl());
         }
             // dataClient.setUrl("/html/file.html");
         // u = "/Users/eelhafia/Desktop/webServer" + dataClient.getUrl();
@@ -300,8 +305,8 @@ void    request::read_request(Client& dataClient)
             dataClient.setReadlen(bytesRead);
         if (!dataClient.getHeaderStatus() && dataClient.getRestRequest().find("\r\n\r\n") != std::string::npos)
             parse_request(dataClient);
-        if (dataClient.getContentLength() > dataClient.configData.client_max_body_size * 1000000)
-            dataClient.error = 413;
+        // if (dataClient.getContentLength() > dataClient.configData.client_max_body_size * 1000000)
+        //     dataClient.error = 413;
         if (dataClient.error)
             return ;
         // std::cout <<"|"<< dataClient.getReadlen() <<"|"<< std::endl;

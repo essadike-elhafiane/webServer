@@ -38,9 +38,20 @@ class Client
         // response variables
         std::streampos lenSend;
         std::string dataResponse;
+        std::string cgi;
     public:
         HTTP_SERVER configData;
         Client(/* args */);
+        void SetCgi(std::string  s)
+        {
+            for (size_t i = 0; i < s.size(); i++)
+                cgi.push_back(s[i]);
+            std::cout << "||||||" << cgi << "!!!!!!!!!\n";
+        }
+        std::string &getCgi()
+        {
+            return cgi;
+        }
         int error;
         std::streampos lengthFile; 
         std::string nameServer;
@@ -162,6 +173,7 @@ class Client
             dataResponse = "";
             lengthFile = 0;
             error = 0;
+            cgi = "";
         }
         ~Client();
 };

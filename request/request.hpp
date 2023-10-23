@@ -9,6 +9,7 @@
 #include <cstring>
 #include "../response/response.hpp"
 #include <cstdio>
+#include "../CGI/CGI.hpp"
 class response;
 class request
 {
@@ -33,6 +34,28 @@ class request
             // return ;
             if (dataClient.getTypeRequset() == "POST" && dataClient.getReadlen() < dataClient.getContentLength())
                 return ;
+            if(dataClient.getUrl().length() > 3)
+            {
+                if (dataClient.getUrl().find(".py", dataClient.getUrl().length() - 4) != dataClient.getUrl().npos) 
+                {
+                    // dataClient.cgi =  mainCGI(dataClient.getUrl(), dataClient.getClientSocket(),  dataClient);
+                    int s = dataClient.getClientSocket();
+                    dataClient.resetData();
+                    dataClient.setClientSocket(s);
+                    return ;
+                }
+                else if (dataClient.getUrl().find(".php", dataClient.getUrl().length() - 4) != dataClient.getUrl().npos)
+                {
+                    std::string res =  mainCGI(dataClient.getUrl(), dataClient.getClientSocket(), dataClient);
+                    std::cout<<";;;;;;" << res;
+                    dataClient.SetCgi(res);
+                    // int s = dataClient.getClientSocket();
+                    // dataClient.resetData();
+                    // dataClient.setClientSocket(s);
+                    std::cout << "php\n\n" << dataClient.getCgi() ;
+                    return ;
+                }
+            }
             // std::ofstream f("tttt.txt", std::ios::app);
             // f.write(dataClient.getRestRequest().c_str(), dataClient.getRestRequest().length());
             if (dataClient.getTypeRequset() == "POST" && dataClient.getReadlen() == dataClient.getContentLength())
