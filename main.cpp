@@ -6,7 +6,7 @@
 /*   By: eelhafia <eelhafia@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/29 21:28:36 by eelhafia          #+#    #+#             */
-/*   Updated: 2023/10/23 22:25:04 by eelhafia         ###   ########.fr       */
+/*   Updated: 2023/10/24 13:53:48 by eelhafia         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -142,11 +142,15 @@ int main(int ac , char **av)
                 if (dataClient.getCgi() != "")
                 {
                     resp.sendStringResponse(dataClient);
-                    close(dataClient.getClientSocket());
-                    dataClient.resetData();
-                    std::cout << "CGI\n"; 
+                    dataClient.setTypeRequset("");
+                    dataClient.setHeaderStatus(false);
+                    dataClient.setUrl("");
+                    dataClient.resetRestRequest();
+                   
+                    fds[i].events = POLLIN;
+                    fds[i].revents = 0;
                     continue;
-                }
+                } 
                 else if (!resp.sendResponse(dataClient))
                 {
                     dataClient.setTypeRequset("");

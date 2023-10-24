@@ -78,7 +78,5 @@ std::string mainCGI(std::string urlCgi, int clientSocket, Client &dataClient) {
       }
         
     std::string res = "HTTP/1.1 200 OK\r\nContent-Length: " + std::to_string(responsesstring.size() - responsesstring.find("\r\n\r\n") - 4) +"\r\n"+ responsesstring;
-    std::cout << res;
-    // dataClient.cgi.append(res);
     return res;
 }

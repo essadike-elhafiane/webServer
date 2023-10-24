@@ -45,20 +45,14 @@ class request
                 if (dataClient.getUrl().find(".py", dataClient.getUrl().length() - 4) != dataClient.getUrl().npos) 
                 {
                     // dataClient.cgi =  mainCGI(dataClient.getUrl(), dataClient.getClientSocket(),  dataClient);
-                    int s = dataClient.getClientSocket();
-                    dataClient.resetData();
-                    dataClient.setClientSocket(s);
+                    std::string res =  mainCGI(dataClient.getUrl(), dataClient.getClientSocket(), dataClient);
+                    dataClient.SetCgi(res);
                     return ;
                 }
                 else if (dataClient.getUrl().find(".php", dataClient.getUrl().length() - 4) != dataClient.getUrl().npos)
                 {
                     std::string res =  mainCGI(dataClient.getUrl(), dataClient.getClientSocket(), dataClient);
-                    std::cout<<";;;;;;" << res;
                     dataClient.SetCgi(res);
-                    // int s = dataClient.getClientSocket();
-                    // dataClient.resetData();
-                    // dataClient.setClientSocket(s);
-                    std::cout << "php\n\n" << dataClient.getCgi() ;
                     return ;
                 }
             }
