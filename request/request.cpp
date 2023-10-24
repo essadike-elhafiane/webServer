@@ -64,7 +64,8 @@ int checkValidRequest(std::string &requests, size_t poss, Client& dataClient)
     size_t posHost = requests.find("Host:");
     if (posHost == std::string::npos)
         return 1;
-    if (getHost(requests, posHost, dataClient))
+    getHost(requests, posHost, dataClient);
+    if (dataClient.HostName.empty())
         return 1;
     std::cout << "|" << dataClient.HostName << "|" << dataClient.port << "|" << dataClient.getTypeRequset() << "\n";
     return 0;
@@ -75,6 +76,7 @@ void request::parse_request(Client& dataClient)
     size_t poss = dataClient.getRestRequest().find("\r\n\r\n");
     if (poss == std::string::npos)
     {
+        std::cout << "not\n";
         dataClient.error = 400;
         return ;
     }
@@ -95,7 +97,7 @@ void request::parse_request(Client& dataClient)
         if (tokens.size() > 2)
             break;
     }
-    if (tokens[2].substr(0,tokens[2].find("\r\n")) != "HTTP/1.1")
+    if (tokens[2].substr(0,tokens[2].find("\r\n")) != "HTTP/1.1" || tokens[1].empty() || tokens[0] == "")
     {
         dataClient.error = 400;
         std::cout << "Error http1.1 not fond\n";
@@ -207,26 +209,27 @@ int findchar(const char *buffer, const char *dest, size_t size)
     return -1;
 }
 
-void request::download_file(Client &dataClient, ssize_t pos_start)
+int request::download_file(Client &dataClient, ssize_t pos_start)
 {
     std::size_t startPos = dataClient.getRestRequest().find("--" + dataClient.getBoundarytSocket(), pos_start);
     if (startPos == std::string::npos)
-        return ;
+        return (dataClient.error = 400, 1);
     if(dataClient.getFileName() == "")
     {
         size_t p = dataClient.getRestRequest().find("filename=", startPos); // bad request if not fond
         if (p == std::string::npos)
-            std::cout << "not fond \n" ;
+            return (dataClient.error = 400, 1);
         p += 9;
-        size_t po = dataClient.getRestRequest().find("\r\n", p); // bad request if not fond
+        size_t po = dataClient.getRestRequest().find("\r\n", p);
+        if (po == std::string::npos)
+            return (dataClient.error = 400, 1); // bad request if not fond
         std::string namefile = dataClient.getRestRequest().substr(p + 1, po - p - 2);
         namefile = "/goinfre/eelhafia/download/" + namefile;
-        std::cout << namefile << std::endl;
         dataClient.setFileName(namefile);
         std::ofstream file(namefile, std::ios::out | std::ios::binary);
         if (!file) {
             std::cerr << "Error opening file for writing" << namefile << std::endl;
-            return;
+            return (dataClient.error = 400, 1);
         }
     }
     if (dataClient.getFileName() != "")
@@ -254,6 +257,7 @@ void request::download_file(Client &dataClient, ssize_t pos_start)
             download_file(dataClient, endPos);
         }
     }
+    return 0;
     // /goinfre/eelhafia/download/
 }
 
@@ -290,6 +294,7 @@ void    request::read_request(Client& dataClient)
     int len_read = 3000;
     std::memset(buffer, 0, sizeof(buffer));
     std::string buf;
+    time_t time = clock();
     while (true) {
         ssize_t bytesRead = recv(dataClient.getClientSocket(), buffer, len_read, 0);
         if (bytesRead == 0) {
@@ -300,15 +305,19 @@ void    request::read_request(Client& dataClient)
         }
         if (bytesRead < 0)
             break;
+            std::cout << "bdfbdfd\n";
         dataClient.setRestRequest(buffer, bytesRead);
         if (dataClient.getHeaderStatus() == true)
             dataClient.setReadlen(bytesRead);
         if (!dataClient.getHeaderStatus() && dataClient.getRestRequest().find("\r\n\r\n") != std::string::npos)
             parse_request(dataClient);
+        else if (!dataClient.getHeaderStatus())
+        {
+            if (clock() - time >= 2000)
+                dataClient.error = 408;
+        }
         // if (dataClient.getContentLength() > dataClient.configData.client_max_body_size * 1000000)
         //     dataClient.error = 413;
-        if (dataClient.error)
-            return ;
         // std::cout <<"|"<< dataClient.getReadlen() <<"|"<< std::endl;
     
     
@@ -317,6 +326,8 @@ void    request::read_request(Client& dataClient)
  
 
         std::memset(buffer, 0, sizeof(buffer));
+        if (dataClient.error)
+            return ;
         // if (dataClient.getReadlen() && dataClient.getTypeRequset() == "POST" && dataClient.getReadlen() >= dataClient.getContentLength())
         // {
         //     // close(dataClient.getClientSocket());
@@ -329,7 +340,8 @@ void    request::read_request(Client& dataClient)
         // if (Header.find("\r\n\r\n") != std::string::npos && dataClient.getTypeRequset() == "GET")
         //     break;
     }
-    
+    if (!dataClient.getHeaderStatus())
+        dataClient.error = 408;
     // if (dataClient.getReadlen() && dataClient.getContentLength() && dataClient.getReadlen() >= dataClient.getContentLength())
     // {
         

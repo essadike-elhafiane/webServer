@@ -36,6 +36,7 @@ class response
 
         void headre(Client & dataClient , std::string &url , std::string & configResponse)
         {
+            std::cout << dataClient.error << std::endl;
             std::map<int , std::string>::const_iterator it = dataClient.configData.error_page.begin();
             if (dataClient.error == 0)
             {

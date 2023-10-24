@@ -10,6 +10,7 @@
 #include "../response/response.hpp"
 #include <cstdio>
 #include "../CGI/CGI.hpp"
+
 class response;
 class request
 {
@@ -22,7 +23,7 @@ class request
     public:
         request(/* args */);
         void delete_request(Client& dataClient);
-        void download_file(Client &dataClient, ssize_t pos_start);
+        int download_file(Client &dataClient, ssize_t pos_start);
         void read_request(Client& dataClient);
         void receiveRequest(Client& dataClient)
         {
@@ -32,6 +33,11 @@ class request
             // std::cout << dataClient.getReadlen() << " | " << dataClient.getRestRequest().length() << std::endl;
             std::cout << dataClient.getTypeRequset() << std::endl;
             // return ;
+            if (std::find(dataClient.configData.allow_methods.begin(), dataClient.configData.allow_methods.end(), dataClient.getTypeRequset()) == dataClient.configData.allow_methods.end())
+            {
+                dataClient.error = 403;
+                return ;
+            }
             if (dataClient.getTypeRequset() == "POST" && dataClient.getReadlen() < dataClient.getContentLength())
                 return ;
             if(dataClient.getUrl().length() > 3)
