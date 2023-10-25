@@ -149,6 +149,7 @@ void request::check_Get_Request(Client &dataClient)
         if (i == dataClient.configData.pages.size())
         {
             dataClient.error = 404;
+            std::cout << "{{-1}}\n";
             return ;
         }
         dataClient.setUrl(dataClient.configData.pages[i].root + dataClient.configData.pages[i].index);
@@ -167,6 +168,7 @@ void request::check_Get_Request(Client &dataClient)
                     break;
             if (i == dataClient.configData.pages.size())
             {
+                std::cout << "{{00}}\n";
                 dataClient.error = 404;
                 return ;
             }
@@ -177,10 +179,14 @@ void request::check_Get_Request(Client &dataClient)
         std::string nameLocation = dataClient.getUrl().substr(0, pos);
         size_t i;
         for (i = 0; i < dataClient.configData.pages.size(); i++)
+        {   
             if (dataClient.configData.pages[i].path == nameLocation)
                 break;
+            std::cout << dataClient.configData.pages[i].path;
+        }
        if (i == dataClient.configData.pages.size())
         {
+            std::cout << "{{1}}\n";
             dataClient.error = 404;
             return ;
         }
