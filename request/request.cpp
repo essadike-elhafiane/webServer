@@ -49,9 +49,7 @@ int checkValidRequest(std::string &requests, size_t poss, Client& dataClient)
             std::cout << line<< "\n";
         }
         else
-        {
-            std::cout << line<< "\n";                         
-
+        {                       
             if (line[line.size() - 1] != '\r')
                 return 1;
             size_t posSpace = line.find(" ");
@@ -142,49 +140,52 @@ void request::parse_request(Client& dataClient)
 
 void request::check_Get_Request(Client &dataClient)
 {
-    // std::string line;
-    // std::string u = "/Users/eelhafia/Desktop/webServer" + dataClient.getUrl();
-    // std::cout << "|" << u << "|" << std::endl;
-    // if (access(u.c_str(), R_OK) && dataClient.getUrl() != "/html/html/app-coder.html")
-    // {
-    //     // error = 404;
-    //     std::string rOK = "HTTP/1.1 404 Not Found\r\nContent-Length: ";
-    //     rsp.sendResponse("/Users/eelhafia/Desktop/webServer/html/404.html", rOK, dataClient.getClientSocket(), dataClient);
-    //     dataClient.setHeaderStatus(false);
-    //     dataClient.resetRestRequest();
-    //     return;
-    // }
-    // if (len > 2048 && typeRequest != "POST")
-    // {
-    //     error = 414;
-    //     std::string rOK = "HTTP/1.1 414 Not Found\r\nCache-Control: no-cache\r\nContent-Length: ";
-    //     rsp.sendResponse("/Users/eelhafia/Desktop/webServer/html/414.html", rOK, client);
-    //     close(client);
-    //     return;
-    // }
-    // else
-    std::cout << "||||||\n"; 
-    // {
-        if (dataClient.getUrl() == "/")
+    if (dataClient.getUrl() == "/")
+    {
+        size_t i;
+        for (i = 0; i < dataClient.configData.pages.size(); i++)
+            if (dataClient.configData.pages[i].path == "/")
+                break;
+        if (i == dataClient.configData.pages.size())
         {
-            dataClient.setUrl(dataClient.configData.pages[0].index);
-            std::cout << dataClient.getUrl() << std::endl;
+            dataClient.error = 404;
+            return ;
         }
-        else
+        dataClient.setUrl(dataClient.configData.pages[i].root + dataClient.configData.pages[i].index);
+        std::cout << dataClient.getUrl() << std::endl;
+        return ;
+    }
+    else
+    {
+        
+        size_t pos = dataClient.getUrl().find("/", 1);
+        if (pos == std::string::npos)
         {
-            dataClient.setUrl(dataClient.configData.pages[0].root + dataClient.getUrl());
+            size_t i;
+            for (i = 0; i < dataClient.configData.pages.size(); i++)
+                if (dataClient.configData.pages[i].path == "/")
+                    break;
+            if (i == dataClient.configData.pages.size())
+            {
+                dataClient.error = 404;
+                return ;
+            }
+            dataClient.setUrl(dataClient.configData.pages[i].root + dataClient.getUrl());
+            std::cout << "!!!" << dataClient.getUrl() << "!!!" << std::endl;
+            return ;
         }
-            // dataClient.setUrl("/html/file.html");
-        // u = "/Users/eelhafia/Desktop/webServer" + dataClient.getUrl();
-        // std::cout << dataClient.getUrl() << std::endl;
-    //     std::string rOK = "HTTP/1.1 200 OK\r\nContent-Length: ";
-    //     rsp.sendResponse(dataClient.getUrl(), rOK, dataClient.getClientSocket(), dataClient);
-    //     dataClient.setTypeRequset("");
-    //     dataClient.setHeaderStatus(false);
-    //     dataClient.setUrl("");
-    //     dataClient.resetRestRequest();
-    //     return;
-    // }
+        std::string nameLocation = dataClient.getUrl().substr(0, pos);
+        size_t i;
+        for (i = 0; i < dataClient.configData.pages.size(); i++)
+            if (dataClient.configData.pages[i].path == nameLocation)
+                break;
+       if (i == dataClient.configData.pages.size())
+        {
+            dataClient.error = 404;
+            return ;
+        }
+        dataClient.setUrl(dataClient.configData.pages[i].root + dataClient.getUrl());
+    }
 }
 
 
@@ -305,7 +306,6 @@ void    request::read_request(Client& dataClient)
         }
         if (bytesRead < 0)
             break;
-            std::cout << "bdfbdfd\n";
         dataClient.setRestRequest(buffer, bytesRead);
         if (dataClient.getHeaderStatus() == true)
             dataClient.setReadlen(bytesRead);
@@ -316,8 +316,8 @@ void    request::read_request(Client& dataClient)
             if (clock() - time >= 2000)
                 dataClient.error = 408;
         }
-        // if (dataClient.getContentLength() > dataClient.configData.client_max_body_size * 1000000)
-        //     dataClient.error = 413;
+        if (dataClient.getContentLength() > dataClient.configData.client_max_body_size)
+            dataClient.error = 413;
         // std::cout <<"|"<< dataClient.getReadlen() <<"|"<< std::endl;
     
     

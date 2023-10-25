@@ -38,45 +38,53 @@ class response
         {
             std::cout << dataClient.error << std::endl;
             std::map<int , std::string>::const_iterator it = dataClient.configData.error_page.begin();
+            while(it != dataClient.configData.error_page.end())
+            {
+                if(it->first == dataClient.error)
+                    break;
+                it++;
+            }
+
             if (dataClient.error == 0)
             {
-                configResponse = "HTTP/1.1 200 OK\r\nContent-Length: ";
+                configResponse = "HTTP/1.1 200 OK\r\nConnection: close\r\nContent-Length: ";
                 return;
             }
             else if (dataClient.error == 400 && it != dataClient.configData.error_page.end())
             {
                 url = dataClient.configData.error_page[400];
-                configResponse = "HTTP/1.1 400 Bad Request\r\nContent-Length: ";
+                configResponse = "HTTP/1.1 400 Bad Request\r\nConnection: close\r\nContent-Length: ";
                 return;
             }
             else if (dataClient.error == 401  && it != dataClient.configData.error_page.end())
             {
                 url = dataClient.configData.error_page[401];
-                configResponse = "HTTP/1.1 401 Unauthorized\r\nContent-Length: ";
+                configResponse = "HTTP/1.1 401 Unauthorized\r\nConnection: close\r\nContent-Length: ";
                 return;
             }
             else if (dataClient.error == 403 && it != dataClient.configData.error_page.end())
             {
+                std::cout << dataClient.configData.error_page[403]<< "fhd\n" ;
                 url = dataClient.configData.error_page[403];
-                configResponse = "HTTP/1.1 403 Forbidden\r\nContent-Length: ";
+                configResponse = "HTTP/1.1 403 Forbidden\r\nConnection: close\r\nContent-Length: ";
                 return;
             }
             else if (dataClient.error == 404 && it != dataClient.configData.error_page.end())
             {
                 url = dataClient.configData.error_page[404];
-                configResponse = "HTTP/1.1 404 Not Found\r\nContent-Length: ";
+                configResponse = "HTTP/1.1 404 Not Found\r\nConnection: close\r\nContent-Length: ";
                 return;
             }
             else if (dataClient.error == 413 && it != dataClient.configData.error_page.end())
             {
                 url = dataClient.configData.error_page[413];
-                configResponse = "HTTP/1.1 502 Bad Gateway\r\nContent-Length: ";
+                configResponse = "HTTP/1.1 502 Bad Gateway\r\nConnection: close\r\nContent-Length: ";
                 return;
             }
             else
             {
                 url = dataClient.configData.error_page.begin()->second;
-                configResponse = "HTTP/1.1 500 Internal Server Error\r\nContent-Length: ";
+                configResponse = "HTTP/1.1 500 Internal Server Error\r\nConnection: close\r\nContent-Length: ";
             }
             std::cout << url << std::endl;
         }
@@ -88,7 +96,7 @@ class response
             std::string response;
             // std::cout << "|" << dataClient.getUrl() << std::endl;
             url = dataClient.getUrl();
-            std::cout << "|" << url  << "|"<< std::endl;
+            std::cout << "---|" <<  url << "|" << dataClient.getClientSocket() << "|---"<< std::endl;
             if (url == "/Users/eelhafia/Desktop/webServer/goinfre/m.mp4")
                 url = "/goinfre/m.mp4";
             // if (url == "/Users/mserrouk/Desktop/webServer/Users/mserrouk/goinfre/send/u.mp4")
@@ -96,6 +104,7 @@ class response
             if(!dataClient.getLenSend())
             {
                 headre(dataClient , url , configResponse);
+                std::cout << "---|" <<  url << "|" << dataClient.getClientSocket() << "|" << dataClient.error << "|---"<< std::endl;
                 std::ifstream r(url, std::ios::binary | std::ios::ate);
                 if (!r.is_open())
                 {
@@ -138,7 +147,6 @@ class response
                 return 1;
             input.close();
             dataClient.clearLenSend();
-            dataClient.error = 0;
             // dataClient.resetdataResponse();
             std::cout << "|" << url  << "|"<< std::endl;
             std::cout << "send success" << std::endl;

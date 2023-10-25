@@ -6,7 +6,7 @@
 /*   By: eelhafia <eelhafia@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/29 21:28:36 by eelhafia          #+#    #+#             */
-/*   Updated: 2023/10/24 13:53:48 by eelhafia         ###   ########.fr       */
+/*   Updated: 2023/10/25 23:08:29 by eelhafia         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -116,12 +116,14 @@ int main(int ac , char **av)
                 {
                     fds[i].events = POLLOUT;
                     fds[i].revents = 0;
-                    continue;
+                    // continue;
                 }
                 std::cout << clientSocket << "||" << mClients[clientSocket].getClientSocket() << std::endl;
                 if (!mClients[clientSocket].getClientSocket())
                 {
                     mClients.erase(fds[i].fd);
+                    std::cout << "closeedd" << fds[i].fd << std::endl;
+                    // exit(1);
                     fds[i].fd = 0;
                     fds[i].events = 0;
                     fds[i].revents = 0;
@@ -150,7 +152,7 @@ int main(int ac , char **av)
                     fds[i].events = POLLIN;
                     fds[i].revents = 0;
                     continue;
-                } 
+                }
                 else if (!resp.sendResponse(dataClient))
                 {
                     dataClient.setTypeRequset("");
@@ -160,6 +162,17 @@ int main(int ac , char **av)
                    
                     fds[i].events = POLLIN;
                     fds[i].revents = 0;
+                }
+                if (dataClient.error)
+                {
+                    mClients.erase(fds[i].fd);
+                    std::cout << "closeedd" << fds[i].fd << std::endl;
+                    // exit(1);
+                    close(fds[i].fd);
+                    fds[i].fd = 0;
+                    fds[i].events = 0;
+                    fds[i].revents = 0;
+                    continue;
                 }
                 
             }

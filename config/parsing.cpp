@@ -237,7 +237,7 @@ void size_pars(std::vector<std::string>::iterator &ptr, HTTP_SERVER &m, std::vec
         {
             while((*ptr)[j])
             {
-                if (((*ptr)[j] >= '0' && (*ptr)[j] <= '9') || (j == (int)(*ptr).length() - 1 && (*ptr)[j] == 'M'))
+                if (((*ptr)[j] >= '0' && (*ptr)[j] <= '9'))
                     j++;
                 else
                     error_message("error client body size");
