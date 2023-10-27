@@ -21,7 +21,7 @@ void bracket_part(std::vector<std::string>::iterator &ptr , Mycfg &obj)
         if(c > o || c  + 3 <= o || (i == 0 && std::string::npos == (*ptr).find("{")))
         {
             std::cout << "error in bracket" << std::endl;
-            exit(0);
+            //exit(0);
         }
         if (c == o )
         {
@@ -33,7 +33,7 @@ void bracket_part(std::vector<std::string>::iterator &ptr , Mycfg &obj)
     if (c == 0 )
     {
         std::cout << "error no server bracket" << std::endl;
-            exit(0);
+            //exit(0);
     }
 }
 
@@ -52,7 +52,7 @@ void listen_port(std::vector<std::string>::iterator &ptr , HTTP_SERVER &m , std:
             else
             {
                 std::cout << "error1 listen" << "\n";
-                exit(0);
+                //exit(0);
             }
         }
         if (i == 1)
@@ -63,7 +63,7 @@ void listen_port(std::vector<std::string>::iterator &ptr , HTTP_SERVER &m , std:
             if(m.port[0] > 65536)
             {
                  std::cout << "error2 listen" << "\n";
-                exit(0);
+                //exit(0);
             }
             return;
         }
@@ -71,7 +71,7 @@ void listen_port(std::vector<std::string>::iterator &ptr , HTTP_SERVER &m , std:
         i++;
     }
     std::cout << "error3 listen" << "\n";
-    exit(0); 
+    //exit(0); 
 }
 
 void is_alpa_digi(std::string str)
@@ -133,7 +133,7 @@ void server_name_parsing(std::vector<std::string>::iterator &ptr , HTTP_SERVER &
         i++;
     }
     std::cout << "error2 server_name" << "\n";
-    exit(0); 
+    //exit(0); 
 }
 
 void root_pars(std::vector<std::string>::iterator &ptr, HTTP_SERVER &m, std::vector<std::string>::iterator l)
@@ -158,7 +158,7 @@ void root_pars(std::vector<std::string>::iterator &ptr, HTTP_SERVER &m, std::vec
         i++;
     }
     std::cout << "error2 root" <<  "\n";
-    exit(0);
+    //exit(0);
 }
 
 
@@ -200,7 +200,7 @@ void index_pars(std::vector<std::string>::iterator &ptr, std::map<std::string,st
         i++;
     }
     std::cout << "error2 index" <<  "\n";
-    exit(0);
+    //exit(0);
 }
 
 void parc_cgi(std::vector<std::string>::iterator &ptr, std::map<std::string,std::string> &m, std::vector<std::string>::iterator l)
@@ -222,7 +222,7 @@ void parc_cgi(std::vector<std::string>::iterator &ptr, std::map<std::string,std:
         i++;
     }
     std::cout << "error2 cgi" <<  "\n";
-    exit(0);
+    //exit(0);
 }
 
 
@@ -253,7 +253,7 @@ void size_pars(std::vector<std::string>::iterator &ptr, HTTP_SERVER &m, std::vec
         i++;
     }
     std::cout << "error2 index" <<  "\n";
-    exit(0);
+    //exit(0);
 }
 
 int is_digit(std::string str)
@@ -321,7 +321,7 @@ void error_page(std::vector<std::string>::iterator &ptr, HTTP_SERVER &m, std::ve
         i++;
     }
     std::cout << "error2 error page" <<  "\n";
-    exit(0);
+    //exit(0);
 }
 
 void pars_methods(std::vector<std::string>::iterator &ptr, HTTP_SERVER &m, std::vector<std::string>::iterator l)
@@ -369,7 +369,7 @@ void  pars_auto(std::vector<std::string>::iterator &ptr, int &m, std::vector<std
         i++;
     }
     std::cout << "error2 outo" <<  "\n";
-    exit(0);
+    //exit(0);
 }
 
 void location_pars(std::vector<std::string>::iterator &ptr, HTTP_SERVER &m, std::vector<std::string>::iterator l)
@@ -425,7 +425,7 @@ void location_pars(std::vector<std::string>::iterator &ptr, HTTP_SERVER &m, std:
         i++;
     }
     // std::cout << "error2 location" <<  "\n";
-    // exit(0);
+    // //exit(0);
 }
 
 
@@ -587,11 +587,11 @@ std::vector<HTTP_SERVER>& configFile (int argc , char **argv,std::vector< HTTP_S
         {
             // std::cout << (*ptr) << "|" << std::endl;
             std::cout << "error in server prototype";
-            exit(0);
+            //exit(0);
         }
         // s++;
     }
-    // exit(0);
+    // //exit(0);
 
 
     std::vector<HTTP_SERVER>::iterator ptr = data.begin();
@@ -608,7 +608,7 @@ std::vector<HTTP_SERVER>& configFile (int argc , char **argv,std::vector< HTTP_S
         ptr++;
     }
 
-    // exit(0);
+    // //exit(0);
     //     std::cout << *ptr << std::endl;
     return data;
     // std::vector< HTTP_SERVER> ata  = data;

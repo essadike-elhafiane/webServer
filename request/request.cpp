@@ -49,7 +49,8 @@ int checkValidRequest(std::string &requests, size_t poss, Client& dataClient)
             std::cout << line<< "\n";
         }
         else
-        {                       
+        {            
+            std::cout << line<< "\n";
             if (line[line.size() - 1] != '\r')
                 return 1;
             size_t posSpace = line.find(" ");
@@ -132,7 +133,7 @@ void request::parse_request(Client& dataClient)
         return ;
     }
     dataClient.setHeaderStatus(true);
-    // exit(1);
+    // //exit(1);
     // std::string kk = k.substr(0, k.size() -2 );
     // }
     // std::cout << "|" << kk << "|" << std::endl;

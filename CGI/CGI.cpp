@@ -62,7 +62,7 @@ CGISettler::CGISettler(const std::string& CGI_path, const std::string& CGI_file,
             } else {
                 std::cout << "Unsupported scriptType: "<< std::endl;
                 this->error_CGI();
-                exit(1);// not use exit just return
+                //exit(1);// not use exit just return
             }
 
             char **env = new char *[this->envp.size() + 1];
@@ -78,12 +78,12 @@ CGISettler::CGISettler(const std::string& CGI_path, const std::string& CGI_file,
             if (execve(bin, args, env) == -1) {
                 std::cerr << "Failed to execute the CGI script: " << strerror(errno) << std::endl;
                 this->error_CGI();
-                exit(1);
+                //exit(1);
             }
            
             std::cerr << "Failed to execute the CGI script: " << strerror(errno) << std::endl;
             this->error_CGI();
-            exit(1);
+            //exit(1);
         }
 
         if (close(this->R_pipes[1]) == -1 || close(this->W_pipes[0]) == -1)
@@ -171,7 +171,7 @@ int CGISettler::getWriteEnd() const {
 
 void CGISettler::error_CGI() {
     this->close_pipes();
-    exit(1);
+    //exit(1);
 }
 
 void CGISettler::close_pipes() {

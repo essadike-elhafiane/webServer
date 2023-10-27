@@ -25,9 +25,9 @@ int main ()
 //     std::string tmp = "server";
 //      std::string tmp1 = "server1";
 //     // if (tmp == tmp1)
-//     //     exit(0);
+//     //     //exit(0);
 //     std::cout << tmp.length() ;
-//     exit(0);
+//     //exit(0);
 //     token =  std::strtok(str ," ");
 //     while(token != nullptr)
 //     {

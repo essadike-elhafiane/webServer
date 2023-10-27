@@ -15,9 +15,9 @@ document.getElementById("compte").addEventListener("click",()=>{
   class slider{
   constructor(){
       this.images = [];
-      this.images[0] = "/images/S.jpeg";
-      this.images[1] = "/images/facebook.jpeg";
-      this.images[2] = "/images/A.webp";
+      this.images[0] = "/images/i.jpeg";
+      this.images[1] = "/images/S.jpeg";
+      this.images[2] = "/images/facebook.jpeg";
       this.contor=0;
 
       this.playss();

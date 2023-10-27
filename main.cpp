@@ -6,7 +6,7 @@
 /*   By: eelhafia <eelhafia@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/29 21:28:36 by eelhafia          #+#    #+#             */
-/*   Updated: 2023/10/25 23:08:29 by eelhafia         ###   ########.fr       */
+/*   Updated: 2023/10/27 16:30:08 by eelhafia         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,10 +19,10 @@
 #include <map>
 #include "config/parsing.hpp"
 
-void sigintHandler(int signal) {
-    std::cout << "Received SIGINT signal. Cleaning up and exiting..." << std::endl;
-    exit(signal);
-}
+// void sigintHandler(int signal) {
+//     std::cout << "Received SIGINT signal. Cleaning up and exiting..." << std::endl;
+//     //exit(signal);
+// }
 
 #define MAX_CLIENTS 1000
 
@@ -32,7 +32,7 @@ void sigintHandler(int signal) {
 // }
 int main(int ac , char **av)
 {
-    // atexit(v);
+    // at//exit(v);
     std::vector<HTTP_SERVER> configData;
     configFile(ac, av ,configData);
     std::vector<server> servers;
@@ -58,7 +58,7 @@ int main(int ac , char **av)
     std::cout<< "number servers: " << numberServer << std::endl;
     while (true) 
     {
-        int activity = poll(fds, MAX_CLIENTS + 1, 1000);
+        int activity = poll(fds, MAX_CLIENTS + 1, -1);
         if (activity < 0) {
             perror("Poll error");
             exit(EXIT_FAILURE);
@@ -111,6 +111,7 @@ int main(int ac , char **av)
             if (fds[i].fd != 0 && (fds[i].revents & POLLIN)){
                 clientSocket = fds[i].fd;
                 request request;
+                std::cout << "read0\n";
                 request.receiveRequest(mClients[clientSocket]);
                 if (mClients[clientSocket].error)
                 {
@@ -123,7 +124,7 @@ int main(int ac , char **av)
                 {
                     mClients.erase(fds[i].fd);
                     std::cout << "closeedd" << fds[i].fd << std::endl;
-                    // exit(1);
+                    // //exit(1);
                     fds[i].fd = 0;
                     fds[i].events = 0;
                     fds[i].revents = 0;
@@ -131,9 +132,9 @@ int main(int ac , char **av)
                 }
                 if (mClients[clientSocket].getTypeRequset() == "POST" && mClients[clientSocket].getReadlen() < mClients[clientSocket].getContentLength())
                     continue;
-                fds[i].events = POLLOUT;
+                fds[i].events = POLLOUT | POLLIN;
                 fds[i].revents = 0;
-                std::cout << "fdfdfgdfg\n";
+                std::cout << "read1\n";
             }
             else if (fds[i].fd != 0 && (fds[i].revents & POLLOUT))
             {
@@ -163,20 +164,35 @@ int main(int ac , char **av)
                     fds[i].events = POLLIN;
                     fds[i].revents = 0;
                 }
+                else
+                {
+                    fds[i].events = POLLOUT | POLLIN;
+                    fds[i].revents = 0;
+                }
                 if (dataClient.error)
                 {
                     mClients.erase(fds[i].fd);
                     std::cout << "closeedd" << fds[i].fd << std::endl;
-                    // exit(1);
+                    // //exit(1);
                     close(fds[i].fd);
                     fds[i].fd = 0;
                     fds[i].events = 0;
                     fds[i].revents = 0;
                     continue;
                 }
-                
+                std::cout << "send\n";
             }
             
+        }
+        if (fds[i].fd != 0 && (fds[i].revents & (POLLERR | POLLHUP)))
+        {
+            mClients.erase(fds[i].fd);
+            std::cout << "close with error" << fds[i].fd << std::endl;
+            // //exit(1);
+            close(fds[i].fd);
+            fds[i].fd = 0;
+            fds[i].events = 0;
+            fds[i].revents = 0;
         }
     }
     for (size_t i = 0; i < 5; i++)
@@ -186,3 +202,4 @@ int main(int ac , char **av)
 
 
 // i need to handle multi severs whit hostName and port because sever orignal must virual
+//./webserv new.con segfault 

@@ -88,6 +88,7 @@ class response
             }
             std::cout << url << std::endl;
         }
+
         int sendResponse(Client & dataClient)
         {
             std::string configResponse;
@@ -97,8 +98,7 @@ class response
             // std::cout << "|" << dataClient.getUrl() << std::endl;
             url = dataClient.getUrl();
             std::cout << "---|" <<  url << "|" << dataClient.getClientSocket() << "|---"<< std::endl;
-            if (url == "/Users/eelhafia/Desktop/webServer/goinfre/m.mp4")
-                url = "/goinfre/m.mp4";
+            
             // if (url == "/Users/mserrouk/Desktop/webServer/Users/mserrouk/goinfre/send/u.mp4")
             //     url = "/Users/mserrouk/goinfre/send/u.mp4";
             if(!dataClient.getLenSend())
@@ -114,18 +114,25 @@ class response
                 }
                 configResponse = configResponse + std::to_string(r.tellg()) + "\r\n\r\n";
                 dataClient.lengthFile = static_cast<size_t>(r.tellg());
-                send(dataClient.getClientSocket(), configResponse.c_str() , configResponse.length() , 0);
+                size_t len = send(dataClient.getClientSocket(), configResponse.c_str() , configResponse.length() , 0);
+                if (len < 0)
+                {
+                    std::cerr << "Failed to send response." << std::endl;
+                    return 0;
+                }
                 r.close();
-            }      
+            }   
+            std::cout << dataClient.getLenSend() <<  "mm\n";   
             std::ifstream input(url, std::ios::binary);
-            char buffer[30001];
+            char buffer[1000001];
             if(!input.is_open())
             {
                 std::cout << "error on file" << url << std::endl;
+                return 0;
             }
             input.seekg(dataClient.getLenSend());
-            size_t lenRead = 30000;
-            if (dataClient.lengthFile - dataClient.getLenSend() < 30000)
+            size_t lenRead = 1000000;
+            if (dataClient.lengthFile - dataClient.getLenSend() < 1000000)
                 lenRead = dataClient.lengthFile - dataClient.getLenSend();
             input.read(buffer, lenRead);
             if ((input.tellg() <= 0))
@@ -135,17 +142,21 @@ class response
                 dataClient.clearLenSend();
                 return 0;
             }
-            std::cout << "|"<<static_cast<ssize_t>(input.tellg()) - dataClient.getLenSend() << "h\n";
+            std::cout << dataClient.getClientSocket() << "|"<<static_cast<ssize_t>(input.tellg()) - dataClient.getLenSend() << "h\n";
+            std::cout << "ttt\n";
             size_t len = send(dataClient.getClientSocket(), buffer , input.tellg() - dataClient.getLenSend(), 0);
+            std::cout << "tttp\n";
+
             if (len < 0)
             {
                 std::cerr << "Failed to send response." << std::endl;
                 return 1;
             }
+            std::cout << "ss\n";
             dataClient.setLenSend(len);
+            input.close();
             if (dataClient.getLenSend() < dataClient.lengthFile)
                 return 1;
-            input.close();
             dataClient.clearLenSend();
             // dataClient.resetdataResponse();
             std::cout << "|" << url  << "|"<< std::endl;
