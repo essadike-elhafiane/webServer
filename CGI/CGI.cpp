@@ -49,13 +49,13 @@ CGISettler::CGISettler(const std::string& CGI_path, const std::string& CGI_file,
             char* args[3];
             if (scriptType == "php") {
         
-                bin = "/Users/eelhafia/Desktop/webServer/CGI/php-cgi"; 
+                bin = "/Users/mserrouk/Desktop/webServer/CGI/php-cgi"; 
                 args[0] = (char*)bin;
                 args[1] = (char*)this->file.c_str();
                 args[2] = nullptr;
             } else if (scriptType == "python") {
 
-                bin = "/Users/eelhafia/Desktop/webServer/CGI/py-cgi";
+                bin = "/Users/mserrouk/Desktop/webServer/CGI/py-cgi";
                 args[0] = (char*)bin;
                 args[1] = (char*)this->file.c_str();
                 args[2] = nullptr;

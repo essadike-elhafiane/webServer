@@ -17,10 +17,10 @@ std::string mainCGI(std::string urlCgi, int clientSocket, Client &dataClient) {
     // std::cout<< dataClient.getTypeRequset()<<std::endl;
 
     //std::string path = "/Users/edraidry/Desktop/webServer/CGIfix/test.py";
-    std::string path ="/Users/eelhafia/Desktop/webServer/CGI/hello_script.php";
-    //std::string file = "/Users/eelhafia/Desktop/webServer/CGIfix/test.py";
+    std::string path ="/Users/mserrouk/Desktop/webServer/CGI/hello_script.php";
+    //std::string file = "/Users/mserrouk/Desktop/webServer/CGIfix/test.py";
     // std:: cout<<file<<std::endl;
-    std::string file = "/Users/eelhafia/Desktop/webServer/CGI/hello_script.php";
+    std::string file = "/Users/mserrouk/Desktop/webServer/CGI/hello_script.php";
     std::string responsesstring;
      try {
 
