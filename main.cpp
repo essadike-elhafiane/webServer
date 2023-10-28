@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.cpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mserrouk <mserrouk@student.42.fr>          +#+  +:+       +#+        */
+/*   By: eelhafia <eelhafia@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/09/29 21:28:36 by mserrouk          #+#    #+#             */
-/*   Updated: 2023/10/27 19:28:43 by mserrouk         ###   ########.fr       */
+/*   Created: 2023/09/29 21:28:36 by eelhafia          #+#    #+#             */
+/*   Updated: 2023/10/27 23:44:09 by eelhafia         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -142,7 +142,8 @@ int main(int ac , char **av)
                 std::string u;
                 Client &dataClient = mClients[fds[i].fd];
                 std::cout <<"|"<< dataClient.getCgi();
-                if (dataClient.getCgi() != "")
+                
+                if (dataClient.getCgi() != "" && (dataClient.getUrl().find(".php") != std::string::npos || dataClient.getUrl().find(".py") != std::string::npos))
                 {
                     resp.sendStringResponse(dataClient);
                     dataClient.setTypeRequset("");
@@ -150,7 +151,7 @@ int main(int ac , char **av)
                     dataClient.setUrl("");
                     dataClient.resetRestRequest();
                    
-                    fds[i].events = POLLIN;
+                    fds[i].events = POLLIN | POLLIN;
                     fds[i].revents = 0;
                     continue;
                 }
@@ -173,7 +174,6 @@ int main(int ac , char **av)
                 {
                     mClients.erase(fds[i].fd);
                     std::cout << "closeedd" << fds[i].fd << std::endl;
-                    // //exit(1);
                     close(fds[i].fd);
                     fds[i].fd = 0;
                     fds[i].events = 0;
@@ -202,4 +202,3 @@ int main(int ac , char **av)
 
 
 // i need to handle multi severs whit hostName and port because sever orignal must virual
-//./webserv new.con segfault 

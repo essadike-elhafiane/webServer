@@ -5,7 +5,7 @@
 			"path": "../../twbeserve/CGIfix"
 		},
 		{
-			"name": "webServer",
+			"name": "fixweb",
 			"path": ".."
 		}
 	],

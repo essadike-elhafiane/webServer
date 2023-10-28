@@ -1,5 +1,5 @@
 document.getElementById("compte").addEventListener("click",()=>{
-    location.replace("html/compte.html");
+    location.replace("./compte.html");
     //document.getElementById("compte").href = "compte.html"
   });
   document.getElementById("button").addEventListener("click",()=>{
@@ -7,7 +7,7 @@ document.getElementById("compte").addEventListener("click",()=>{
      var email = document.getElementById("email").value;
      var passwordd = document.getElementById("password").value;
      if(email==localStorage.getItem("name") && passwordd == localStorage.getItem("password")){
-         location.replace("html/app-coder.html");            
+         location.replace("./app-coder.html");            
      }else{
          alert("votre mote passe ou email est incorrect !")
      }
@@ -15,9 +15,9 @@ document.getElementById("compte").addEventListener("click",()=>{
   class slider{
   constructor(){
       this.images = [];
-      this.images[0] = "/images/i.jpeg";
-      this.images[1] = "/images/S.jpeg";
-      this.images[2] = "/images/facebook.jpeg";
+      this.images[0] = "../images/i.jpeg";
+      this.images[1] = "../images/S.jpeg";
+      this.images[2] = "../images/facebook.jpeg";
       this.contor=0;
 
       this.playss();

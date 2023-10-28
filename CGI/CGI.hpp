@@ -22,14 +22,14 @@ struct HttpRequest {
 
 class CGISettler {
 private:
-    HttpRequest& request;
+    // HttpRequest& request;
      //Clientt& Client;
 
     std::vector<std::pair<std::string, std::string> > env;
     void addEnv(const std::string& key, const std::string& value) {
-        env.push_back(std::make_pair(key, value));
+        envp[key] =  value;
     }
-
+    std::string allrequest;
     std::string path;  // : These members could represent the path to the CGI script and the name of the CGI file
     std::string file;
     std::string output;
@@ -40,23 +40,26 @@ private:
     int W_pipes[2];
 
 public:
+
     Client &dataClient;
-    CGISettler(const std::string& path, const std::string& file, const std::string& scriptType, HttpRequest& request, Client &dataClient);
+    std::string body;
+    CGISettler(const std::string& path, const std::string& file, const std::string& scriptType,  Client &dataClient);
     
     int getReadEnd() const;
     int getWriteEnd() const;
     // void processResponse();
     char* const*getEnv() const ;
 
-   
+
     void executionCGI();
     void CgiEnv(Client &dataClient);
     bool validpath() const;
-    char** createEnvArray();
+    // char** createEnvArray();
     void error_CGI();
     void close_pipes();
+    // std::string stringQuery(std::string &restQuery);
     ~CGISettler();
-   
+
 };
 //int mainCGI(std::string urlCgi, int clientSocket, client dataClient);
 
