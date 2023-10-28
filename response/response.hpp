@@ -97,6 +97,23 @@ class response
             std::string response;
 
             url = dataClient.getUrl();
+            std::vector<LOCATION>::iterator ptr = dataClient.configData.pages.begin();
+            while(ptr != dataClient.configData.pages.end())
+            {
+                // std::cout << "---|" <<  ptr->root + ptr->path << "|" << "222" << std::endl;
+                if(!ptr->redirection.empty() && !ptr->root.empty()  &&url == ptr->root + ptr->path)
+                {
+                    configResponse = "HTTP/1.1 302 Found\r\n";
+                    std::string sit = ptr->redirection;
+                    configResponse += "Location: " + sit + "\r\n";
+                    dataClient.clearLenSend();
+                    send(dataClient.getClientSocket(), configResponse.c_str(), configResponse.length(), 0);
+                    dataClient.error = 1000;
+                    return 0;
+                }
+                ptr++;
+            }
+
             if(!dataClient.getLenSend())
             {
                 headre(dataClient , url , configResponse);
@@ -107,6 +124,7 @@ class response
                     std::cout<< url << std::endl;
                     std::cerr << "Error open file1"  << std::endl;
                     dataClient.error = 1000;
+                    sendResponse(dataClient);
                     return 0;
                 }
                 configResponse = configResponse + std::to_string(r.tellg()) + "\r\n\r\n";

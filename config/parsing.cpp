@@ -582,7 +582,6 @@ void ValidData(HTTP_SERVER data)
         error_message("error not enough data");
 }
 
-
 void valid_location(HTTP_SERVER data)
 {
     for(std::vector<LOCATION>::iterator ptr = data.pages.begin() ; ptr != data.pages.end() ; ptr++)
@@ -605,7 +604,6 @@ std::vector<HTTP_SERVER>& configFile (int argc , char **argv,std::vector< HTTP_S
     int s = 0;
 
     std::string name(file);
-    //std::cout<< name.find(".conf") << "|" << name.length()  << name.length() - 5 << std::endl;
     if(name.length() < 6   || name.find(".conf") != name.length() - 5 )
         error_message("error in file extention");
     //std::cout<< name.find(".conf") << "|" << name.length() <<std::endl;
