@@ -30,8 +30,8 @@ class request
             read_request(dataClient);
             if (dataClient.error)
                 return ;
-            // std::cout << dataClient.getReadlen() << " | " << dataClient.getRestRequest().length() << std::endl;
-            std::cout << dataClient.getTypeRequset() << std::endl;
+            // //std::cout<< dataClient.getReadlen() << " | " << dataClient.getRestRequest().length() << std::endl;
+            //std::cout<< dataClient.getTypeRequset() << std::endl;
             // return ;
             if (std::find(dataClient.configData.allow_methods.begin(), dataClient.configData.allow_methods.end(), dataClient.getTypeRequset()) == dataClient.configData.allow_methods.end())
             {
@@ -53,7 +53,7 @@ class request
                 {
                     std::string res =  mainCGI(dataClient.getUrl(), dataClient.getClientSocket(), dataClient);
                     dataClient.SetCgi(res);
-                    std::cout << "fgf=++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n";
+                    //std::cout<< "fgf=++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n";
                     return ;
                 }
             }
@@ -71,8 +71,8 @@ class request
                 check_Get_Request(dataClient);
             if (dataClient.getTypeRequset() == "DELETE")
                 delete_request(dataClient);
-            // std::cout << "|" << url << "|"<< " " << "|" << "|" << " " << dataClient.getClientSocket() << " "<< client << std::endl << std::endl;
-            std::cout << std::endl << "________________________________________________________" << std::endl << std::endl;     
+            // //std::cout<< "|" << url << "|"<< " " << "|" << "|" << " " << dataClient.getClientSocket() << " "<< client << std::endl << std::endl;
+            //std::cout<< std::endl << "________________________________________________________" << std::endl << std::endl;     
         }
         // std::string getRequest()
         // {

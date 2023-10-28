@@ -67,7 +67,7 @@ CGISettler::CGISettler(const std::string& CGI_path, const std::string& CGI_file,
                 args[1] = (char*)this->file.c_str();
                 args[2] = nullptr;
             } else {
-                std::cout << "Unsupported scriptType: "<< std::endl;
+                //std::cout<< "Unsupported scriptType: "<< std::endl;
                 this->error_CGI();
                 exit(1);// not use exit just return
             }
@@ -126,7 +126,7 @@ CGISettler::CGISettler(const std::string& CGI_path, const std::string& CGI_file,
         // std::string name;
         // std::string path;
         // dataClient.configData.get_cgi( name, path );
-        // std::cout <<"|||||" << name << path << std::endl;
+        // //std::cout<<"|||||" << name << path << std::endl;
         addEnv("CONTENT_TYPE", valueContentType); 
         addEnv("QUERY_STRING",  valuequertString);
         addEnv("REQUEST_METHOD", dataClient.getTypeRequset()); 
@@ -158,18 +158,18 @@ CGISettler::CGISettler(const std::string& CGI_path, const std::string& CGI_file,
 bool CGISettler::validpath() const {
     struct stat fileInfo;
 
-    std::cout << this->path << std::endl;
+    //std::cout<< this->path << std::endl;
 
     if (stat(this->path.c_str(), &fileInfo) == 0) {
         if (fileInfo.st_mode & S_IXUSR) {
             return true;
         } else {
             // Handle the case where the file doesn't have execute permission.
-            std::cout << "File does not have execute permission." << std::endl;
+            //std::cout<< "File does not have execute permission." << std::endl;
         }
     } else {
         // Handle the case where stat fails, e.g., the file doesn't exist.
-        std::cout << "File not found or stat failed." << std::endl;
+        //std::cout<< "File not found or stat failed." << std::endl;
     }
 
     return false;

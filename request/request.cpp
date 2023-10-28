@@ -45,12 +45,12 @@ int checkValidRequest(std::string &requests, size_t poss, Client& dataClient)
             if (line[line.size() - 1] != '\r')
                 return 1;   
             i++; 
-            std::cout << "1111\n"; 
-            std::cout << line<< "\n";
+            //std::cout<< "1111\n"; 
+            //std::cout<< line<< "\n";
         }
         else
         {            
-            // std::cout << line<< "\n";
+            // //std::cout<< line<< "\n";
             if (line[line.size() - 1] != '\r')
                 return 1;
             size_t posSpace = line.find(" ");
@@ -66,7 +66,7 @@ int checkValidRequest(std::string &requests, size_t poss, Client& dataClient)
     getHost(requests, posHost, dataClient);
     if (dataClient.HostName.empty())
         return 1;
-    std::cout << "|" << dataClient.HostName << "|" << dataClient.port << "|" << dataClient.getTypeRequset() << "\n";
+    //std::cout<< "|" << dataClient.HostName << "|" << dataClient.port << "|" << dataClient.getTypeRequset() << "\n";
     return 0;
 }
 
@@ -75,7 +75,7 @@ void request::parse_request(Client& dataClient)
     size_t poss = dataClient.getRestRequest().find("\r\n\r\n");
     if (poss == std::string::npos)
     {
-        std::cout << "not\n";
+        //std::cout<< "not\n";
         dataClient.error = 400;
         return ;
     }
@@ -99,10 +99,10 @@ void request::parse_request(Client& dataClient)
     if (tokens[2].substr(0,tokens[2].find("\r\n")) != "HTTP/1.1" || tokens[1].empty() || tokens[0] == "")
     {
         dataClient.error = 400;
-        std::cout << "Error http1.1 not fond\n";
+        //std::cout<< "Error http1.1 not fond\n";
         return ;
     }
-    // std::cout << "hhh |" << dataClient.getRestRequest() << "|" << std::endl;
+    // //std::cout<< "hhh |" << dataClient.getRestRequest() << "|" << std::endl;
     dataClient.setTypeRequset(tokens[0]);
     dataClient.setUrl(tokens[1]);
     if (tokens[0] == "POST")
@@ -115,7 +115,7 @@ void request::parse_request(Client& dataClient)
         }
         size_t pos_rn = dataClient.getRestRequest().find("\r\n", pos_boundary);
         dataClient.setBoundaryRequest(dataClient.getRestRequest().substr(pos_boundary + 9, pos_rn - pos_boundary - 7));
-        // std::cout << dataClient.getBoundarytSocket() << std::endl;
+        // //std::cout<< dataClient.getBoundarytSocket() << std::endl;
         size_t pos_Content = dataClient.getRestRequest().find("Content-Length:", 0) + 16;
         if (pos_Content == std::string::npos)
         {
@@ -125,7 +125,7 @@ void request::parse_request(Client& dataClient)
         size_t poss_end = dataClient.getRestRequest().find("\r\n", pos_Content);
         dataClient.setContentLength((ssize_t)std::atof(dataClient.getRestRequest().substr(pos_Content,poss_end - pos_Content).c_str()));
         // std::string k = Header.substr(pos, poss - pos + 1);
-        // std::cout << dataClient.getContentLength() << std::endl;
+        // //std::cout<< dataClient.getContentLength() << std::endl;
     }
     if (tokens[0] == "" ||  (tokens[0] != "GET" && tokens[0] != "POST" && tokens[0] != "DELETE"))
     {
@@ -136,7 +136,7 @@ void request::parse_request(Client& dataClient)
     // //exit(1);
     // std::string kk = k.substr(0, k.size() -2 );
     // }
-    // std::cout << "|" << kk << "|" << std::endl;
+    // //std::cout<< "|" << kk << "|" << std::endl;
 }
 
 void request::check_Get_Request(Client &dataClient)
@@ -150,11 +150,11 @@ void request::check_Get_Request(Client &dataClient)
         if (i == dataClient.configData.pages.size())
         {
             dataClient.error = 404;
-            std::cout << "{{-1}}\n";
+            //std::cout<< "{{-1}}\n";
             return ;
         }
         dataClient.setUrl(dataClient.configData.pages[i].root + dataClient.configData.pages[i].index);
-        std::cout << dataClient.getUrl() << std::endl;
+        //std::cout<< dataClient.getUrl() << std::endl;
         return ;
     }
     else
@@ -169,12 +169,12 @@ void request::check_Get_Request(Client &dataClient)
                     break;
             if (i == dataClient.configData.pages.size())
             {
-                std::cout << "{{00}}\n";
+                //std::cout<< "{{00}}\n";
                 dataClient.error = 404;
                 return ;
             }
             dataClient.setUrl(dataClient.configData.pages[i].root + dataClient.getUrl());
-            // std::cout << "!!!" << dataClient.getUrl() << "!!!" << std::endl;
+            // //std::cout<< "!!!" << dataClient.getUrl() << "!!!" << std::endl;
             return ;
         }
         std::string nameLocation = dataClient.getUrl().substr(0, pos);
@@ -183,11 +183,11 @@ void request::check_Get_Request(Client &dataClient)
         {   
             if (dataClient.configData.pages[i].path == nameLocation)
                 break;
-            std::cout << dataClient.configData.pages[i].path;
+            //std::cout<< dataClient.configData.pages[i].path;
         }
        if (i == dataClient.configData.pages.size())
         {
-            std::cout << "{{1}}\n";
+            //std::coutt<< "{{1}}\n";
             dataClient.error = 404;
             return ;
         }
@@ -250,7 +250,7 @@ int request::download_file(Client &dataClient, ssize_t pos_start)
         {
             endPos = dataClient.getRestRequest().find(bonadry.substr(0, bonadry.length() - 2) + "--");
             if (endPos == std::string::npos)
-                std::cout << "bad request\n";
+                std::cout<< "bad request\n";
         }
         size_t start = dataClient.getRestRequest().find("\r\n\r\n", startPos);
         if (start != std::string::npos)
@@ -270,30 +270,30 @@ int request::download_file(Client &dataClient, ssize_t pos_start)
 }
 
 void printLoadingBar(int percentage, int barWidth) {
-    std::cout << "Loading: [";
+    //std::cout<< "Loading: [";
     
     int progress = (percentage * barWidth) / 100;
     
     for (int i = 0; i < barWidth; ++i) {
         if (i < progress) {
-            std::cout << "=";
+            //std::cout<< "=";
         } else if (i == progress) {
             if (i % 3 == 0)
-                std::cout << "/";
+                std::cout<< "/";
             else if (i % 3 == 1)
-                std::cout << "-";
+                std::cout<< "-";
             else
-                std::cout << "\\";
+                std::cout<< "\\";
                 
 
         } else {
-            std::cout << " ";
+            std::cout<< " ";
         }
     }
     
-    std::cout << "] " << percentage << "%";
+    //std::cout<< "] " << percentage << "%";
     std::cout.flush();
-    std::cout << "\r";
+    //std::cout<< "\r";
 }
 
 void    request::read_request(Client& dataClient)
@@ -306,7 +306,7 @@ void    request::read_request(Client& dataClient)
     while (true) {
         ssize_t bytesRead = recv(dataClient.getClientSocket(), buffer, len_read, 0);
         if (bytesRead == 0) {
-            std::cout << "connection closed by client " << dataClient.getClientSocket() << "\n";  
+            std::cout<< "connection closed by client " << dataClient.getClientSocket() << "\n";  
             close(dataClient.getClientSocket());   
             dataClient.resetData();             
             break;
@@ -325,7 +325,7 @@ void    request::read_request(Client& dataClient)
         }
         if (dataClient.getContentLength() > dataClient.configData.client_max_body_size)
             dataClient.error = 413;
-        // std::cout <<"|"<< dataClient.getReadlen() <<"|"<< std::endl;
+        // //std::cout<<"|"<< dataClient.getReadlen() <<"|"<< std::endl;
     
     
         // if (dataClient.getReadlen() && dataClient.getTypeRequset() == "POST" && dataClient.getHeaderStatus() == true)

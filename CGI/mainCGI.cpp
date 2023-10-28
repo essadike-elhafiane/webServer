@@ -53,7 +53,7 @@ std::string mainCGI(std::string urlCgi, int clientSocket, Client &dataClient) {
           responsesstring += c;
            
         }
-        std::cout << responsesstring << std::endl;
+        //std::cout<< responsesstring << std::endl;
     
      } catch (const char* error) {
         std::cerr << "Error: " << error << std::endl;

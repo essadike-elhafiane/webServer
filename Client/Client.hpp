@@ -41,12 +41,13 @@ class Client
         std::string cgi;
     public:
         HTTP_SERVER configData;
+        clock_t timerequest;
         Client(/* args */);
         void SetCgi(std::string  s)
         {
             for (size_t i = 0; i < s.size(); i++)
                 cgi.push_back(s[i]);
-            // std::cout << "||||||" << cgi << "!!!!!!!!!\n";
+            // //std::cout<< "||||||" << cgi << "!!!!!!!!!\n";
         }
         std::string &getCgi()
         {

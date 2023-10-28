@@ -2,7 +2,7 @@
 
 void error_message(std::string str)
 {
-    std::cout << str << std::endl;
+    std::cout<< str << std::endl;
     exit(1);
 }
 
@@ -48,7 +48,7 @@ void bracket_part(std::vector<std::string>::iterator &ptr , Mycfg &obj)
             c++;
         if(c > o || c  + 3 <= o || (i == 0 && std::string::npos == (*ptr).find("{")))
         {
-            std::cout << "error in bracket" << std::endl;
+            //std::cout<< "error in bracket" << std::endl;
             exit(0);
         }
         if (c == o )
@@ -60,7 +60,7 @@ void bracket_part(std::vector<std::string>::iterator &ptr , Mycfg &obj)
     }
     if (c == 0 )
     {
-        std::cout << "error no server bracket" << std::endl;
+        //std::cout<< "error no server bracket" << std::endl;
             exit(0);
     }
 }
@@ -79,7 +79,7 @@ void listen_port(std::vector<std::string>::iterator &ptr , HTTP_SERVER &m , std:
                 j++;
             else
             {
-                std::cout << "error1 listen" << "\n";
+                //std::cout<< "error1 listen" << "\n";
                 exit(0);
             }
         }
@@ -90,7 +90,7 @@ void listen_port(std::vector<std::string>::iterator &ptr , HTTP_SERVER &m , std:
         {
             if(m.port[0] > 65536)
             {
-                 std::cout << "error2 listen" << "\n";
+                 //std::cout<< "error2 listen" << "\n";
                 exit(0);
             }
             return;
@@ -98,7 +98,7 @@ void listen_port(std::vector<std::string>::iterator &ptr , HTTP_SERVER &m , std:
         ptr++;
         i++;
     }
-    std::cout << "error3 listen" << "\n";
+    //std::cout<< "error3 listen" << "\n";
     exit(0); 
 }
 
@@ -111,7 +111,7 @@ void is_alpa_digi(std::string str)
             i++;
         else
         {
-            std::cout << str[i];
+            //std::cout<< str[i];
             error_message("error domaine name");
         }
     }
@@ -148,7 +148,7 @@ void server_name_parsing(std::vector<std::string>::iterator &ptr , HTTP_SERVER &
     int i = 0;
 
 
-    // std::cout << *ptr;
+    // //std::cout<< *ptr;
     while(ptr != l && i < 3)
     {
         if(i == 1 && ((*ptr) == "{" || (*ptr) == "}" || (*ptr) == ";"))
@@ -160,7 +160,7 @@ void server_name_parsing(std::vector<std::string>::iterator &ptr , HTTP_SERVER &
         ptr++;
         i++;
     }
-    std::cout << "error2 server_name" << "\n";
+    //std::cout<< "error2 server_name" << "\n";
     exit(0); 
 }
 
@@ -169,7 +169,7 @@ void root_pars(std::vector<std::string>::iterator &ptr, HTTP_SERVER &m, std::vec
     int i = 0;
 
     
-    // std::cout << *ptr;
+    // //std::cout<< *ptr;
     while(ptr != l && i < 3)
     {
         if(i == 1 && ((*ptr) == ";" || (*ptr) =="{" || (*ptr) == "}"))
@@ -217,7 +217,7 @@ void pars_redirection(std::vector<std::string>::iterator &ptr, std::string &m, s
                 DIR* directory = opendir(m.c_str());
                 if (directory == NULL) 
                 {
-                    std::cout << "|" << m << "|" << std::endl;
+                    //std::cout<< "|" << m << "|" << std::endl;
                     error_message("faile to open root directory");
                 }
             }
@@ -235,7 +235,7 @@ void index_pars(std::vector<std::string>::iterator &ptr, std::map<std::string,st
     int i = 0;
 
 
-    // std::cout << *ptr;
+    // //std::cout<< *ptr;
     while(ptr != l && i < 3)
     {
         if(i == 1 && ((*ptr) == ";" || (*ptr) =="{" || (*ptr) == "}"))
@@ -247,7 +247,7 @@ void index_pars(std::vector<std::string>::iterator &ptr, std::map<std::string,st
         ptr++;
         i++;
     }
-    std::cout << "error2 index" <<  "\n";
+    //std::cout<< "error2 index" <<  "\n";
     exit(0);
 }
 
@@ -259,17 +259,17 @@ void parc_cgi(std::vector<std::string>::iterator &ptr, std::map<std::string,std:
     while(ptr != l && i < 3)
     {
         if(i == 1 && ((*ptr) == ";" || (*ptr) =="{" || (*ptr) == "}"))
-            std::cout << "error2 cgi" <<  "\n";
+            std::cout<< "error2 cgi" <<  "\n";
         if (i == 1)
             m["fastcgi.index"] = *ptr;
         if (i == 2 && (*ptr) != ";" )
-            std::cout << "error2 cgi" <<  "\n";
+            std::cout<< "error2 cgi" <<  "\n";
         else if (i == 2)
             return ;
         ptr++;
         i++;
     }
-    std::cout << "error2 cgi" <<  "\n";
+    //std::cout<< "error2 cgi" <<  "\n";
     exit(0);
 }
 
@@ -278,7 +278,7 @@ void size_pars(std::vector<std::string>::iterator &ptr, HTTP_SERVER &m, std::vec
 {
     int i = 0;
     int j = 0;
-    // std::cout << *ptr;
+    // //std::cout<< *ptr;
     while(ptr != l && i < 3)
     {
         if(i == 1)
@@ -300,7 +300,7 @@ void size_pars(std::vector<std::string>::iterator &ptr, HTTP_SERVER &m, std::vec
         ptr++;
         i++;
     }
-    std::cout << "error2 index" <<  "\n";
+    //std::cout<< "error2 index" <<  "\n";
     exit(0);
 }
 
@@ -323,7 +323,7 @@ void assigne_element(HTTP_SERVER &m , std::string str)
     std::fstream open(str);
     if (!open.is_open())
     {
-        std::cout << str;
+        //std::cout<< str;
         error_message("error open file 2");
     }
    for( std::map<int , std::string>::iterator  ptr = m.error_page.begin() ; ptr != m.error_page.end() ; ptr++)
@@ -339,7 +339,7 @@ void assigne_element(HTTP_SERVER &m , std::string str)
 void error_page(std::vector<std::string>::iterator &ptr, HTTP_SERVER &m, std::vector<std::string>::iterator l)
 {
     int i = 0;
-    // std::cout << *ptr;
+    // //std::cout<< *ptr;
     while(ptr != l && i < 3)
     {
         if(i == 1 && !is_digit(*ptr))
@@ -368,7 +368,7 @@ void error_page(std::vector<std::string>::iterator &ptr, HTTP_SERVER &m, std::ve
         ptr++;
         i++;
     }
-    std::cout << "error2 error page" <<  "\n";
+    //std::cout<< "error2 error page" <<  "\n";
     exit(0);
 }
 
@@ -401,7 +401,7 @@ void  pars_auto(std::vector<std::string>::iterator &ptr, int &m, std::vector<std
     while(ptr != l && i < 3)
     {
         if (i == 1 && (*ptr) != "on" && (*ptr) != "off")
-            std::cout << "error1 auto" <<  "\n";
+            //std::cout<< "error1 auto" <<  "\n";
         if (i == 1)
         {
             if(*ptr == "off")
@@ -410,13 +410,13 @@ void  pars_auto(std::vector<std::string>::iterator &ptr, int &m, std::vector<std
                 m = 1;
         }
         if (i == 2 && (*ptr) != ";" )
-            std::cout << "error2 outo" <<  "\n";
+            std::cout<< "error2 outo" <<  "\n";
         else if (i == 2 )
             return ;
         ptr++;
         i++;
     }
-    std::cout << "error2 outo" <<  "\n";
+    //std::cout<< "error2 outo" <<  "\n";
     exit(0);
 }
 
@@ -425,7 +425,7 @@ void location_pars(std::vector<std::string>::iterator &ptr, HTTP_SERVER &m, std:
      int i = 0;
 
     std::vector<std::string>::iterator l2;
-    // std::cout << *ptr;
+    // //std::cout<< *ptr;
 
     l2 = ptr;
     while(l2 != l)
@@ -437,7 +437,7 @@ void location_pars(std::vector<std::string>::iterator &ptr, HTTP_SERVER &m, std:
     
     while(ptr != l2)
     {
-        // std::cout << (*ptr) <<  "in location" <<std::endl;
+        // //std::cout<< (*ptr) <<  "in location" <<std::endl;
         if (i == 1 && ((*ptr) == ";" || (*ptr) =="{" || (*ptr) == "}" || (*ptr)[0] != '/' ))
             error_message("error in location1");
         if (i == 1)
@@ -466,14 +466,14 @@ void location_pars(std::vector<std::string>::iterator &ptr, HTTP_SERVER &m, std:
                 pars_redirection(ptr,m.pages.back().cgi ,l2 , "cgi_data");
             else 
             {
-                std::cout << *ptr;
+                //std::cout<< *ptr;
                 error_message("error ");
             }
         }
         ptr++;
         i++;
     }
-    // std::cout << "error2 location" <<  "\n";
+    // //std::cout<< "error2 location" <<  "\n";
     // exit(0);
 }
 
@@ -487,7 +487,7 @@ void server_pars(std::vector<std::string>::iterator &ptr , Mycfg &obj, HTTP_SERV
     ptr++;
     while(ptr != l)
     {
-        // std::cout << (*ptr) <<  std::endl;
+        // //std::cout<< (*ptr) <<  std::endl;
         if((*ptr) == "port")
             listen_port(ptr , m , l);
         else if((*ptr) == "server_name")
@@ -504,7 +504,7 @@ void server_pars(std::vector<std::string>::iterator &ptr , Mycfg &obj, HTTP_SERV
             location_pars(ptr,m,l);
         else if ((*ptr) != ";" && (*ptr) != "{" && (*ptr) != "}")
         {
-            std::cout  << "|"<< (*ptr) << "|"<< std::endl;
+            //std::cout << "|"<< (*ptr) << "|"<< std::endl;
             error_message("error in valide data");
         }
         ptr++;
@@ -605,10 +605,10 @@ std::vector<HTTP_SERVER>& configFile (int argc , char **argv,std::vector< HTTP_S
     int s = 0;
 
     std::string name(file);
-    std::cout << name.find(".conf") << "|" << name.length()  << name.length() - 5 << std::endl;
+    //std::cout<< name.find(".conf") << "|" << name.length()  << name.length() - 5 << std::endl;
     if(name.length() < 6   || name.find(".conf") != name.length() - 5 )
         error_message("error in file extention");
-    std::cout << name.find(".conf") << "|" << name.length() <<std::endl;
+    //std::cout<< name.find(".conf") << "|" << name.length() <<std::endl;
     if (!readcofg.is_open())
         error_message("error open cpnfig file");
     while(getline(readcofg,tmp))
@@ -636,8 +636,8 @@ std::vector<HTTP_SERVER>& configFile (int argc , char **argv,std::vector< HTTP_S
         }
         else
         {
-            // std::cout << (*ptr) << "|" << std::endl;
-            std::cout << "error in server prototype";
+            // //std::cout<< (*ptr) << "|" << std::endl;
+            //std::cout<< "error in server prototype";
             exit(0);
         }
         // s++;
@@ -668,11 +668,11 @@ std::vector<HTTP_SERVER>& configFile (int argc , char **argv,std::vector< HTTP_S
             error_message("error not root /");
         ptr++;
     }
-    //     std::cout << *ptr << std::endl;
+    //     //std::cout<< *ptr << std::endl;
     return data;
     // std::vector< HTTP_SERVER> ata  = data;
-    // std::cout << "\n\n\n\n";
+    // //std::cout<< "\n\n\n\n";
     // for(std::vector<HTTP_SERVER>::iterator ptr =ata.begin() ; ptr != ata.end(); ptr++ )
-    //     std::cout << *ptr << std::endl;
+    //     //std::cout<< *ptr << std::endl;
     // return 0;
 }
