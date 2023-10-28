@@ -41,8 +41,10 @@ class Client
         std::string cgi;
     public:
         HTTP_SERVER configData;
+        std::vector<HTTP_SERVER> dataServers;
+        std::string connection;
         clock_t timerequest;
-        Client(/* args */);
+        Client();
         void SetCgi(std::string  s)
         {
             for (size_t i = 0; i < s.size(); i++)
@@ -175,6 +177,7 @@ class Client
             lengthFile = 0;
             error = 0;
             cgi = "";
+            connection = "";
         }
         ~Client();
 };

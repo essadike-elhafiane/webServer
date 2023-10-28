@@ -123,7 +123,7 @@ class response
                 {
                     std::cout<< url << std::endl;
                     std::cerr << "Error open file1"  << std::endl;
-                    dataClient.error = 1000;
+                    dataClient.error = 404;
                     sendResponse(dataClient);
                     return 0;
                 }
@@ -159,10 +159,10 @@ class response
                 dataClient.error = 1000;
                 return 0;
             }
-            std::cout<< dataClient.getClientSocket() << "|"<<static_cast<ssize_t>(input.tellg()) - dataClient.getLenSend() << "h\n";
-            std::cout<< "ttt\n";
+            // std::cout<< dataClient.getClientSocket() << "|"<<static_cast<ssize_t>(input.tellg()) - dataClient.getLenSend() << "h\n";
+            // std::cout<< "ttt\n";
             size_t len = send(dataClient.getClientSocket(), buffer , input.tellg() - dataClient.getLenSend(), 0);
-            std::cout<< "tttp\n";
+            // std::cout<< "tttp\n";
             if (len < 0)
             {
                 std::cerr << "Failed to send response." << std::endl;

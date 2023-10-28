@@ -1,7 +1,7 @@
 #include "Client.hpp"
 
 
-Client::Client(/* args */)
+Client::Client()
 {
     clientSocket = 0;
     filename = "";
@@ -16,6 +16,7 @@ Client::Client(/* args */)
     lengthFile = 0;
     error = 0;
     cgi = "";
+    connection = "";
 }
 
 Client::~Client()

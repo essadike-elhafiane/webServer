@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.cpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mserrouk <mserrouk@student.42.fr>          +#+  +:+       +#+        */
+/*   By: eelhafia <eelhafia@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/09/29 21:28:36 by mserrouk          #+#    #+#             */
-/*   Updated: 2023/10/28 21:49:35 by mserrouk         ###   ########.fr       */
+/*   Created: 2023/09/29 21:28:36 by eelhafia          #+#    #+#             */
+/*   Updated: 2023/10/28 23:27:29 by eelhafia         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -83,7 +83,7 @@ int main(int ac , char **av)
                 Client a;
                 a.setClientSocket(clientSocket);
                 a.nameServer = servers[i].getName();
-                
+                a.dataServers = configData;
                 std::cout<< servers[i].getName() << "|" << servers[i].port << " accept client : " << a.getClientSocket() << std::endl;
                 size_t posServerData = 0;
                 while (posServerData < configData.size())
@@ -180,7 +180,8 @@ int main(int ac , char **av)
                     fds[i].revents = 0;
                     // std::cout<< "fhd\n";
                 }
-                if (dataClient.error)
+                std::cout << dataClient.connection << "======================================" <<std::endl;
+                if (dataClient.error || dataClient.connection == "close")
                 {
                     mClients.erase(fds[i].fd);
                     std::cout<< "closeedd" << fds[i].fd << std::endl;

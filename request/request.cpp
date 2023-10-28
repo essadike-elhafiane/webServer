@@ -10,6 +10,16 @@ int isdigits(std::string Host)
     return 1;
 }
 
+int checkIsIp(std::string host)
+{
+    for (size_t i = 0; host[i]; i++)
+    {
+       if (!isdigit(host[i]) && host[i] != '.')
+            return 0;
+    }
+    return 1;
+}
+
 int    getHost(std::string& requests,size_t posHost, Client& dataClient)
 {
     size_t endPosHost = requests.find("\r\n", posHost);
@@ -50,7 +60,7 @@ int checkValidRequest(std::string &requests, size_t poss, Client& dataClient)
         }
         else
         {            
-            // //std::cout<< line<< "\n";
+            std::cout<< line<< "\n";
             if (line[line.size() - 1] != '\r')
                 return 1;
             size_t posSpace = line.find(" ");
@@ -66,6 +76,20 @@ int checkValidRequest(std::string &requests, size_t poss, Client& dataClient)
     getHost(requests, posHost, dataClient);
     if (dataClient.HostName.empty())
         return 1;
+    std::cout << "|" << dataClient.HostName << "|" << std::endl;
+    if (!checkIsIp(dataClient.HostName))
+    {
+        size_t posServerData = 0;
+        while (posServerData < dataClient.dataServers.size())
+        {
+            if (dataClient.HostName == dataClient.dataServers[posServerData].server_name)
+                break;
+            posServerData++;
+        }
+        if (posServerData == dataClient.dataServers.size())
+            return 0;
+        dataClient.configData = dataClient.dataServers[posServerData];
+    }
     //std::cout<< "|" << dataClient.HostName << "|" << dataClient.port << "|" << dataClient.getTypeRequset() << "\n";
     return 0;
 }
@@ -124,9 +148,18 @@ void request::parse_request(Client& dataClient)
         }
         size_t poss_end = dataClient.getRestRequest().find("\r\n", pos_Content);
         dataClient.setContentLength((ssize_t)std::atof(dataClient.getRestRequest().substr(pos_Content,poss_end - pos_Content).c_str()));
+        
         // std::string k = Header.substr(pos, poss - pos + 1);
         // //std::cout<< dataClient.getContentLength() << std::endl;
     }
+    size_t pos = dataClient.getRestRequest().find("Connection:");
+    if (pos != std::string::npos)
+    {
+        size_t Endpos = dataClient.getRestRequest().find("\r\n", pos);
+        dataClient.connection = dataClient.getRestRequest().substr(pos + 12, Endpos - pos - 12);
+    }
+    else
+        dataClient.connection = "";
     if (tokens[0] == "" ||  (tokens[0] != "GET" && tokens[0] != "POST" && tokens[0] != "DELETE"))
     {
         dataClient.error = 400;
@@ -232,7 +265,7 @@ int request::download_file(Client &dataClient, ssize_t pos_start)
         if (po == std::string::npos)
             return (dataClient.error = 400, 1); // bad request if not fond
         std::string namefile = dataClient.getRestRequest().substr(p + 1, po - p - 2);
-        namefile = "/goinfre/mserrouk/download/" + namefile;
+        namefile = "/goinfre/eelhafia/download/" + namefile;
         dataClient.setFileName(namefile);
         std::ofstream file(namefile, std::ios::out | std::ios::binary);
         if (!file) {
@@ -266,7 +299,7 @@ int request::download_file(Client &dataClient, ssize_t pos_start)
         }
     }
     return 0;
-    // /goinfre/mserrouk/download/
+    // /goinfre/eelhafia/download/
 }
 
 void printLoadingBar(int percentage, int barWidth) {
@@ -302,7 +335,6 @@ void    request::read_request(Client& dataClient)
     int len_read = 3000;
     std::memset(buffer, 0, sizeof(buffer));
     std::string buf;
-    time_t time = clock();
     while (true) {
         ssize_t bytesRead = recv(dataClient.getClientSocket(), buffer, len_read, 0);
         if (bytesRead == 0) {
@@ -318,11 +350,6 @@ void    request::read_request(Client& dataClient)
             dataClient.setReadlen(bytesRead);
         if (!dataClient.getHeaderStatus() && dataClient.getRestRequest().find("\r\n\r\n") != std::string::npos)
             parse_request(dataClient);
-        else if (!dataClient.getHeaderStatus())
-        {
-            if (clock() - time >= 2000)
-                dataClient.error = 408;
-        }
         if (dataClient.getContentLength() > dataClient.configData.client_max_body_size)
             dataClient.error = 413;
         // //std::cout<<"|"<< dataClient.getReadlen() <<"|"<< std::endl;
@@ -366,13 +393,13 @@ void request::delete_request(Client& dataClient)
     int result = std::remove(filename.c_str());
     if (result == 0) {
         // std::string response1 = "HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\nContent-Length: ";
-        dataClient.setUrl("/Users/mserrouk/Desktop/webServer/html/delete.html");
-        // rsp.sendResponse("/Users/mserrouk/Desktop/webServer/html/delete.html", response1, dataClient.getClientSocket(), dataClient);
+        dataClient.setUrl("/Users/eelhafia/Desktop/webServer/html/delete.html");
+        // rsp.sendResponse("/Users/eelhafia/Desktop/webServer/html/delete.html", response1, dataClient.getClientSocket(), dataClient);
         // printf("File deleted successfully.");
         // dataClient.resetData();
     } else {
-        dataClient.setUrl("/Users/mserrouk/Desktop/webServer/html/not_delete.html");
-        // rsp.sendResponse("/Users/mserrouk/Desktop/webServer/html/not_delete.html", response1, dataClient.getClientSocket(), dataClient);
+        dataClient.setUrl("/Users/eelhafia/Desktop/webServer/html/not_delete.html");
+        // rsp.sendResponse("/Users/eelhafia/Desktop/webServer/html/not_delete.html", response1, dataClient.getClientSocket(), dataClient);
         // printf("Failed to delete the file.\n");
         // dataClient.resetData();
     }
