@@ -56,7 +56,7 @@ int checkValidRequest(std::string &requests, size_t poss, Client& dataClient)
                 return 1;   
             i++; 
             //std::cout<< "1111\n"; 
-            //std::cout<< line<< "\n";
+            std::cout<< line<< "\n";
         }
         else
         {            
@@ -265,7 +265,13 @@ int request::download_file(Client &dataClient, ssize_t pos_start)
         if (po == std::string::npos)
             return (dataClient.error = 400, 1); // bad request if not fond
         std::string namefile = dataClient.getRestRequest().substr(p + 1, po - p - 2);
-        namefile = "/goinfre/eelhafia/download/" + namefile;
+        size_t i = 0;
+        for (i = 0; i < dataClient.configData.pages.size() ; i++)
+        {
+            if (dataClient.configData.pages[i].path == "/upload")
+                break;
+        }
+        namefile = dataClient.configData.pages[i].root + namefile;
         dataClient.setFileName(namefile);
         std::ofstream file(namefile, std::ios::out | std::ios::binary);
         if (!file) {
@@ -283,7 +289,7 @@ int request::download_file(Client &dataClient, ssize_t pos_start)
         {
             endPos = dataClient.getRestRequest().find(bonadry.substr(0, bonadry.length() - 2) + "--");
             if (endPos == std::string::npos)
-                std::cout<< "bad request\n";
+                return (dataClient.error = 400, 1);
         }
         size_t start = dataClient.getRestRequest().find("\r\n\r\n", startPos);
         if (start != std::string::npos)
@@ -389,7 +395,15 @@ void    request::read_request(Client& dataClient)
 void request::delete_request(Client& dataClient)
 {
     std::string filename;
-    filename = "download" + dataClient.getUrl();
+    size_t i = 0;
+    for (i = 0; i < dataClient.configData.pages.size() ; i++)
+    {
+        if (dataClient.configData.pages[i].path == "/upload")
+            break;
+    }
+    filename = dataClient.configData.pages[i].root + dataClient.getUrl();
+    if (dataClient.getUrl() == "")
+        return ;
     int result = std::remove(filename.c_str());
     if (result == 0) {
         // std::string response1 = "HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\nContent-Length: ";

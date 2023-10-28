@@ -141,8 +141,15 @@
       </form>
       <h1>Delete Request Example</h1>
 
-      <input type="text" id="g">
-      <button onclick="sendDeleteRequest()"> Delete Resource </button>
+      <form method="DELETE" enctype="multipart/form-data">
+        <input type="text" id="g">
+        <button > Delete Resource </button>
+      </form>
+
+      <!-- <form id="deleteForm"  method="DELETE">
+        <input type="hidden" name="_method" value="DELETE">
+        <button type="submit">Delete</button>
+    </form> -->
       <hr>
       <video width="640" height="360" controls>
       <source src="/goinfre/m.mp4" type="video/mp4">
