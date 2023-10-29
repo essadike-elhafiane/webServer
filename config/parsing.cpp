@@ -292,7 +292,7 @@ void size_pars(std::vector<std::string>::iterator &ptr, HTTP_SERVER &m, std::vec
             }
         }
         if(i == 1)
-            m.client_max_body_size = atoi((*ptr).c_str());
+            m.client_max_body_size =(long long int)atof((*ptr).c_str());
         if (i == 2 && (*ptr) == ";")
         {
             return;

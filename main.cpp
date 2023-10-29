@@ -6,7 +6,7 @@
 /*   By: eelhafia <eelhafia@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/29 21:28:36 by eelhafia          #+#    #+#             */
-/*   Updated: 2023/10/28 23:27:29 by eelhafia         ###   ########.fr       */
+/*   Updated: 2023/10/29 15:08:08 by eelhafia         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,7 +39,7 @@ int main(int ac , char **av)
     struct pollfd fds[MAX_CLIENTS + 1];
     size_t numberServer = 0;
     memset(fds, 0, sizeof(fds));
-    
+    signal(SIGPIPE, SIG_IGN);
     for (size_t i = 0; i < configData.size(); i++)
     {
         for (size_t j = 0; j < configData[i].port.size(); j++)
@@ -71,7 +71,7 @@ int main(int ac , char **av)
         {
             if (fds[i].fd != 0 && fds[i].revents & POLLIN) 
             {
-                for (size_t i = 0; i < 100000000; i++)
+                for (size_t i = 0; i < 1000000; i++)
                 {
                     /* code */
                 }
@@ -120,7 +120,7 @@ int main(int ac , char **av)
                 request request;
                 //std::cout<< "read0\n";
                 request.receiveRequest(mClients[clientSocket]);
-                std::cout<< clientSocket << "||" << mClients[clientSocket].getClientSocket() << std::endl;
+                // std::cout<< clientSocket << "||" << mClients[clientSocket].getClientSocket() << std::endl;
                 if (mClients[clientSocket].error)
                 {
                     fds[i].events = POLLOUT;

@@ -309,13 +309,13 @@ int request::download_file(Client &dataClient, ssize_t pos_start)
 }
 
 void printLoadingBar(int percentage, int barWidth) {
-    //std::cout<< "Loading: [";
+    std::cout<< "Loading: [";
     
     int progress = (percentage * barWidth) / 100;
     
     for (int i = 0; i < barWidth; ++i) {
         if (i < progress) {
-            //std::cout<< "=";
+            std::cout<< "=";
         } else if (i == progress) {
             if (i % 3 == 0)
                 std::cout<< "/";
@@ -330,9 +330,9 @@ void printLoadingBar(int percentage, int barWidth) {
         }
     }
     
-    //std::cout<< "] " << percentage << "%";
+    std::cout<< "] " << percentage << "%";
     std::cout.flush();
-    //std::cout<< "\r";
+    std::cout<< "\r";
 }
 
 void    request::read_request(Client& dataClient)
@@ -357,12 +357,15 @@ void    request::read_request(Client& dataClient)
         if (!dataClient.getHeaderStatus() && dataClient.getRestRequest().find("\r\n\r\n") != std::string::npos)
             parse_request(dataClient);
         if (dataClient.getContentLength() > dataClient.configData.client_max_body_size)
+        {
+            std::cout << dataClient.getContentLength() << "|" << dataClient.configData.client_max_body_size << std::endl;
             dataClient.error = 413;
+        }
         // //std::cout<<"|"<< dataClient.getReadlen() <<"|"<< std::endl;
     
     
-        // if (dataClient.getReadlen() && dataClient.getTypeRequset() == "POST" && dataClient.getHeaderStatus() == true)
-        //     printLoadingBar((double)(dataClient.getReadlen()) / dataClient.getContentLength() * 100, 40);
+        if (dataClient.getReadlen() && dataClient.getTypeRequset() == "POST" && dataClient.getHeaderStatus() == true)
+            printLoadingBar((double)(dataClient.getReadlen()) / dataClient.getContentLength() * 100, 40);
  
 
         std::memset(buffer, 0, sizeof(buffer));
