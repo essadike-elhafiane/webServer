@@ -90,7 +90,7 @@ class response
             else if (dataClient.error == 400 && it != dataClient.configData.error_page.end())
             {
                 url = dataClient.configData.error_page[400];
-                configResponse = "HTTP/1.1 400 Bad Request\r\nConnection: close\r\nContent-Length: ";
+                configResponse = "HTTP/1.1 400 Bad Request\r\nConnection: close\r\nLocation: /html/403.html\r\n";
                 return;
             }
             else if (dataClient.error == 401  && it != dataClient.configData.error_page.end())
@@ -103,13 +103,13 @@ class response
             {
                 //std::cout<< dataClient.configData.error_page[403]<< "fhd\n" ;
                 url = dataClient.configData.error_page[403];
-                configResponse = "HTTP/1.1 403 Forbidden\r\nConnection: close\r\nContent-Length: ";
+                configResponse = "HTTP/1.1 403 Forbidden\r\nConnection: close\r\nLocation: /html/403.html\r\n";
                 return;
             }
             else if (dataClient.error == 404 && it != dataClient.configData.error_page.end())
             {
                 url = dataClient.configData.error_page[404];
-                configResponse = "HTTP/1.1 404 Not Found\r\nConnection: close\r\nContent-Length: ";
+                configResponse = "HTTP/1.1 404 Not Found\r\nConnection: close\r\nLocation: /html/403.html\r\n";
                 return;
             }
             else if (dataClient.error == 413 && it != dataClient.configData.error_page.end())
