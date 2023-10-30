@@ -220,6 +220,8 @@ void pars_redirection(std::vector<std::string>::iterator &ptr, std::string &m, s
                     std::cout << "|" << m << "|" << std::endl;
                     error_message("faile to open root directory");
                 }
+                delete directory->__dd_buf;
+                delete directory;
             }
         }
         if (i == 2 && (*ptr) == ";")
@@ -492,8 +494,8 @@ void server_pars(std::vector<std::string>::iterator &ptr , Mycfg &obj, HTTP_SERV
             listen_port(ptr , m , l);
         else if((*ptr) == "server_name")
             server_name_parsing(ptr , m , l);
-        else if((*ptr) == "root")
-            root_pars(ptr,m,l); 
+        // else if((*ptr) == "root")
+        //     root_pars(ptr,m,l); 
         else if ((*ptr) == "error_page")
             error_page(ptr,m,l);
         else if ((*ptr) == "client_max_body_size")
@@ -578,7 +580,7 @@ void chek_line(std::vector<std::string> line)
 
 void ValidData(HTTP_SERVER data)
 {
-    if(data.error_page.empty() || data.port.empty() || data.client_max_body_size == -1 || data.root.empty())
+    if(data.error_page.empty() || data.port.empty() || data.client_max_body_size == -1)
         error_message("error not enough data");
 }
 
@@ -590,6 +592,11 @@ void valid_location(HTTP_SERVER data)
         if(ptr->root.empty() || ptr->index.empty())
             error_message("error location not enough data");
     } 
+}
+
+void f()
+{
+    system("leaks webserv");
 }
 
 std::vector<HTTP_SERVER>& configFile (int argc , char **argv,std::vector< HTTP_SERVER> &data)
@@ -669,6 +676,8 @@ std::vector<HTTP_SERVER>& configFile (int argc , char **argv,std::vector< HTTP_S
         ptr++;
     }
     //     std::cout << *ptr << std::endl;
+   
+   
     return data;
     // std::vector< HTTP_SERVER> ata  = data;
     // std::cout << "\n\n\n\n";

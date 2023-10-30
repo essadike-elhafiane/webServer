@@ -12,7 +12,7 @@ CGISettler::CGISettler(const std::string& CGI_path, const std::string& CGI_file,
     this->W_pipes[1] = -1;
     
     if (!this->validpath())
-        throw "HTTP  502";
+        throw 502;
     this->CgiEnv(dataClient);  
 }
 
@@ -23,23 +23,25 @@ CGISettler::CGISettler(const std::string& CGI_path, const std::string& CGI_file,
    void CGISettler::executionCGI () {
         if (pipe(this->R_pipes) == -1 || pipe(this->W_pipes) == -1) {
             this->close_pipes();
-            throw "HTTP 500";
+            throw 500;
         }
         // std::cout<< dataClient.getTypeRequset()<<std::endl;
         std::ofstream m("/tmp/file111.tmp");
         int fd = open("/tmp/file111.tmp", O_CREAT | O_RDWR | O_TRUNC);
         if (fd < 0)
-            exit(1);
+            throw 500;
+            //exit(1);
         if (write(fd, body.c_str(), body.size())< 0)
-            exit(1);
+            throw 500;
+            //exit(1);
         close(fd);
         fd = open("/tmp/file111.tmp", O_RDWR);
 
-        std::cerr<< "dataClient.getContentLength()+++++++++++++++++++++++++"<<std::endl;
+        std::cerr<< "CGIIIIIIII()+++++++++++++++++++++++++"<<std::endl;
         pid_t pid = fork();
         if (pid == -1) {
             this->close_pipes();
-            throw "HTTP 500 here";
+            throw 500;
         }
         if (pid == 0) {
            if (dup2(this->R_pipes[1], STDOUT_FILENO) == -1 ||
@@ -49,6 +51,7 @@ CGISettler::CGISettler(const std::string& CGI_path, const std::string& CGI_file,
                 close(this->R_pipes[1]) == -1 ||
                 close(this->W_pipes[0]) == -1 ||
                 close(this->W_pipes[1]) == -1)
+    
                 this->error_CGI();
             
             
@@ -56,20 +59,21 @@ CGISettler::CGISettler(const std::string& CGI_path, const std::string& CGI_file,
             char* args[3];
             if (scriptType == "php") {
         
-                bin = "/Users/eelhafia/Desktop/webServer/CGI/php-cgi"; 
+                bin = "/Users/edraidry/Desktop/webserver/CGI/php-cgi"; 
                 args[0] = (char*)bin;
                 args[1] = (char*)this->file.c_str();
                 args[2] = nullptr;
-            } else if (scriptType == "python") {
+            } else if (scriptType == "py") {
 
-                bin = "/Users/eelhafia/Desktop/webServer/CGI/py-cgi";
+                bin = "/Users/edraidry/Desktop/webserver/CGI/py-cgi";
                 args[0] = (char*)bin;
                 args[1] = (char*)this->file.c_str();
                 args[2] = nullptr;
             } else {
                 std::cout << "Unsupported scriptType: "<< std::endl;
                 this->error_CGI();
-                exit(1);// not use exit just return
+                //exit(1);// not use exit just return
+                throw 500;
             }
 
             std::cerr << "|-------|\n";
@@ -89,7 +93,8 @@ CGISettler::CGISettler(const std::string& CGI_path, const std::string& CGI_file,
             if (execve(bin, args, env) == -1) {
                 std::cerr << "Failed to execute the CGI script: " << strerror(errno) << std::endl;
                 this->error_CGI();
-                exit(1);
+                //exit(1);
+                throw 500;
             }
            
             std::cerr << "Failed to execute the CGI script: " << strerror(errno) << std::endl;
@@ -100,7 +105,7 @@ CGISettler::CGISettler(const std::string& CGI_path, const std::string& CGI_file,
 
 
         if (close(this->R_pipes[1]) == -1 || close(this->W_pipes[0]) == -1)
-            throw "HTTP 500";
+            throw 500;
     
 }
  
@@ -130,10 +135,10 @@ CGISettler::CGISettler(const std::string& CGI_path, const std::string& CGI_file,
         addEnv("CONTENT_TYPE", valueContentType); 
         addEnv("QUERY_STRING",  valuequertString);
         addEnv("REQUEST_METHOD", dataClient.getTypeRequset()); 
-        addEnv("SCRIPT_FILENAME", "/Users/eelhafia/Desktop/webServer/CGI/hello_script.php");
+        addEnv("SCRIPT_FILENAME", "/Users/edraidry/Desktop/webserver/CGI/hello_script.php");
         addEnv("SCRIPT_NAME",  "hello_script.php");
         addEnv("CONTENT_LENGTH", std::to_string (dataClient.getContentLength())); //! here!//
-        addEnv("PATH_INFO", "/Users/eelhafia/Desktop/webServer");
+        addEnv("PATH_INFO", "/Users/edraidry/Desktop/webserver");
         addEnv("REDIRECT_STATUS","200");
         size_t pos = 0;
         while (pos < valuequertString.length()) {
@@ -193,7 +198,8 @@ int CGISettler::getWriteEnd() const {
 void CGISettler::error_CGI() {
     std::cerr << "Error Cgi\n";
     this->close_pipes();
-    exit(1);
+    //exit(1);
+    throw 500;
 }
 
 void CGISettler::close_pipes() {

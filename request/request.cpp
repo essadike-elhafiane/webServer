@@ -232,7 +232,7 @@ int request::download_file(Client &dataClient, ssize_t pos_start)
         if (po == std::string::npos)
             return (dataClient.error = 400, 1); // bad request if not fond
         std::string namefile = dataClient.getRestRequest().substr(p + 1, po - p - 2);
-        namefile = "/goinfre/eelhafia/download/" + namefile;
+        namefile = "/goinfre/edraidry/download/" + namefile;
         dataClient.setFileName(namefile);
         std::ofstream file(namefile, std::ios::out | std::ios::binary);
         if (!file) {
@@ -266,7 +266,7 @@ int request::download_file(Client &dataClient, ssize_t pos_start)
         }
     }
     return 0;
-    // /goinfre/eelhafia/download/
+    // /goinfre/edraidry/download/
 }
 
 void printLoadingBar(int percentage, int barWidth) {
@@ -366,13 +366,13 @@ void request::delete_request(Client& dataClient)
     int result = std::remove(filename.c_str());
     if (result == 0) {
         // std::string response1 = "HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\nContent-Length: ";
-        dataClient.setUrl("/Users/eelhafia/Desktop/webServer/html/delete.html");
-        // rsp.sendResponse("/Users/eelhafia/Desktop/webServer/html/delete.html", response1, dataClient.getClientSocket(), dataClient);
+        dataClient.setUrl("/Users/edraidry/Desktop/webserver/html/delete.html");
+        // rsp.sendResponse("/Users/edraidry/Desktop/webserver/html/delete.html", response1, dataClient.getClientSocket(), dataClient);
         // printf("File deleted successfully.");
         // dataClient.resetData();
     } else {
-        dataClient.setUrl("/Users/eelhafia/Desktop/webServer/html/not_delete.html");
-        // rsp.sendResponse("/Users/eelhafia/Desktop/webServer/html/not_delete.html", response1, dataClient.getClientSocket(), dataClient);
+        dataClient.setUrl("/Users/edraidry/Desktop/webserver/html/not_delete.html");
+        // rsp.sendResponse("/Users/edraidry/Desktop/webserver/html/not_delete.html", response1, dataClient.getClientSocket(), dataClient);
         // printf("Failed to delete the file.\n");
         // dataClient.resetData();
     }

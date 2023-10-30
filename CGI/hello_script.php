@@ -11,7 +11,7 @@
     if ($uploadedFile['error'] === UPLOAD_ERR_OK) { 
     $tempFileName = $uploadedFile['tmp_name']; // The temporary file name on the server.
 
-    $destination = '/Users/eelhafia/Desktop/webServer/' . $uploadedFile['name']; // Set your desired destination path and filename.
+    $destination = '/Users/edraidry/Desktop/webserver/' . $uploadedFile['name']; // Set your desired destination path and filename.
 
     if (move_uploaded_file($tempFileName, $destination)) {
         echo 'File successfully uploaded and moved to ' . $destination;
@@ -27,7 +27,7 @@
 
  
 
-<form action="upload.php" method="post" enctype="multipart/form-data">
+<form action="upload.py" method="post" enctype="multipart/form-data">
     Select File: <input type="file" name="fileToUpload">
     <input type="submit" value="Upload File" multiple>
 </form>

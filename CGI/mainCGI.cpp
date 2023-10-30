@@ -12,9 +12,11 @@ std::string mainCGI(std::string urlCgi, int clientSocket, Client &dataClient) {
     std::cout<<urlCgi<<std::endl;
     (void) clientSocket;
   
-    std::string spath ="/Users/eelhafia/Desktop/webServer/CGI/hello_script.php";
-    std::string sfile = "/Users/eelhafia/Desktop/webServer/CGI/hello_script.php";
-    std::string sscriptType = "php";
+    // std::string spath ="/Users/edraidry/Desktop/webserver/CGI/hello_script.php";
+    // std::string sfile = "/Users/edraidry/Desktop/webserver/CGI/hello_script.php";
+    std::string spath ="/Users/edraidry/Desktop/webserver/CGI/hello_cgi.py" ;
+    std::string sfile ="/Users/edraidry/Desktop/webserver/CGI/hello_cgi.py" ;
+    std::string sscriptType = "py";
     CGISettler cgiSettler(spath, sfile, sscriptType, dataClient);
 
     if (dataClient.getTypeRequset() == "POST") 
@@ -31,10 +33,10 @@ std::string mainCGI(std::string urlCgi, int clientSocket, Client &dataClient) {
     request.request_data = "fix"; ;
    
 
-    //std::string path = "/Users/eelhafia/Desktop/fixweb/CGIfix/test.py";
-    std::string path ="/Users/eelhafia/Desktop/webServer/CGI/hello_script.php";
+    std::string path = "/Users/edraidry/Desktop/fixweb/CGIfix/test.py";
+    //std::string path ="/Users/edraidry/Desktop/webserver/CGI/hello_script.php";
    
-    std::string file = "/Users/eelhafia/Desktop/webServer/CGI/hello_script.php";
+    //std::string file = "/Users/edraidry/Desktop/webserver/CGI/hello_script.php";
     std::string responsesstring;
      try {
 
@@ -53,12 +55,20 @@ std::string mainCGI(std::string urlCgi, int clientSocket, Client &dataClient) {
           responsesstring += c;
            
         }
+        if(read(readEnd,&c,1) == 0)
+        {
+          throw 500;
+          return " ";
+        }
         std::cout << responsesstring << std::endl;
     
-     } catch (const char* error) {
+     } catch (int error) {
         std::cerr << "Error: " << error << std::endl;
+
+        dataClient.error = error;
+        return " ";
       }
-        
+        std::cout<< responsesstring.size() << "|" << responsesstring.find("\r\n\r\n") << std::endl;
     std::string res = "HTTP/1.1 200 OK\r\nContent-Length: " + std::to_string(responsesstring.size() - responsesstring.find("\r\n\r\n") - 4) +"\r\n"+ responsesstring;
     return res;
 }

@@ -99,7 +99,7 @@ class response
             url = dataClient.getUrl();
             std::cout << "---|" <<  url << "|" << dataClient.getClientSocket() << "|---"<< std::endl;
             
-            // if (url == "/Users/mserrouk/Desktop/webServer/Users/mserrouk/goinfre/send/u.mp4")
+            // if (url == "/Users/mserrouk/Desktop/webserver/Users/mserrouk/goinfre/send/u.mp4")
             //     url = "/Users/mserrouk/goinfre/send/u.mp4";
 
             //  std::cout << "---|" <<  url << "|" << "111" << std::endl;

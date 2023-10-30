@@ -1,0 +1,69 @@
+<!-- <!DOCTYPE html>
+<html>
+<head>
+    <title>Sample Form</title>
+</head>
+<body>
+    <h1>Sample Form</h1>
+    <form action="hello_cgi.py" method="post" enctype="multipart/form-data" >
+        <label for="name">Name:</label>
+        <input type="file" name="name" id="name" required><br><br>
+        
+         <p>Select your favorite programming languages:</p>
+        <input type="checkbox" name="languages" value="Python"> Python<br>
+        <input type="checkbox" name="languages" value="JavaScript"> JavaScript<br>
+        <input type="checkbox" name="languages" value="Java"> Java<br>
+        <input type="checkbox" name="languages" value="C++"> C++<br><br> 
+        
+        <input type="submit" value="Submit">
+    </form>
+</body>
+</html> -->
+
+<!-- this is vide -->
+
+
+<!-- <!DOCTYPE html>
+<html>
+<head>
+    <title>Sample Form</title>
+</head>
+<body>
+    <h1>Sample Form</h1>
+    <form action="hello_cgi.py" method="post" enctype="multipart/form-data">
+        <label for="name">Name:</label>
+        <input type="file" name="fileToUpload" id="name" required multiple><br><br>
+        
+        <input type="submit" value="Submit">
+    </form>
+
+    
+</body>
+</html>
+ -->
+
+
+ <!DOCTYPE html>
+<html>
+<head>
+    <title>Sample Form</title>
+</head>
+<body>
+    <h1>Sample Form</h1>
+    <form action="hello_cgi.py" method="post" enctype="multipart/form-data" onsubmit="setCookie()">
+        <label for="name">Name:</label>
+        <input type="text" name="dynamic_value" id="dynamic_value" required><br><br>
+        
+        <input type="file" name="fileToUpload" id="name" required multiple><br><br>
+        
+        <input type="submit" value="Submit">
+    </form>
+
+    <script>
+        function setCookie() {
+            var dynamicValue = document.getElementById("dynamic_value").value;
+            document.cookie = "mycookie=" + dynamicValue;
+        }
+    </script>
+</body>
+</html>
