@@ -34,6 +34,43 @@ class response
             dataClient.SetCgi("");
         }
 
+        int indexGenerator(std::string url , std::string name )
+        {
+            std::string path = url;
+            std::string html = url +  name + ".html";
+
+            std::ofstream write(html);
+            if (! write.is_open())
+            {
+                return 0;
+            
+            }
+            std::cout << "jj";
+            write << "<!DOCTYPE html>\n";
+            write << "<html lang=\"en\">\n";
+            write << "<head>\n";
+            write << "<meta charset=\"UTF-8\">\n";
+            write << "<meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n";
+            write << "<title>" << path << "</title>\n";
+            write << "<h1>" << "index " << path << "<h1>\n";
+            write << "<hr>\n<ul>\n";
+            DIR *directory = opendir(path.c_str());
+            if(directory == NULL)
+            {
+                write << "<h1>" << "error open path" << path << "<h1>\n";
+                return 0;
+            }
+                // delete directory->__dd_buf;
+                // delete directory;
+            
+            struct dirent* file;
+            while ((file = readdir(directory)) != NULL)
+            {
+                write << "<li><div style=\" padding: 20px; color: rgb(224, 190, 141); margin: 5px;\"><a href=\"" << file->d_name << "\">" << file->d_name << "</a></div></li>\n" ; 
+            }
+            return 1;
+        }
+
         void headre(Client & dataClient , std::string &url , std::string & configResponse)
         {
             //std::cout<< dataClient.error << std::endl;
@@ -89,6 +126,60 @@ class response
             //std::cout<< url << std::endl;
         }
 
+        int redirection (Client & dataClient , std::string & url)
+        {
+
+            std::string configResponse;
+            std::vector<LOCATION>::iterator ptr = dataClient.configData.pages.begin();
+
+            while(ptr != dataClient.configData.pages.end())
+            {
+                // std::cout << "---|" <<  ptr->root + ptr->path << "|" << "222" << std::endl;
+                if(!ptr->redirection.empty() && !ptr->root.empty()  && url == ptr->root + ptr->path)
+                {
+                    configResponse = "HTTP/1.1 302 Found\r\n";
+                    std::string sit = ptr->redirection;
+                    configResponse += "Location: " + sit + "\r\n";
+                    dataClient.clearLenSend();
+                    send(dataClient.getClientSocket(), configResponse.c_str(), configResponse.length(), 0);
+                    dataClient.error = 1000;
+                    return 1;
+                }
+                ptr++;
+            }
+            return 0;
+        }
+
+        int  outoindex(std::string &url  , Client & dataClient)
+        {
+            DIR *directory = opendir(url.c_str());
+            if(directory == NULL)  
+            {
+                std::cout << "not found\n";
+                return 0 ;
+            }
+            delete directory->__dd_buf;
+            delete directory;     
+         std::vector<LOCATION>::iterator ptr = dataClient.configData.pages.begin();
+
+            while(ptr != dataClient.configData.pages.end())
+            {
+                std::cout << "---|" <<  ptr->root + ptr->path << "|" << ptr->autoindex  << "222" << std::endl;
+
+                if(ptr->redirection.empty() &&  url == ptr->root + ptr->path && ptr->autoindex == 0)
+                {
+                    dataClient.error = 404;
+                    return 1;
+                }
+                ptr++;
+            }
+
+            if (indexGenerator(url , "myindex"))
+                url += "myindex.html"; 
+           
+            return 0;
+        }
+
         int sendResponse(Client & dataClient)
         {
             std::string configResponse;
@@ -97,27 +188,20 @@ class response
             std::string response;
 
             url = dataClient.getUrl();
-            std::vector<LOCATION>::iterator ptr = dataClient.configData.pages.begin();
-            while(ptr != dataClient.configData.pages.end())
+            std::cout<< "---|" <<  url << "|" << dataClient.getClientSocket() << "|" << dataClient.error << "|---"<< std::endl;
+            if(redirection(dataClient , url))
+                return 0;
+            std::cout << "|||||\n";
+            if (!dataClient.error && outoindex(url , dataClient ))
             {
-                // std::cout << "---|" <<  ptr->root + ptr->path << "|" << "222" << std::endl;
-                if(!ptr->redirection.empty() && !ptr->root.empty()  &&url == ptr->root + ptr->path)
-                {
-                    configResponse = "HTTP/1.1 302 Found\r\n";
-                    std::string sit = ptr->redirection;
-                    configResponse += "Location: " + sit + "\r\n";
-                    dataClient.clearLenSend();
-                    send(dataClient.getClientSocket(), configResponse.c_str(), configResponse.length(), 0);
-                    dataClient.error = 1000;
-                    return 0;
-                }
-                ptr++;
+                sendResponse(dataClient);
+                return 0;
             }
-
+            std::cout<< "---|" <<  url << "|" << dataClient.getClientSocket() << "|" << dataClient.error << "|---"<< std::endl;
             if(!dataClient.getLenSend())
             {
                 headre(dataClient , url , configResponse);
-                std::cout<< "---|" <<  url << "|" << dataClient.getClientSocket() << "|" << dataClient.error << "|---"<< std::endl;
+                
                 std::ifstream r(url, std::ios::binary | std::ios::ate);
                 if (!r.is_open())
                 {

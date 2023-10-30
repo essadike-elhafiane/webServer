@@ -2,7 +2,7 @@
 
 void error_message(std::string str)
 {
-    std::cout<< str << std::endl;
+    std::cout << str << std::endl;
     exit(1);
 }
 
@@ -19,7 +19,10 @@ void bracket_part(std::vector<std::string>::iterator &ptr , Mycfg &obj)
         if(std::string::npos != (*ptr).find("}"))
             c++;
         if(c > o || c  + 3 <= o || (i == 0 && std::string::npos == (*ptr).find("{")))
-            error_message( "error in bracket");
+        {
+            std::cout << "error in bracket" << std::endl;
+            exit(0);
+        }
         if (c == o )
         {
             return ;
@@ -28,7 +31,10 @@ void bracket_part(std::vector<std::string>::iterator &ptr , Mycfg &obj)
         i++;
     }
     if (c == 0 )
-        error_message( "error no server bracket");
+    {
+        std::cout << "error no server bracket" << std::endl;
+            exit(0);
+    }
 }
 
 void listen_port(std::vector<std::string>::iterator &ptr , HTTP_SERVER &m , std::vector<std::string>::iterator l)
@@ -44,15 +50,19 @@ void listen_port(std::vector<std::string>::iterator &ptr , HTTP_SERVER &m , std:
             if((*ptr)[j] >= '0' && (*ptr)[j] <= '9')
                 j++;
             else
-                error_message( "error1 listen");
+            {
+                std::cout << "error1 listen" << "\n";
+                exit(0);
+            }
         }
         if (i == 1)
             m.port.push_back(atoi((*ptr).c_str()));
+        
         if(i == 2 && (*ptr) == ";")
         {
             if(m.port[0] > 65536)
             {
-                 //std::cout<< "error2 listen" << "\n";
+                 std::cout << "error2 listen" << "\n";
                 exit(0);
             }
             return;
@@ -60,8 +70,35 @@ void listen_port(std::vector<std::string>::iterator &ptr , HTTP_SERVER &m , std:
         ptr++;
         i++;
     }
-    //std::cout<< "error3 listen" << "\n";
+    std::cout << "error3 listen" << "\n";
     exit(0); 
+}
+
+void is_alpa_digi(std::string str)
+{
+    int i = 0;
+    while(str[i])
+    {
+        if ((str[i] >= '0' && str[i] <= '9'  ) || (str[i] >= 'a' && str[i] <= 'z'  ) || (str[i] >= 'A' && str[i] <= 'Z') || str[i] == '-' )
+            i++;
+        else
+        {
+            std::cout << str[i];
+            error_message("error domaine name");
+        }
+    }
+}
+
+void is_word(std::string str)
+{
+    int i = 0;
+    while(str[i])
+    {
+        if ((str[i] >= '0' && str[i] <= '9'  ) || (str[i] >= 'a' && str[i] <= 'z'  ) || (str[i] >= 'A' && str[i] <= 'Z') || str[i] == '-' || str[i] == '.')
+            i++;
+        else
+            error_message("error domaine name");
+    }
 }
 
 
@@ -81,6 +118,9 @@ int  is_path(std::string str)
 void server_name_parsing(std::vector<std::string>::iterator &ptr , HTTP_SERVER &m , std::vector<std::string>::iterator l)
 {
     int i = 0;
+
+
+    // std::cout << *ptr;
     while(ptr != l && i < 3)
     {
         if(i == 1 && ((*ptr) == "{" || (*ptr) == "}" || (*ptr) == ";"))
@@ -92,34 +132,48 @@ void server_name_parsing(std::vector<std::string>::iterator &ptr , HTTP_SERVER &
         ptr++;
         i++;
     }
-    //std::cout<< "error2 server_name" << "\n";
+    std::cout << "error2 server_name" << "\n";
     exit(0); 
 }
+
+void root_pars(std::vector<std::string>::iterator &ptr, HTTP_SERVER &m, std::vector<std::string>::iterator l)
+{
+    int i = 0;
+
+    
+    // std::cout << *ptr;
+    while(ptr != l && i < 3)
+    {
+        if(i == 1 && ((*ptr) == ";" || (*ptr) =="{" || (*ptr) == "}"))
+        {
+            std::cout << "error2 root" <<  "\n";
+        }
+        if (i == 1)
+            m.root = *ptr;
+        if (i == 2 && (*ptr) == ";")
+        {
+            return;
+        }
+        ptr++;
+        i++;
+    }
+    std::cout << "error2 root" <<  "\n";
+    exit(0);
+}
+
 
 
 void pars_redirection(std::vector<std::string>::iterator &ptr, std::string &m, std::vector<std::string>::iterator l , std::string str)
 {
     int i = 0;
 
+    
     while(ptr != l && i < 3)
     {
         if(i == 1 && ((*ptr) == ";" || (*ptr) =="{" || (*ptr) == "}"))
             error_message(str);
         if (i == 1)
-        {
             m = *ptr;
-            if (str == "root")
-            {
-                DIR* directory = opendir(m.c_str());
-                if (directory == NULL) 
-                {
-                    //std::cout<< "|" << m << "|" << std::endl;
-                    error_message("faile to open root directory");
-                }
-                delete directory->__dd_buf;
-                delete directory;
-            }
-        }
         if (i == 2 && (*ptr) == ";")
             return;
         ptr++;
@@ -128,26 +182,69 @@ void pars_redirection(std::vector<std::string>::iterator &ptr, std::string &m, s
    error_message(str);
 }
 
+void index_pars(std::vector<std::string>::iterator &ptr, std::map<std::string,std::string> &m, std::vector<std::string>::iterator l)
+{
+    int i = 0;
+
+
+    // std::cout << *ptr;
+    while(ptr != l && i < 3)
+    {
+        if(i == 1 && ((*ptr) == ";" || (*ptr) =="{" || (*ptr) == "}"))
+            error_message("error index");
+        if (i == 1)
+            m["index"] = *ptr; 
+        if (i == 2 && (*ptr) == ";")
+            return;
+        ptr++;
+        i++;
+    }
+    std::cout << "error2 index" <<  "\n";
+    exit(0);
+}
+
+void parc_cgi(std::vector<std::string>::iterator &ptr, std::map<std::string,std::string> &m, std::vector<std::string>::iterator l)
+{
+    int i = 0;
+
+    
+    while(ptr != l && i < 3)
+    {
+        if(i == 1 && ((*ptr) == ";" || (*ptr) =="{" || (*ptr) == "}"))
+            std::cout << "error2 cgi" <<  "\n";
+        if (i == 1)
+            m["fastcgi.index"] = *ptr;
+        if (i == 2 && (*ptr) != ";" )
+            std::cout << "error2 cgi" <<  "\n";
+        else if (i == 2)
+            return ;
+        ptr++;
+        i++;
+    }
+    std::cout << "error2 cgi" <<  "\n";
+    exit(0);
+}
+
 
 void size_pars(std::vector<std::string>::iterator &ptr, HTTP_SERVER &m, std::vector<std::string>::iterator l)
 {
     int i = 0;
     int j = 0;
-    // //std::cout<< *ptr;
+    // std::cout << *ptr;
     while(ptr != l && i < 3)
     {
         if(i == 1)
         {
             while((*ptr)[j])
             {
-                if (((*ptr)[j] >= '0' && (*ptr)[j] <= '9'))
+                if (((*ptr)[j] >= '0' && (*ptr)[j] <= '9') || (j == (int)(*ptr).length() - 1 && (*ptr)[j] == 'M'))
                     j++;
                 else
                     error_message("error client body size");
             }
         }
         if(i == 1)
-            m.client_max_body_size =(long long int)atof((*ptr).c_str());
+            m.client_max_body_size = atoi((*ptr).c_str());
         if (i == 2 && (*ptr) == ";")
         {
             return;
@@ -155,7 +252,7 @@ void size_pars(std::vector<std::string>::iterator &ptr, HTTP_SERVER &m, std::vec
         ptr++;
         i++;
     }
-    //std::cout<< "error2 index" <<  "\n";
+    std::cout << "error2 index" <<  "\n";
     exit(0);
 }
 
@@ -178,10 +275,9 @@ void assigne_element(HTTP_SERVER &m , std::string str)
     std::fstream open(str);
     if (!open.is_open())
     {
-        //std::cout<< str;
+        std::cout << str;
         error_message("error open file 2");
     }
-    open.close();
    for( std::map<int , std::string>::iterator  ptr = m.error_page.begin() ; ptr != m.error_page.end() ; ptr++)
    {
         if((*ptr).second.empty())
@@ -195,7 +291,7 @@ void assigne_element(HTTP_SERVER &m , std::string str)
 void error_page(std::vector<std::string>::iterator &ptr, HTTP_SERVER &m, std::vector<std::string>::iterator l)
 {
     int i = 0;
-    // //std::cout<< *ptr;
+    // std::cout << *ptr;
     while(ptr != l && i < 3)
     {
         if(i == 1 && !is_digit(*ptr))
@@ -224,13 +320,14 @@ void error_page(std::vector<std::string>::iterator &ptr, HTTP_SERVER &m, std::ve
         ptr++;
         i++;
     }
-    //std::cout<< "error2 error page" <<  "\n";
+    std::cout << "error2 error page" <<  "\n";
     exit(0);
 }
 
-void pars_methods(std::vector<std::string>::iterator &ptr, LOCATION &m, std::vector<std::string>::iterator l)
+void pars_methods(std::vector<std::string>::iterator &ptr, HTTP_SERVER &m, std::vector<std::string>::iterator l)
 {
     ptr++;
+       
     while(( (*ptr) == "GET" || (*ptr) == "POST" || (*ptr) == "DELETE") && ptr != l)
     {
         for(std::vector<std::string>::iterator itr = m.allow_methods.begin() ; itr !=   m.allow_methods.end() ; itr++)
@@ -248,51 +345,33 @@ void pars_methods(std::vector<std::string>::iterator &ptr, LOCATION &m, std::vec
     error_message("error allow methods");
 }
 
-void  pars_auto(std::vector<std::string>::iterator &ptr, int &m, std::vector<std::string>::iterator l)
-{
-     int i = 0;
-    
-    while(ptr != l && i < 3)
-    {
-        if (i == 1 && (*ptr) != "on" && (*ptr) != "off")
-            error_message("error autoindex");
-        if (i == 1)
-        {
-            if(*ptr == "off")
-                m = 0;
-            else
-                m = 1;
-        }
-        if (i == 2 && (*ptr) != ";" )
-            error_message("error autoindex");
-        else if (i == 2 )
-            return ;
-        ptr++;
-        i++;
-    }
-    error_message("error autoindex");
-}
+
+
 
 void location_pars(std::vector<std::string>::iterator &ptr, HTTP_SERVER &m, std::vector<std::string>::iterator l)
 {
      int i = 0;
+
     std::vector<std::string>::iterator l2;
+    // std::cout << *ptr;
+
     l2 = ptr;
     while(l2 != l)
     {
         if(((*l2) == "}"))
             break;
         l2++;
-    } 
+    }
+    
     while(ptr != l2)
     {
+        // std::cout << (*ptr) <<  "in location" <<std::endl;
         if (i == 1 && ((*ptr) == ";" || (*ptr) =="{" || (*ptr) == "}" || (*ptr)[0] != '/' ))
             error_message("error in location1");
         if (i == 1)
         {
             m.pages.push_back(LOCATION());
             m.pages.back().path = (*ptr);
-            
         }
          if (i == 2 && (*ptr) != "{")
             error_message("error in location2");
@@ -302,8 +381,10 @@ void location_pars(std::vector<std::string>::iterator &ptr, HTTP_SERVER &m, std:
                 pars_redirection(ptr,m.pages.back().root,l2 , "root" );
             else if((*ptr) == "index")
                 pars_redirection(ptr,m.pages.back().index,l ,"index");
+            else if ((*ptr) == "error_page")
+                pars_redirection(ptr,m.error_page_path ,l2 , "error_page_path");
             else if((*ptr) == "allow_methods")
-                pars_methods(ptr,m.pages.back() ,l2);
+                pars_methods(ptr,m ,l2);
             else if((*ptr) == "return")
                 pars_redirection(ptr,m.pages.back().redirection,l2 , "return");
             else if ((*ptr) == "autoindex")
@@ -312,13 +393,18 @@ void location_pars(std::vector<std::string>::iterator &ptr, HTTP_SERVER &m, std:
                 pars_redirection(ptr,m.pages.back().cgi ,l2 , "cgi_data");
             else 
             {
+                std::cout << *ptr;
                 error_message("error ");
             }
         }
         ptr++;
         i++;
     }
+    // std::cout << "error2 location" <<  "\n";
+    // exit(0);
 }
+
+
 
 void server_pars(std::vector<std::string>::iterator &ptr , Mycfg &obj, HTTP_SERVER &m)
 {
@@ -328,18 +414,24 @@ void server_pars(std::vector<std::string>::iterator &ptr , Mycfg &obj, HTTP_SERV
     ptr++;
     while(ptr != l)
     {
+        // std::cout << (*ptr) <<  std::endl;
         if((*ptr) == "port")
             listen_port(ptr , m , l);
         else if((*ptr) == "server_name")
             server_name_parsing(ptr , m , l);
+        else if((*ptr) == "root")
+            root_pars(ptr,m,l);  
         else if ((*ptr) == "error_page")
             error_page(ptr,m,l);
         else if ((*ptr) == "client_max_body_size")
             size_pars(ptr,m,l);
+        else if((*ptr) == "allow_methods")
+                pars_methods(ptr,m ,l);
         else if ((*ptr) == "location")
             location_pars(ptr,m,l);
         else if ((*ptr) != ";" && (*ptr) != "{" && (*ptr) != "}")
         {
+            std::cout  << "|"<< (*ptr) << "|"<< std::endl;
             error_message("error in valide data");
         }
         ptr++;
@@ -392,6 +484,7 @@ void chek_line(std::vector<std::string> line)
     std::string tmp;
     for(std::vector<std::string>::iterator ptr = line.begin() ; ptr != line.end(); ptr++)
     {
+       
         if(std::string::npos != (*ptr).find("location"))
             ptr++;
         else if(*ptr != "{" && *ptr != "}" && std::string::npos == (*ptr).find("server"))
@@ -413,9 +506,10 @@ void chek_line(std::vector<std::string> line)
 
 void ValidData(HTTP_SERVER data)
 {
-    if(data.error_page.empty() || data.port.empty() || data.client_max_body_size == -1 )
+    if(data.error_page.empty() || data.port.empty() || data.client_max_body_size == -1 || data.root.empty())
         error_message("error not enough data");
 }
+
 
 void valid_location(HTTP_SERVER data)
 {
@@ -423,18 +517,12 @@ void valid_location(HTTP_SERVER data)
     {
         if(ptr->root.empty() || ptr->index.empty())
             error_message("error location not enough data");
-    } 
-}
-
-void f()
-{
-    system("leaks webserv");
+    }
+    
 }
 
 std::vector<HTTP_SERVER>& configFile (int argc , char **argv,std::vector< HTTP_SERVER> &data)
 {
-
-   atexit(f);
     if (argc != 2)
         error_message("error invalide argument");
     char *file = argv[1];
@@ -445,10 +533,6 @@ std::vector<HTTP_SERVER>& configFile (int argc , char **argv,std::vector< HTTP_S
     std::ifstream readcofg(file);
     int s = 0;
 
-    std::string name(file);
-    if(name.length() < 6   || name.find(".conf") != name.length() - 5 )
-        error_message("error in file extention");
-    //std::cout<< name.find(".conf") << "|" << name.length() <<std::endl;
     if (!readcofg.is_open())
         error_message("error open cpnfig file");
     while(getline(readcofg,tmp))
@@ -466,6 +550,7 @@ std::vector<HTTP_SERVER>& configFile (int argc , char **argv,std::vector< HTTP_S
     chek_line(obj.line2);
     token_elemet(obj.line2 , obj.line3 ,";");
     clean_element(obj.line3 , obj.line4);
+
     // s = 0;
     for(std::vector<std::string>::iterator ptr = obj.line4.begin() ; ptr < obj.line4.end() ;ptr++)
     {
@@ -475,68 +560,36 @@ std::vector<HTTP_SERVER>& configFile (int argc , char **argv,std::vector< HTTP_S
             server_pars(ptr ,obj , data.back());
         }
         else
-            error_message("error in server prototype");
+        {
+            // std::cout << (*ptr) << "|" << std::endl;
+            std::cout << "error in server prototype";
+            exit(0);
+        }
+        // s++;
     }
     // exit(0);
-    std::vector<HTTP_SERVER>::iterator ptr = data.begin();
+
+
+    std::vector<HTTP_SERVER>::iterator ptr =data.begin();
     ValidData(*ptr);
-    int flg;
-    int flg1;
-    int flg2 = 0;
+    ptr++;
     while(ptr != data.end())
     {
-        flg = 0;
-        flg = 0;
-        flg2 = 0;
+        ValidData(*ptr);
         for(std::vector<HTTP_SERVER>::iterator ptr1 = ptr + 1 ; ptr1 != data.end(); ptr1++)
         {
             if((!ptr->server_name.empty() && !ptr1->server_name.empty() &&  ptr->server_name == ptr1->server_name))
                 error_message("error ");
-        }
-        if(ptr != data.begin() && (ptr->client_max_body_size == -1))
-            ptr->client_max_body_size = data.begin()->client_max_body_size;
-        for(std::vector<LOCATION>::iterator ptr2 = ptr->pages.begin() ; ptr2 != ptr->pages.end(); ptr2++ )
-        {
-            if(ptr2->path == "/upload" && flg1 == 1)
-                error_message("error server can only have one upload directory");
-            if(ptr2->path == "/upload" && flg1 == 0)
-                flg1 = 1;
-            if(ptr2->path == "/" && flg ==1)  
-                error_message("error server can have only one root /");
-            if(ptr2->path == "/" && flg == 0)
-                flg = 1;
-            if(ptr2->root.empty())
-            {
-                std::cout << "|" << ptr2->root << "|" << ptr2->path << std::endl;
-                error_message("error not root ");
-            }
-            if((ptr2->path == "php" || ptr2->path == "py" ) && flg2 == 1)
-                error_message("error server can only run one scripte");   
-            if((ptr2->path == "php" || ptr2->path == "py" ) && flg2 == 0)
-                flg2 = 1;
-            if(ptr2->path == "/py")  
-            {
-                if(ptr2->cgi.length() < 4 || ptr2->cgi.find(".py") != ptr2->cgi.length() - 3)
-                        error_message("error in file extention pyton");
-                std::ifstream read(ptr2->root + ptr2->cgi );
-                if( !read.is_open())
-                    error_message("error open cgi file");
-                read.close();
-            }
-            if(ptr2->path == "/php")
-            {
-                 if(ptr2->cgi.length() < 5   || ptr2->cgi.find(".php") != ptr2->cgi.length() - 4)
-                        error_message("error in file extention php");
-                std::ifstream read(ptr2->root + ptr2->cgi );
-                if( !read.is_open())
-                    error_message("error open cgi file");
-                read.close();
-            }
-        }
-        if(flg == 0)
-            error_message("error not root /");
+        } 
         ptr++;
     }
-    readcofg.close();
+
+    // exit(0);
+    //     std::cout << *ptr << std::endl;
     return data;
+    // std::vector< HTTP_SERVER> ata  = data;
+    // std::cout << "\n\n\n\n";
+    // for(std::vector<HTTP_SERVER>::iterator ptr =ata.begin() ; ptr != ata.end(); ptr++ )
+    //     std::cout << *ptr << std::endl;
+    // return 0;
 }

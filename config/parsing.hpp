@@ -30,6 +30,7 @@ class Mycfg
 class LOCATION
 {
     public:
+        std::vector<std::string> allow_methods;
         std::string path;
         std::string root ;
         std::string index ;
@@ -55,6 +56,7 @@ class LOCATION
                 this->autoindex = other.autoindex;
                 this->redirection = other.redirection;
                 this->cgi = other.cgi;
+                this->allow_methods = other.allow_methods;
             }
             return *this;
         }
@@ -64,19 +66,14 @@ class HTTP_SERVER
 {
     public:
         std::string server_name;
-        std::string root;
         long long int client_max_body_size ;
-        std::string error_page_path;
         std::map<int , std::string> error_page;
         std::vector<int> port;
-        std::vector<std::string> allow_methods;
         std::vector<LOCATION> pages;
     HTTP_SERVER()
     {
         server_name = "";
-        root = "";
         client_max_body_size = -1;
-        error_page_path = "";
     }
 
     HTTP_SERVER & operator = (const HTTP_SERVER & other)
@@ -84,12 +81,10 @@ class HTTP_SERVER
             if (this != &other)
             {
                 this->server_name = other.server_name;
-                this->root = other.root;
+                
                 this->client_max_body_size = other.client_max_body_size;
-                this->error_page_path = other.error_page_path;
                 this->error_page = other.error_page;
                 this->port = other.port;
-                this->allow_methods = other.allow_methods;
                 this->pages = other.pages;   
             }
         return *this;

@@ -33,11 +33,11 @@ class request
             // //std::cout<< dataClient.getReadlen() << " | " << dataClient.getRestRequest().length() << std::endl;
             //std::cout<< dataClient.getTypeRequset() << std::endl;
             // return ;
-            if (std::find(dataClient.configData.allow_methods.begin(), dataClient.configData.allow_methods.end(), dataClient.getTypeRequset()) == dataClient.configData.allow_methods.end())
-            {
-                dataClient.error = 403;
-                return ;
-            }
+            // if (std::find(dataClient.configData.allow_methods.begin(), dataClient.configData.allow_methods.end(), dataClient.getTypeRequset()) == dataClient.configData.allow_methods.end())
+            // {
+            //     dataClient.error = 403;
+            //     return ;
+            // }
             if (dataClient.getTypeRequset() == "POST" && dataClient.getReadlen() < dataClient.getContentLength())
                 return ;
             if(dataClient.getUrl().length() > 3)
@@ -64,7 +64,7 @@ class request
                 download_file(dataClient, 0);
                 int s = dataClient.getClientSocket();
                 dataClient.resetData();
-                dataClient.setUrl("/Users/eelhafia/Desktop/webServer/html/delete.html");
+                dataClient.setUrl("/Users/mserrouk/Desktop/webServer/html/delete.html");
                 dataClient.setClientSocket(s);
             }
             if (dataClient.getTypeRequset() == "GET")
