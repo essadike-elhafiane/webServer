@@ -25,6 +25,82 @@ class request
         void delete_request(Client& dataClient);
         int download_file(Client &dataClient, ssize_t pos_start);
         void read_request(Client& dataClient);
+        int   checkAllowedMethods(Client& dataClient)
+        {
+            if (dataClient.getUrl() == "/")
+            {
+                size_t i;
+                for (i = 0; i < dataClient.configData.pages.size(); i++)
+                    if (dataClient.configData.pages[i].path == "/")
+                        break;
+                if (i == dataClient.configData.pages.size())
+                {
+                    dataClient.error = 404;
+                    //std::cout<< "{{-1}}\n";
+                    return 1;
+                }
+                // for (size_t i = 0; i < dataClient.configData.pages[i].allow_methods.size(); i++)
+                // {
+                //     std::cout << "{{{{{{{{{{{{{{{{{{{" << dataClient.configData.pages[i].allow_methods[i] << "}}}}}}}}}}}}}}}}}}}"<< std::endl;
+                // }
+                
+                if (std::find(dataClient.configData.pages[i].allow_methods.begin(), dataClient.configData.pages[i].allow_methods.end(), dataClient.getTypeRequset()) == dataClient.configData.pages[i].allow_methods.end())
+                    return (dataClient.error = 403, 1);
+                
+                // dataClient.setUrl(dataClient.configData.pages[i].root + dataClient.configData.pages[i].index);
+                //std::cout<< dataClient.getUrl() << std::endl;
+                return 0;
+            }
+            else
+            {
+                
+                size_t pos = dataClient.getUrl().find("/", 1);
+                if (pos == std::string::npos)
+                {
+                    size_t i;
+                    for (i = 0; i < dataClient.configData.pages.size(); i++)
+                        if (dataClient.configData.pages[i].path == "/")
+                            break;
+                    if (i == dataClient.configData.pages.size())
+                    {
+                        //std::cout<< "{{00}}\n";
+                        dataClient.error = 404;
+                        return 1;
+                    }
+                    for (size_t i = 0; i < dataClient.configData.pages[i].allow_methods.size(); i++)
+                    {
+                        std::cout << "{{{{{{{{{{{{{{{{{{{" << dataClient.configData.pages[i].allow_methods[i] <<  "}}}}}" << dataClient.getUrl() << "}}}}}}}}}}}}}}"<< std::endl;
+                    }
+                    if (std::find(dataClient.configData.pages[i].allow_methods.begin(), dataClient.configData.pages[i].allow_methods.end(), dataClient.getTypeRequset()) == dataClient.configData.pages[i].allow_methods.end())
+                        return (dataClient.error = 403, 1);
+                    // dataClient.setUrl(dataClient.configData.pages[i].root + dataClient.getUrl());
+                    // //std::cout<< "!!!" << dataClient.getUrl() << "!!!" << std::endl;
+                    return 0;
+                }
+                std::string nameLocation = dataClient.getUrl().substr(0, pos);
+                size_t i;
+                for (i = 0; i < dataClient.configData.pages.size(); i++)
+                {   
+                    if (dataClient.configData.pages[i].path == nameLocation)
+                        break;
+                    //std::cout<< dataClient.configData.pages[i].path;
+                }
+                if (i == dataClient.configData.pages.size())
+                {
+                    //std::coutt<< "{{1}}\n";
+                    dataClient.error = 404;
+                    return 1;
+                }
+                for (size_t i = 0; i < dataClient.configData.pages[i].allow_methods.size(); i++)
+                {
+                    std::cout << "{{{{{{{{{{{{{{{{{{{" << dataClient.configData.pages[i].allow_methods[i] << "}}}}}}}}}}}}}}}}}}}"<< std::endl;
+                }
+                if (std::find(dataClient.configData.pages[i].allow_methods.begin(), dataClient.configData.pages[i].allow_methods.end(), dataClient.getTypeRequset()) == dataClient.configData.pages[i].allow_methods.end())
+                    return (dataClient.error = 403, 1);
+                    // dataClient.setUrl(dataClient.configData.pages[i].root + dataClient.getUrl());
+            }
+            return 0;
+        }
         void receiveRequest(Client& dataClient)
         {
             read_request(dataClient);
@@ -33,6 +109,7 @@ class request
             // //std::cout<< dataClient.getReadlen() << " | " << dataClient.getRestRequest().length() << std::endl;
             //std::cout<< dataClient.getTypeRequset() << std::endl;
             // return ;
+            
             // if (std::find(dataClient.configData.allow_methods.begin(), dataClient.configData.allow_methods.end(), dataClient.getTypeRequset()) == dataClient.configData.allow_methods.end())
             // {
             //     dataClient.error = 403;
@@ -64,7 +141,7 @@ class request
                 download_file(dataClient, 0);
                 int s = dataClient.getClientSocket();
                 dataClient.resetData();
-                dataClient.setUrl("/Users/mserrouk/Desktop/webServer/html/delete.html");
+                dataClient.setUrl("/Users/eelhafia/Desktop/webServer/html/delete.html");
                 dataClient.setClientSocket(s);
             }
             if (dataClient.getTypeRequset() == "GET")

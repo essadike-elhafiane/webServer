@@ -537,6 +537,11 @@ std::vector<HTTP_SERVER>& configFile (int argc , char **argv,std::vector< HTTP_S
             error_message("error not root /");
         ptr++;
     }
+    // for(std::vector<std::string>::iterator itr = data.begin()->pages.begin()->allow_methods.begin() ; itr !=  data.begin()->pages.begin()->allow_methods.end() ; itr++)
+    //     {
+    //        std::cout <<  *itr << std::endl;
+    //     }
+    // exit(0);
     readcofg.close();
     return data;
 }

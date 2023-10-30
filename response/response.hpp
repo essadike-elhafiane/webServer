@@ -152,6 +152,8 @@ class response
 
         int  outoindex(std::string &url  , Client & dataClient)
         {
+            if (url [url.length() - 1] != '/')
+                return 0;
             DIR *directory = opendir(url.c_str());
             if(directory == NULL)  
             {

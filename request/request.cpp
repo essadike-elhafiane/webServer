@@ -305,7 +305,7 @@ int request::download_file(Client &dataClient, ssize_t pos_start)
         }
     }
     return 0;
-    // /goinfre/mserrouk/download/
+    // /goinfre/eelhafia/download/
 }
 
 void printLoadingBar(int percentage, int barWidth) {
@@ -355,7 +355,11 @@ void    request::read_request(Client& dataClient)
         if (dataClient.getHeaderStatus() == true)
             dataClient.setReadlen(bytesRead);
         if (!dataClient.getHeaderStatus() && dataClient.getRestRequest().find("\r\n\r\n") != std::string::npos)
-            parse_request(dataClient);
+        {
+           parse_request(dataClient);
+           if (checkAllowedMethods(dataClient))
+                return ;
+        }
         if (dataClient.getContentLength() > dataClient.configData.client_max_body_size)
         {
             std::cout << dataClient.getContentLength() << "|" << dataClient.configData.client_max_body_size << std::endl;
@@ -410,13 +414,13 @@ void request::delete_request(Client& dataClient)
     int result = std::remove(filename.c_str());
     if (result == 0) {
         // std::string response1 = "HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\nContent-Length: ";
-        dataClient.setUrl("/Users/mserrouk/Desktop/webServer/html/delete.html");
-        // rsp.sendResponse("/Users/mserrouk/Desktop/webServer/html/delete.html", response1, dataClient.getClientSocket(), dataClient);
+        dataClient.setUrl("/Users/eelhafia/Desktop/webServer/html/delete.html");
+        // rsp.sendResponse("/Users/eelhafia/Desktop/webServer/html/delete.html", response1, dataClient.getClientSocket(), dataClient);
         // printf("File deleted successfully.");
         // dataClient.resetData();
     } else {
-        dataClient.setUrl("/Users/mserrouk/Desktop/webServer/html/not_delete.html");
-        // rsp.sendResponse("/Users/mserrouk/Desktop/webServer/html/not_delete.html", response1, dataClient.getClientSocket(), dataClient);
+        dataClient.setUrl("/Users/eelhafia/Desktop/webServer/html/not_delete.html");
+        // rsp.sendResponse("/Users/eelhafia/Desktop/webServer/html/not_delete.html", response1, dataClient.getClientSocket(), dataClient);
         // printf("Failed to delete the file.\n");
         // dataClient.resetData();
     }
