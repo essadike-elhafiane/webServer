@@ -6,7 +6,7 @@
 /*   By: eelhafia <eelhafia@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/29 21:28:36 by eelhafia          #+#    #+#             */
-/*   Updated: 2023/10/30 19:54:26 by eelhafia         ###   ########.fr       */
+/*   Updated: 2023/10/31 22:02:34 by eelhafia         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -180,7 +180,7 @@ int main(int ac , char **av)
                     fds[i].revents = 0;
                     // std::cout<< "fhd\n";
                 }
-                std::cout << dataClient.connection << "======================================" <<std::endl;
+                // std::cout << dataClient.connection << "======================================" <<std::endl;
                 if (dataClient.error || dataClient.connection == "close")
                 {
                     mClients.erase(fds[i].fd);
