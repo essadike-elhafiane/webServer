@@ -34,7 +34,7 @@ class response
             dataClient.SetCgi("");
         }
 
-        void indexGenerator(std::string url, std::string &write)
+        void indexGenerator(std::string url, std::string &write, std::string pathLocation, Client& dataClient)
         {
             std::string path = url;
             write = "<!DOCTYPE html>\n";
@@ -42,7 +42,7 @@ class response
             write += "<head>\n";
             write += "<meta charset=\"UTF-8\">\n";
             write += "<meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n";
-            write += "<title>" + path + "</title>\n";
+            write += "<title> AutoIndex </title>\n";
             write += "<h1>index " + path + "<h1>\n";
             write += "<hr>\n<ul>\n";
             DIR *directory = opendir(path.c_str());
@@ -51,15 +51,34 @@ class response
                 write += "<h1>error open path" + path + "<h1>\n";
                 return ;
             }
-                // delete directory->__dd_buf;
-                // delete directory;
+            
             struct dirent* file;
             while ((file = readdir(directory)) != NULL)
             {
                 std::string d_name = file->d_name;
-                write += "<li><div style=\" padding: 20px; color: rgb(224, 190, 141); margin: 5px;\"><a href=\"" + d_name + "\">" + d_name + "</a></div></li>\n" ; 
+                std::string rest = url.substr(url.find(pathLocation), url.size() - url.find(pathLocation));
+                if (pathLocation == "/")
+                {
+                    size_t i;
+                    for (i = 0; i < dataClient.configData.pages.size(); i++)
+                        if (dataClient.configData.pages[i].path == "/")
+                            break;
+                    if (i == dataClient.configData.pages.size())
+                    {
+                        dataClient.error = 404;
+                        return ;
+                    }
+                    rest = url.substr(dataClient.configData.pages[i].root.size(), url.size() - dataClient.configData.pages[i].root.size());
+                }
+                if (rest[rest.size() -1] != '/')
+                    rest += "/";
+                std::cout<< dataClient.configData.pages[0].root << "||" << rest << "||" << d_name << std::endl;
+                write += "<li><div style=\" padding: 20px; color: rgb(224, 190, 141); margin: 5px;\"><a href=\"" + rest + d_name + "\">" + d_name + "</a></div></li>\n" ; 
                 // std::string name();
             }
+            delete directory->__dd_buf;
+
+            delete directory;
             return ;
         }
 
@@ -144,8 +163,8 @@ class response
 
        int  outoindex(std::string &url  , Client & dataClient ,  std:: string &response)
         {
-            if(url[url.length() - 1] !=  '/' )
-                return 0;
+            // if(url[url.length() - 1] !=  '/' )
+            //     return 0;
             DIR *directory = opendir(url.c_str());
             // std::string root;
             if(directory == NULL)  
@@ -162,11 +181,11 @@ class response
             {
                 // if(ptr->path == "\"")
                 //     root = ptr->root + "\"";
-                std::cout<< "4---|" <<  url << "|" << ptr->root + "/" << "|" << ptr->autoindex << "|" << dataClient.path << "|44---"<< std::endl;
-                if(ptr->redirection.empty() &&  ptr->index.empty()  && url == ptr->root + "/" && ptr->autoindex == 0 && dataClient.path == ptr->path)
+                std::cout<< "4---|" <<  url << "|" << ptr->autoindex << "|" << dataClient.path << "|44---"<< std::endl;
+                if(ptr->redirection.empty() &&  ptr->index.empty() && ptr->autoindex == 0 && dataClient.path == ptr->path)
                 {
                     std::cout<< "77---|\n";
-                    dataClient.error = 401;
+                    dataClient.error = 404;
                     return 1;
                 }
                 if(ptr->redirection.empty() &&  url == ptr->root + "/" && !ptr->index.empty() && dataClient.path == ptr->path)
@@ -174,14 +193,13 @@ class response
                     url +=  ptr->index;
                     return 0;
                 }
-                if( url == ptr->root + "/" && dataClient.path == ptr->path)
+                if(dataClient.path == ptr->path && ptr->autoindex == 1)
                     break;
                 ptr++;
             }
             if (ptr == dataClient.configData.pages.end())
                 return (0);
-            std::cout << "fgh\n";
-            indexGenerator(url  , response);   
+            indexGenerator(url  , response, dataClient.path, dataClient);   
             return 0;
         }
 
