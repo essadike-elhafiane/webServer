@@ -224,7 +224,7 @@ void request::check_Get_Request(Client &dataClient)
             dataClient.error = 404;
             return ;
         }
-        dataClient.setUrl(dataClient.configData.pages[i].root + dataClient.getUrl());
+        dataClient.setUrl(dataClient.configData.pages[i].root + dataClient.getUrl().substr(pos, dataClient.getUrl().size() - pos));
     }
 }
 
@@ -305,7 +305,7 @@ int request::download_file(Client &dataClient, ssize_t pos_start)
         }
     }
     return 0;
-    // /goinfre/eelhafia/download/
+    // /goinfre/mserrouk/download/
 }
 
 void printLoadingBar(int percentage, int barWidth) {
@@ -414,13 +414,13 @@ void request::delete_request(Client& dataClient)
     int result = std::remove(filename.c_str());
     if (result == 0) {
         // std::string response1 = "HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\nContent-Length: ";
-        dataClient.setUrl("/Users/eelhafia/Desktop/webServer/html/delete.html");
-        // rsp.sendResponse("/Users/eelhafia/Desktop/webServer/html/delete.html", response1, dataClient.getClientSocket(), dataClient);
+        dataClient.setUrl("/Users/mserrouk/Desktop/webServer/html/delete.html");
+        // rsp.sendResponse("/Users/mserrouk/Desktop/webServer/html/delete.html", response1, dataClient.getClientSocket(), dataClient);
         // printf("File deleted successfully.");
         // dataClient.resetData();
     } else {
-        dataClient.setUrl("/Users/eelhafia/Desktop/webServer/html/not_delete.html");
-        // rsp.sendResponse("/Users/eelhafia/Desktop/webServer/html/not_delete.html", response1, dataClient.getClientSocket(), dataClient);
+        dataClient.setUrl("/Users/mserrouk/Desktop/webServer/html/not_delete.html");
+        // rsp.sendResponse("/Users/mserrouk/Desktop/webServer/html/not_delete.html", response1, dataClient.getClientSocket(), dataClient);
         // printf("Failed to delete the file.\n");
         // dataClient.resetData();
     }

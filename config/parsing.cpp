@@ -113,12 +113,15 @@ void pars_redirection(std::vector<std::string>::iterator &ptr, std::string &m, s
                 DIR* directory = opendir(m.c_str());
                 if (directory == NULL) 
                 {
-                    //std::cout<< "|" << m << "|" << std::endl;
+                    std::cout<< "|" << m << "|" << std::endl;
                     error_message("faile to open root directory");
                 }
                 delete directory->__dd_buf;
                 delete directory;
             }
+            // if(str == "index")
+            //     if(m[0] != '/')
+            //         error_message("index must start with /");
         }
         if (i == 2 && (*ptr) == ";")
             return;
@@ -532,16 +535,21 @@ std::vector<HTTP_SERVER>& configFile (int argc , char **argv,std::vector< HTTP_S
                     error_message("error open cgi file");
                 read.close();
             }
+            if(!ptr2->index.empty())
+            {
+                std::ifstream ff(ptr2->root + ptr2->index);
+                if(!ff.is_open() || ptr2->index[0] != '/')
+                {
+                    std::cout << ptr2->root + ptr2->index << std::endl;
+                    error_message("error open index");
+                }
+                ff.close();
+            }
         }
         if(flg == 0)
             error_message("error not root /");
         ptr++;
     }
-    // for(std::vector<std::string>::iterator itr = data.begin()->pages.begin()->allow_methods.begin() ; itr !=  data.begin()->pages.begin()->allow_methods.end() ; itr++)
-    //     {
-    //        std::cout <<  *itr << std::endl;
-    //     }
-    // exit(0);
     readcofg.close();
     return data;
 }

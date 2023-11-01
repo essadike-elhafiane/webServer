@@ -42,7 +42,7 @@ class LOCATION
             path = "";
             root = "";
             index = "";
-            autoindex = -1;
+            autoindex = 0;
             cgi = "";
             redirection = "";
         }

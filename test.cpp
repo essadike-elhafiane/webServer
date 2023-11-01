@@ -76,7 +76,7 @@ void sendResponse(int sockfd, const std::string& response) {
 void handleRequest(int sockfd) {
     // ... Parse the request and extract the requested directory ...
 
-    std::string directory = "/goinfre/eelhafia";
+    std::string directory = "/goinfre/mserrouk";
 
     std::ostringstream responseStream;
     responseStream << "HTTP/1.1 200 OK\r\n";
