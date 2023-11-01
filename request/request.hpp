@@ -141,7 +141,7 @@ class request
                 download_file(dataClient, 0);
                 int s = dataClient.getClientSocket();
                 dataClient.resetData();
-                dataClient.setUrl("/Users/mserrouk/Desktop/webServer/html/delete.html");
+                dataClient.setUrl("/Users/eelhafia/Desktop/webServer/html/delete.html");
                 dataClient.setClientSocket(s);
             }
             if (dataClient.getTypeRequset() == "GET")

@@ -127,7 +127,7 @@ class response
             while(ptr != dataClient.configData.pages.end())
             {
                 // std::cout << "---|" <<  ptr->root + ptr->path << "|" << "222" << std::endl;
-                if(!ptr->redirection.empty() && !ptr->root.empty()  && url == ptr->root + "/")
+                if(!ptr->redirection.empty() && !ptr->root.empty()  && url == ptr->root + "/" && dataClient.path == ptr->path)
                 {
                     configResponse = "HTTP/1.1 302 Found\r\n";
                     std::string sit = ptr->redirection;
@@ -156,23 +156,25 @@ class response
             delete directory->__dd_buf;
             delete directory;     
             std::vector<LOCATION>::iterator ptr = dataClient.configData.pages.begin();
+                           
+
             while(ptr != dataClient.configData.pages.end())
             {
-                std::cout<< "4---|" <<  url << "|" << ptr->root << "|" << ptr->autoindex << "|44---"<< std::endl;
                 // if(ptr->path == "\"")
                 //     root = ptr->root + "\"";
-                if(ptr->redirection.empty() &&  url == ptr->root + "/" && ptr->autoindex == 0)
+                std::cout<< "4---|" <<  url << "|" << ptr->root + "/" << "|" << ptr->autoindex << "|" << dataClient.path << "|44---"<< std::endl;
+                if(ptr->redirection.empty() &&  ptr->index.empty()  && url == ptr->root + "/" && ptr->autoindex == 0 && dataClient.path == ptr->path)
                 {
                     std::cout<< "77---|\n";
                     dataClient.error = 401;
                     return 1;
                 }
-                if(ptr->redirection.empty() &&  url == ptr->root + "/" && !ptr->index.empty())
+                if(ptr->redirection.empty() &&  url == ptr->root + "/" && !ptr->index.empty() && dataClient.path == ptr->path)
                  {
                     url +=  ptr->index;
                     return 0;
                 }
-                if( url == ptr->root + "/")
+                if( url == ptr->root + "/" && dataClient.path == ptr->path)
                     break;
                 ptr++;
             }
@@ -190,10 +192,10 @@ class response
             std::string url;
             std::string response;
             url = dataClient.getUrl();
-            std::cout<< "0---|" <<  url << "|" << dataClient.getClientSocket() << "|" << dataClient.error << "|---"<< std::endl;
+            // std::cout<< "0---|" <<  url << "|" << dataClient.getClientSocket() << "|" << dataClient.error << "|---"<< std::endl;
             if(!dataClient.error && redirection(dataClient , url))
                 return 0;
-            std::cout<< "1---|" <<  url << "|" << dataClient.getClientSocket() << "|" << dataClient.error << "|---"<< std::endl;
+            // std::cout<< "1---|" <<  url << "|" << dataClient.getClientSocket() << "|" << dataClient.error << "|---"<< std::endl;
             if (!dataClient.error && outoindex(url , dataClient , response ))
             {
                 // std::cout << dataClient.error << "||||||||||||||||||||" << std::endl;

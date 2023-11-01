@@ -41,6 +41,7 @@ class Client
         std::string cgi;
     public:
         HTTP_SERVER configData;
+        std::string path;
         std::vector<HTTP_SERVER> dataServers;
         std::string connection;
         clock_t timerequest;
