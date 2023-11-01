@@ -56,11 +56,11 @@ int checkValidRequest(std::string &requests, size_t poss, Client& dataClient)
                 return 1;   
             i++; 
             //std::cout<< "1111\n"; 
-            std::cout<< line<< "\n";
+            // std::cout<< line<< "\n";
         }
         else
         {            
-            std::cout<< line<< "\n";
+            // std::cout<< line<< "\n";
             if (line[line.size() - 1] != '\r')
                 return 1;
             size_t posSpace = line.find(" ");
@@ -172,66 +172,64 @@ void request::parse_request(Client& dataClient)
     // //std::cout<< "|" << kk << "|" << std::endl;
 }
 
-void request::check_Get_Request(Client &dataClient)
-{
-    if (dataClient.getUrl() == "/")
-    {
-        size_t i;
-        for (i = 0; i < dataClient.configData.pages.size(); i++)
-            if (dataClient.configData.pages[i].path == "/")
-                break;
-        if (i == dataClient.configData.pages.size())
-        {
-            dataClient.error = 404;
-            //std::cout<< "{{-1}}\n";
-            return ;
-        }
-        dataClient.setUrl(dataClient.configData.pages[i].root + dataClient.configData.pages[i].index);
-        //std::cout<< dataClient.getUrl() << std::endl;
-        dataClient.path = dataClient.configData.pages[i].path;
-        return ;
-    }
-    else
-    {
+// void request::check_Get_Request(Client &dataClient)
+// {
+//     if (dataClient.getUrl() == "/")
+//     {
+//         size_t i;
+//         for (i = 0; i < dataClient.configData.pages.size(); i++)
+//             if (dataClient.configData.pages[i].path == "/")
+//                 break;
+//         if (i == dataClient.configData.pages.size())
+//         {
+//             dataClient.error = 404;
+//             //std::cout<< "{{-1}}\n";
+//             return ;
+//         }
+//         //std::cout<< dataClient.getUrl() << std::endl;
+//         dataClient.path = dataClient.configData.pages[i].path;
+//         return ;
+//     }
+//     else
+//     {
         
-        size_t pos = dataClient.getUrl().find("/", 1);
-        if (pos == std::string::npos)
-        {
-            size_t i;
-            for (i = 0; i < dataClient.configData.pages.size(); i++)
-                if (dataClient.configData.pages[i].path == "/")
-                    break;
-            if (i == dataClient.configData.pages.size())
-            {
-                //std::cout<< "{{00}}\n";
-                dataClient.error = 404;
-                return ;
-            }
-            dataClient.setUrl(dataClient.configData.pages[i].root + dataClient.getUrl());
-            // //std::cout<< "!!!" << dataClient.getUrl() << "!!!" << std::endl;
-        dataClient.path = dataClient.configData.pages[i].path;
+//         size_t pos = dataClient.getUrl().find("/", 1);
+//         if (pos == std::string::npos)
+//         {
+//             size_t i;
+//             for (i = 0; i < dataClient.configData.pages.size(); i++)
+//                 if (dataClient.configData.pages[i].path == "/")
+//                     break;
+//             if (i == dataClient.configData.pages.size())
+//             {
+//                 //std::cout<< "{{00}}\n";
+//                 dataClient.error = 404;
+//                 return ;
+//             }
+//             dataClient.setUrl(dataClient.configData.pages[i].root + dataClient.getUrl());
+//             // //std::cout<< "!!!" << dataClient.getUrl() << "!!!" << std::endl;
+//         dataClient.path = dataClient.configData.pages[i].path;
 
-            return ;
-        }
-        std::string nameLocation = dataClient.getUrl().substr(0, pos);
-        size_t i;
-        for (i = 0; i < dataClient.configData.pages.size(); i++)
-        {   
-            if (dataClient.configData.pages[i].path == nameLocation)
-                break;
-            //std::cout<< dataClient.configData.pages[i].path;
-        }
-       if (i == dataClient.configData.pages.size())
-        {
-            //std::coutt<< "{{1}}\n";
-            dataClient.error = 404;
-            return ;
-        }
+//             return ;
+//         }
+//         std::string nameLocation = dataClient.getUrl().substr(0, pos);
+//         size_t i;
+//         for (i = 0; i < dataClient.configData.pages.size(); i++)
+//         {   
+//             if (dataClient.configData.pages[i].path == nameLocation)
+//                 break;
+//             //std::cout<< dataClient.configData.pages[i].path;
+//         }
+//        if (i == dataClient.configData.pages.size())
+//         {
+//             //std::coutt<< "{{1}}\n";
+//             dataClient.error = 404;
+//             return ;
+//         }
         
-        dataClient.setUrl(dataClient.configData.pages[i].root + dataClient.getUrl().substr(pos, dataClient.getUrl().size() - pos));
-        dataClient.path = dataClient.configData.pages[i].path;
-    }
-}
+       
+//     }
+// }
 
 
 request::request(/* args */)
@@ -272,11 +270,10 @@ int request::download_file(Client &dataClient, ssize_t pos_start)
         std::string namefile = dataClient.getRestRequest().substr(p + 1, po - p - 2);
         size_t i = 0;
         for (i = 0; i < dataClient.configData.pages.size() ; i++)
-        {
-            if (dataClient.configData.pages[i].path == "/upload")
+            if (dataClient.configData.pages[i].path == dataClient.path)
                 break;
-        }
-        namefile = dataClient.configData.pages[i].root + namefile;
+        namefile = dataClient.configData.pages[i].root + "/" + namefile;
+        std::cout << namefile << std::endl;
         dataClient.setFileName(namefile);
         std::ofstream file(namefile, std::ios::out | std::ios::binary);
         if (!file) {
@@ -310,7 +307,6 @@ int request::download_file(Client &dataClient, ssize_t pos_start)
         }
     }
     return 0;
-    // /goinfre/eelhafia/download/
 }
 
 void printLoadingBar(int percentage, int barWidth) {
@@ -410,10 +406,11 @@ void request::delete_request(Client& dataClient)
     size_t i = 0;
     for (i = 0; i < dataClient.configData.pages.size() ; i++)
     {
-        if (dataClient.configData.pages[i].path == "/upload")
+        if (dataClient.configData.pages[i].path == dataClient.path)
             break;
     }
-    filename = dataClient.configData.pages[i].root + dataClient.getUrl();
+    filename = dataClient.getUrl();
+    std::cout << "+++++++++++++++++++++++++++" << filename << std::endl;
     if (dataClient.getUrl() == "")
         return ;
     int result = std::remove(filename.c_str());

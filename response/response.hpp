@@ -226,6 +226,8 @@ class response
                 {
                     std::cout<< url << std::endl;
                     std::cerr << "Error open file1"  << std::endl;
+                    if (dataClient.error == 404)
+                        return 0;
                     dataClient.error = 404;
                     sendResponse(dataClient);
                     return 0;
