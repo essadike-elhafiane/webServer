@@ -25,6 +25,9 @@ class request
         void read_request(Client& dataClient);
         int   checkAllowedMethods(Client& dataClient)
         {
+            std::cout << dataClient.getUrl() << std::endl;
+            if (dataClient.error)
+                return 1;
             if (dataClient.getUrl() == "/")
             {
                 size_t i;
@@ -35,7 +38,7 @@ class request
                     return (dataClient.error = 404, 1);
                 if (std::find(dataClient.configData.pages[i].allow_methods.begin(), dataClient.configData.pages[i].allow_methods.end(), dataClient.getTypeRequset()) == dataClient.configData.pages[i].allow_methods.end())
                     return (dataClient.error = 403, 1);
-                dataClient.setUrl(dataClient.configData.pages[i].root + dataClient.configData.pages[i].index);
+                dataClient.setUrl(dataClient.configData.pages[i].root + dataClient.getUrl());
                 dataClient.path = dataClient.configData.pages[i].path;
                 return 0;
             }
