@@ -132,7 +132,9 @@ class response
             else
             {
                 url = dataClient.configData.error_page.begin()->second;
-                configResponse = "HTTP/1.1 500 Internal Server Error\r\nContent-Type: text/html\r\nConnection: close\r\nContent-Length: ";
+                std::stringstream ss;
+                ss << dataClient.error;
+                configResponse = "HTTP/1.1 "+ ss.str() +" Internal Server Error\r\nContent-Type: text/html\r\nConnection: close\r\nContent-Length: ";
             }
             //std::cout<< url << std::endl;
         }
@@ -248,7 +250,7 @@ class response
                     if (dataClient.error == 404)
                         return 0;
                     dataClient.error = 404;
-                    // sendResponse(dataClient);
+                    sendResponse(dataClient);
                     return 0;
                 }
                 configResponse = configResponse + std::to_string(r.tellg()) + "\r\n\r\n";
@@ -286,6 +288,7 @@ class response
             }
             // std::cout<< dataClient.getClientSocket() << "|"<<static_cast<ssize_t>(input.tellg()) - dataClient.getLenSend() << "h\n";
             // std::cout<< "ttt\n";
+            std::cout << dataClient.configData.server_name << "+++++++++++\n";
             size_t len = send(dataClient.getClientSocket(), buffer , input.tellg() - dataClient.getLenSend(), 0);
             // std::cout<< "tttp\n";
             if (len < 0)
