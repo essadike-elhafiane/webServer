@@ -9,7 +9,7 @@
 #include<map>
 #include <sstream>
 #include <dirent.h>
-
+#include <unistd.h>
 
 
 class Mycfg

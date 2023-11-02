@@ -117,6 +117,7 @@ void pars_redirection(std::vector<std::string>::iterator &ptr, std::string &m, s
                     error_message("faile to open root directory");
                 }
                 delete directory->__dd_buf;
+                close(directory->__dd_fd);
                 delete directory;
             }
             // if(str == "index")

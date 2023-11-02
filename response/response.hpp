@@ -77,7 +77,7 @@ class response
                 // std::string name();
             }
             delete directory->__dd_buf;
-
+            close(directory->__dd_fd);
             delete directory;
             return ;
         }
@@ -173,6 +173,7 @@ class response
                 return 0 ;
             }
             delete directory->__dd_buf;
+            close (directory->__dd_fd);
             delete directory;     
             std::vector<LOCATION>::iterator ptr = dataClient.configData.pages.begin();
                            
@@ -247,7 +248,7 @@ class response
                     if (dataClient.error == 404)
                         return 0;
                     dataClient.error = 404;
-                    sendResponse(dataClient);
+                    // sendResponse(dataClient);
                     return 0;
                 }
                 configResponse = configResponse + std::to_string(r.tellg()) + "\r\n\r\n";
@@ -256,6 +257,7 @@ class response
                 if (len < 0)
                 {
                     std::cerr << "Failed to send response." << std::endl;
+                    r.close();
                     return 0;
                 }
                 r.close();
@@ -289,8 +291,9 @@ class response
             if (len < 0)
             {
                 std::cerr << "Failed to send response." << std::endl;
-                return 1;
+                input.close();
                 dataClient.error = 1000;
+                return 1;
             }
             dataClient.setLenSend(len);
             input.close();

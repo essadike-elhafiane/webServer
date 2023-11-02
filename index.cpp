@@ -1,7 +1,7 @@
 #include <iostream>
 #include <fstream>
 #include <dirent.h>
-
+#include <unistd.h>
 
 
 int indexGenerator(std::string url , std::string name )
@@ -30,8 +30,9 @@ int indexGenerator(std::string url , std::string name )
         write << "<h1>" << "error open path" << path << "<h1>\n";
         return 0;
     }
-        delete directory->__dd_buf;
-        delete directory;
+    delete directory->__dd_buf;
+    close(directory->__dd_fd);
+    delete directory;
     struct dirent* file;
     while ((file = readdir(directory)) != NULL)
     {

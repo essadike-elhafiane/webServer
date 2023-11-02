@@ -6,7 +6,7 @@
 /*   By: eelhafia <eelhafia@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/29 21:28:36 by eelhafia          #+#    #+#             */
-/*   Updated: 2023/11/01 20:23:47 by eelhafia         ###   ########.fr       */
+/*   Updated: 2023/11/02 01:14:35 by eelhafia         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -60,10 +60,26 @@ int main(int ac , char **av)
     std::cout<< "number servers: " << numberServer << std::endl;
     while (true) 
     {
-        int activity = poll(fds, MAX_CLIENTS + 1, -1);
+        int activity = poll(fds, MAX_CLIENTS + 1, 10000);
         if (activity < 0) {
             perror("Poll error");
             exit(EXIT_FAILURE);
+        }
+        if (activity == 0)
+        {
+            for (size_t i = numberServer; i < MAX_CLIENTS; i++)
+            {
+                if (fds[i].fd != 0)
+                {
+                    mClients.erase(fds[i].fd);
+                    std::cout<< "close with error : " << fds[i].fd << std::endl;
+                    // //exit(1);
+                    close(fds[i].fd);
+                    fds[i].fd = 0;
+                    fds[i].events = 0;
+                    fds[i].revents = 0;
+                }
+            }
         }
 
         // Check for activity on the server socket
@@ -198,7 +214,7 @@ int main(int ac , char **av)
         if (fds[i].fd != 0 && (fds[i].revents & (POLLERR | POLLHUP)))
         {
             mClients.erase(fds[i].fd);
-            std::cout<< "close with error" << fds[i].fd << std::endl;
+            std::cout<< "close with errorkkkk" << fds[i].fd << std::endl;
             // //exit(1);
             close(fds[i].fd);
             fds[i].fd = 0;
