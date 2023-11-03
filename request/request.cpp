@@ -142,7 +142,7 @@ void request::parse_request(Client& dataClient)
             return ;
         }
         size_t pos_rn = dataClient.getRestRequest().find("\r\n", pos_boundary);
-        dataClient.setBoundaryRequest(dataClient.getRestRequest().substr(pos_boundary + 9, pos_rn - pos_boundary - 7));
+        dataClient.setBoundaryRequest(dataClient.getRestRequest().substr(pos_boundary + 9, pos_rn - pos_boundary - 9));
         //std::cout<< dataClient.getBoundarytSocket() << std::endl;
         size_t pos_Content = dataClient.getRestRequest().find("Content-Length:", 0) + 16;
         if (pos_Content == std::string::npos)
@@ -199,12 +199,12 @@ int findchar(const char *buffer, const char *dest, size_t size)
     return -1;
 }
 
-void request::parseChucke(Client& dataClient, size_t pos)
+int request::parseChunck(Client& dataClient, size_t pos)
 {
     size_t posf = dataClient.getRestRequest().find("\r\n\r\n", pos);
     size_t poss = dataClient.getRestRequest().find("\r\n", posf + 4);
     if (poss == std::string::npos)
-        return ;
+        return (dataClient.error = 400);
     size_t lenRead = 0;
     std::string len = dataClient.getRestRequest().substr(posf + 4, poss - posf - 4);
     std::stringstream f;
@@ -217,6 +217,8 @@ void request::parseChucke(Client& dataClient, size_t pos)
     size_t startpos = posf + 4 + ll;
     while (startpos != std::string::npos)
     {
+        // if (dataClient.getRestRequest()[startpos + 1] != '\r')
+        //     return (dataClient.error = 400);
         size_t endPos = dataClient.getRestRequest().find("\r\n", startpos + 2);
         if (endPos ==  std::string::npos)
             break;
@@ -231,6 +233,7 @@ void request::parseChucke(Client& dataClient, size_t pos)
     }
     dataClient.clearReadlen();
     dataClient.setReadlen(lenRead);
+    return 0;
 }
 
 int request::download_file(Client &dataClient, ssize_t pos_start)
