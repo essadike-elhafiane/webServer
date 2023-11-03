@@ -120,6 +120,10 @@ void request::parse_request(Client& dataClient)
         if (tokens.size() > 2)
             break;
     }
+    size_t postype = dataClient.getRestRequest().find("Transfer-Encoding:");
+    if (postype != std::string::npos)
+        dataClient.TransferEncoding = dataClient.getRestRequest().substr(postype + 19,dataClient.getRestRequest().find("\r\n", postype) - postype - 19);
+    std::cout << "-----------" << dataClient.TransferEncoding << std::endl;
     if (tokens[2].substr(0,tokens[2].find("\r\n")) != "HTTP/1.1" || tokens[1].empty() || tokens[0] == "")
     {
         dataClient.error = 400;
@@ -139,7 +143,7 @@ void request::parse_request(Client& dataClient)
         }
         size_t pos_rn = dataClient.getRestRequest().find("\r\n", pos_boundary);
         dataClient.setBoundaryRequest(dataClient.getRestRequest().substr(pos_boundary + 9, pos_rn - pos_boundary - 7));
-        // //std::cout<< dataClient.getBoundarytSocket() << std::endl;
+        //std::cout<< dataClient.getBoundarytSocket() << std::endl;
         size_t pos_Content = dataClient.getRestRequest().find("Content-Length:", 0) + 16;
         if (pos_Content == std::string::npos)
         {
@@ -166,70 +170,12 @@ void request::parse_request(Client& dataClient)
         return ;
     }
     dataClient.setHeaderStatus(true);
+    
     // //exit(1);
     // std::string kk = k.substr(0, k.size() -2 );
     // }
     // //std::cout<< "|" << kk << "|" << std::endl;
 }
-
-// void request::check_Get_Request(Client &dataClient)
-// {
-//     if (dataClient.getUrl() == "/")
-//     {
-//         size_t i;
-//         for (i = 0; i < dataClient.configData.pages.size(); i++)
-//             if (dataClient.configData.pages[i].path == "/")
-//                 break;
-//         if (i == dataClient.configData.pages.size())
-//         {
-//             dataClient.error = 404;
-//             //std::cout<< "{{-1}}\n";
-//             return ;
-//         }
-//         //std::cout<< dataClient.getUrl() << std::endl;
-//         dataClient.path = dataClient.configData.pages[i].path;
-//         return ;
-//     }
-//     else
-//     {
-        
-//         size_t pos = dataClient.getUrl().find("/", 1);
-//         if (pos == std::string::npos)
-//         {
-//             size_t i;
-//             for (i = 0; i < dataClient.configData.pages.size(); i++)
-//                 if (dataClient.configData.pages[i].path == "/")
-//                     break;
-//             if (i == dataClient.configData.pages.size())
-//             {
-//                 //std::cout<< "{{00}}\n";
-//                 dataClient.error = 404;
-//                 return ;
-//             }
-//             dataClient.setUrl(dataClient.configData.pages[i].root + dataClient.getUrl());
-//             // //std::cout<< "!!!" << dataClient.getUrl() << "!!!" << std::endl;
-//         dataClient.path = dataClient.configData.pages[i].path;
-
-//             return ;
-//         }
-//         std::string nameLocation = dataClient.getUrl().substr(0, pos);
-//         size_t i;
-//         for (i = 0; i < dataClient.configData.pages.size(); i++)
-//         {   
-//             if (dataClient.configData.pages[i].path == nameLocation)
-//                 break;
-//             //std::cout<< dataClient.configData.pages[i].path;
-//         }
-//        if (i == dataClient.configData.pages.size())
-//         {
-//             //std::coutt<< "{{1}}\n";
-//             dataClient.error = 404;
-//             return ;
-//         }
-        
-       
-//     }
-// }
 
 
 request::request(/* args */)
@@ -251,6 +197,40 @@ int findchar(const char *buffer, const char *dest, size_t size)
             return i + pos;
     }
     return -1;
+}
+
+void request::parseChucke(Client& dataClient, size_t pos)
+{
+    size_t posf = dataClient.getRestRequest().find("\r\n\r\n", pos);
+    size_t poss = dataClient.getRestRequest().find("\r\n", posf + 4);
+    if (poss == std::string::npos)
+        return ;
+    size_t lenRead = 0;
+    std::string len = dataClient.getRestRequest().substr(posf + 4, poss - posf - 4);
+    std::stringstream f;
+    f << len;
+    int ll;
+    f >> std::hex >> ll;
+    lenRead += ll;
+   
+    dataClient.getRestRequest().erase(posf + 4, poss - posf - 2);
+    size_t startpos = posf + 4 + ll;
+    while (startpos != std::string::npos)
+    {
+        size_t endPos = dataClient.getRestRequest().find("\r\n", startpos + 2);
+        if (endPos ==  std::string::npos)
+            break;
+        len = dataClient.getRestRequest().substr(startpos + 2, endPos - startpos - 2);
+        dataClient.getRestRequest().erase(startpos, endPos + 2 - startpos);
+        f.clear();
+        f << len;
+        f >> std::hex >> ll;
+        f << ll;
+        lenRead += ll;
+        startpos = startpos + ll;
+    }
+    dataClient.clearReadlen();
+    dataClient.setReadlen(lenRead);
 }
 
 int request::download_file(Client &dataClient, ssize_t pos_start)
@@ -300,7 +280,7 @@ int request::download_file(Client &dataClient, ssize_t pos_start)
         file.write(dataClient.getRestRequest().c_str() + start, endPos - start - 2);
         file.close();
         size_t pos_next_start = dataClient.getRestRequest().find(bonadry, endPos + bonadry.length() - 4);
-        if (pos_next_start != std::string::npos)
+        if (pos_next_start != std::string::npos && !dataClient.getBoundarytSocket().empty())
         {
             dataClient.setFileName("");
             download_file(dataClient, endPos);
@@ -352,7 +332,13 @@ void    request::read_request(Client& dataClient)
         }
         if (bytesRead < 0)
             break;
+        // std::cout << buffer ;
+        // // exit(1);
         dataClient.setRestRequest(buffer, bytesRead);
+        // if (dataClient.getHeaderStatus() == true && dataClient)
+        // {
+
+        // }
         if (dataClient.getHeaderStatus() == true)
             dataClient.setReadlen(bytesRead);
         if (!dataClient.getHeaderStatus() && dataClient.getRestRequest().find("\r\n\r\n") != std::string::npos)

@@ -44,6 +44,7 @@ class Client
         std::string path;
         std::vector<HTTP_SERVER> dataServers;
         std::string connection;
+        std::string TransferEncoding;
         clock_t timerequest;
         Client();
         void SetCgi(std::string  s)
@@ -158,6 +159,10 @@ class Client
         {
             return readylen;
         }
+        void clearReadlen()
+        {
+            readylen = 0;
+        }
         void setHeaderStatus(bool h)
         {
             header = h;
@@ -179,6 +184,7 @@ class Client
             error = 0;
             cgi = "";
             connection = "";
+            TransferEncoding ="";
         }
         ~Client();
 };

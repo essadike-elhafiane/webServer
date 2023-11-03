@@ -20,6 +20,7 @@ class request
 
     public:
         request(/* args */);
+        void parseChucke(Client& dataClient, size_t pos);
         void delete_request(Client& dataClient);
         int download_file(Client &dataClient, ssize_t pos_start);
         void read_request(Client& dataClient);
@@ -81,9 +82,10 @@ class request
             read_request(dataClient);
             if (dataClient.error)
                 return ;
-           
+
             if (dataClient.getTypeRequset() == "POST" && dataClient.getReadlen() < dataClient.getContentLength())
                 return ;
+            
             if(dataClient.getUrl().length() > 3)
             {
                 if (dataClient.getUrl().find(".py", dataClient.getUrl().length() - 4) != dataClient.getUrl().npos) 
@@ -101,10 +103,19 @@ class request
                     return ;
                 }
             }
-
+            if (dataClient.getHeaderStatus() == true && dataClient.TransferEncoding == "chunked" && dataClient.getTypeRequset() == "POST")
+            {
+                parseChucke(dataClient, 0);
+            }
+            std::ofstream m("txt");
+            m << dataClient.getRestRequest();
+            std::cout << "||||||" << dataClient.getReadlen() << "|" << dataClient.getContentLength() << "||||\n";
             if (dataClient.getTypeRequset() == "POST" && dataClient.getReadlen() == dataClient.getContentLength())
             {
-                download_file(dataClient, 0);
+                std::cout << "dhfhdfhd\n";
+                if (download_file(dataClient, 0))
+                    return ;
+                std::cout << "downnnnnnnnn\n";
                 int s = dataClient.getClientSocket();
                 dataClient.resetData();
                 size_t i;

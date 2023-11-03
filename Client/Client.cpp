@@ -17,6 +17,7 @@ Client::Client()
     error = 0;
     cgi = "";
     connection = "";
+    TransferEncoding = "";
 }
 
 Client::~Client()
