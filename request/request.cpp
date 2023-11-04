@@ -142,7 +142,11 @@ void request::parse_request(Client& dataClient)
             return ;
         }
         size_t pos_rn = dataClient.getRestRequest().find("\r\n", pos_boundary);
-        dataClient.setBoundaryRequest(dataClient.getRestRequest().substr(pos_boundary + 9, pos_rn - pos_boundary - 9));
+        if (dataClient.TransferEncoding == "chunked")
+            dataClient.setBoundaryRequest(dataClient.getRestRequest().substr(pos_boundary + 9, pos_rn - pos_boundary - 9));
+        else
+            dataClient.setBoundaryRequest(dataClient.getRestRequest().substr(pos_boundary + 9, pos_rn - pos_boundary - 7));
+
         //std::cout<< dataClient.getBoundarytSocket() << std::endl;
         size_t pos_Content = dataClient.getRestRequest().find("Content-Length:", 0) + 16;
         if (pos_Content == std::string::npos)
