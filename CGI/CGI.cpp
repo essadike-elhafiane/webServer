@@ -86,6 +86,7 @@ CGISettler::CGISettler(const std::string& CGI_path, const std::string& CGI_file,
                 std::cerr << env[i] << std::endl;
             
             close_pipes();
+            close(fd);
             if (execve(bin, args, env) == -1) {
                 std::cerr << "Failed to execute the CGI script: " << strerror(errno) << std::endl;
                 this->error_CGI();
@@ -97,8 +98,7 @@ CGISettler::CGISettler(const std::string& CGI_path, const std::string& CGI_file,
             exit(1);
         }
 
-
-
+        close(fd);
         if (close(this->R_pipes[1]) == -1 || close(this->W_pipes[0]) == -1)
             throw "HTTP 500";
     

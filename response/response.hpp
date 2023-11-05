@@ -245,11 +245,28 @@ class response
                 if (!r.is_open())
                 {
                     std::cout<< url << std::endl;
+                    if (!dataClient.error)
+                    {
+                        dataClient.error = 404;
+                        sendResponse(dataClient);
+                    }
+                    if (dataClient.error)
+                    {
+                        std::cout << "====\n";
+                        std::stringstream ss;
+                        ss << dataClient.error;
+                        configResponse = "HTTP/1.1 "+ ss.str() +" Error\r\nContent-Type: text/html\r\nConnection: close\r\nContent-Length: 32\r\n\r\n<!DOCTYPE html>\n<h1>\"Error\"</h1>";
+                        size_t len = send(dataClient.getClientSocket(), configResponse.c_str() , configResponse.length() , 0);
+                        if (len < 0)
+                        {
+                            std::cerr << "Failed to send response." << std::endl;
+                            return 0;
+                        }
+                        return 0;
+                    }
                     std::cerr << "Error open file1"  << std::endl;
                     if (dataClient.error == 404)
                         return 0;
-                    dataClient.error = 404;
-                    sendResponse(dataClient);
                     return 0;
                 }
                 configResponse = configResponse + std::to_string(r.tellg()) + "\r\n\r\n";

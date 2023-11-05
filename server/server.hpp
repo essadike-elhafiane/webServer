@@ -21,10 +21,11 @@ class server
     private: 
         std::string name;
         int serverSocket;
+        std::string host;
         struct sockaddr_in serverAddress;
     public:
         int port;
-        server(std::string name);
+        server(std::string name, std::string host);
         std::string getName()
         {
            return name;
@@ -40,19 +41,19 @@ class server
         }
         int setUpServer()
         {
-            std::memset((char*)&serverAddress, 0, sizeof(serverAddress));
-            serverAddress.sin_family = AF_INET;
-            serverAddress.sin_addr.s_addr = INADDR_ANY; // Bind to any available address
-            serverAddress.sin_port = htons(port);
-            // bind server;
-            
             int opt = 1;
             if (setsockopt(serverSocket, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt)) == -1) {
                 std::cerr << "Failed to set socket options." << std::endl;
                 return 1;
             }
+            std::memset((char*)&serverAddress, 0, sizeof(serverAddress));
+            serverAddress.sin_family = AF_INET;
+            serverAddress.sin_addr.s_addr = inet_addr(host.c_str()); // Bind to any available address
+            serverAddress.sin_port = htons(port);
+            // bind server;
+            
 
-            if (bind(serverSocket, (struct sockaddr*)&serverAddress, sizeof(serverAddress)) < 0) {
+            if (bind(serverSocket, reinterpret_cast<sockaddr*>(&serverAddress), sizeof(serverAddress)) < 0) {
                 std::cerr << "Error binding socket." << std::endl;
                 return 1;
             }

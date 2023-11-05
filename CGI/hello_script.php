@@ -3,7 +3,7 @@
 <?php
 
     echo "<pre>";
-
+    // sleep(20000);
     print_r($_FILES);
     echo ($_FILES['fileToUpload']['tmp_name']);
     $uploadedFile = $_FILES['fileToUpload']; // Assuming 'file' is the name of your file input field in a form.
@@ -27,9 +27,9 @@
 
  
 
-<form action="upload.php" method="post" enctype="multipart/form-data">
+<!-- <form action="upload.php" method="post" enctype="multipart/form-data">
     Select File: <input type="file" name="fileToUpload">
     <input type="submit" value="Upload File" multiple>
 </form>
-<img src="../images/i.jpeg" alt="">
+<img src="../images/i.jpeg" alt=""> -->
 

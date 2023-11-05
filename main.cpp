@@ -6,7 +6,7 @@
 /*   By: eelhafia <eelhafia@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/29 21:28:36 by eelhafia          #+#    #+#             */
-/*   Updated: 2023/11/02 01:14:35 by eelhafia         ###   ########.fr       */
+/*   Updated: 2023/11/05 15:46:26 by eelhafia         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,7 +44,7 @@ int main(int ac , char **av)
     {
         for (size_t j = 0; j < configData[i].port.size(); j++)
         {
-            server a(configData[i].server_name);
+            server a(configData[i].server_name, "10.11.8.6");
             if (a.runServer(MAX_CLIENTS, configData[i].port[j]))
                 continue;
             fcntl(a.getServerSocket(), F_SETFL, O_NONBLOCK, FD_CLOEXEC);
@@ -167,7 +167,7 @@ int main(int ac , char **av)
                 std::string u;
                 Client &dataClient = mClients[fds[i].fd];
                 // //std::cout<<"|"<< dataClient.getCgi();
-                
+                std::cout << "+}}}{{{{{{{{}}}}}}}}\n";
                 if (dataClient.getCgi() != "" && (dataClient.getUrl().find(".php") != std::string::npos || dataClient.getUrl().find(".py") != std::string::npos))
                 {
                     resp.sendStringResponse(dataClient);

@@ -111,11 +111,11 @@ void pars_redirection(std::vector<std::string>::iterator &ptr, std::string &m, s
             if (str == "root")
             {
                 DIR* directory = opendir(m.c_str());
-                if (directory == NULL) 
-                {
-                    std::cout<< "|" << m << "|" << std::endl;
-                    error_message("faile to open root directory");
-                }
+                // if (directory == NULL) 
+                // {
+                //     std::cout<< "|" << m << "|" << std::endl;
+                //     error_message("faile to open root directory");
+                // }
                 delete directory->__dd_buf;
                 close(directory->__dd_fd);
                 delete directory;

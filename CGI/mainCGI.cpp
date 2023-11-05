@@ -39,22 +39,25 @@ std::string mainCGI(std::string urlCgi, int clientSocket, Client &dataClient) {
      try {
 
         std::string scriptType = "php";
+        std::cout << "sdgsdgsdgsdgsdgs\n";
 
         cgiSettler.executionCGI();
         cgiSettler.dataClient = dataClient;
         wait(0);
-       
+        std::cout << "sdgsdgsdgsdgsdgs------------------\n";
         std::string postDate = "my data";
         int readEnd = cgiSettler.getReadEnd();
 
-        char c;
-        while(read(readEnd ,&c,1))
+        char c[1001];
+        memset(c, 0, 1000);
+        while(read(readEnd ,c,1000))
         {
           responsesstring += c;
-           
+          memset(c, 0, 1000);
+           std::cout << "????????????\n";
         }
         //std::cout<< responsesstring << std::endl;
-    
+        cgiSettler.close_pipes();
      } catch (const char* error) {
         std::cerr << "Error: " << error << std::endl;
       }
