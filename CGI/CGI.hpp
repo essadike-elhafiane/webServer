@@ -43,6 +43,7 @@ public:
 
     Client &dataClient;
     std::string body;
+    pid_t pid;
     CGISettler(const std::string& path, const std::string& file, const std::string& scriptType,  Client &dataClient);
     
     int getReadEnd() const;

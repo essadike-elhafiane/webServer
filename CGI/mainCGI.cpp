@@ -1,6 +1,6 @@
 #include"CGI.hpp"
 #include <fstream>
-
+#include <signal.h>
 
 
 
@@ -12,8 +12,8 @@ std::string mainCGI(std::string urlCgi, int clientSocket, Client &dataClient) {
     std::cout<<urlCgi<<std::endl;
     (void) clientSocket;
   
-    std::string spath ="/Users/eelhafia/Desktop/webServer/CGI/hello_script.php";
-    std::string sfile = "/Users/eelhafia/Desktop/webServer/CGI/hello_script.php";
+    std::string spath ="/Users/edraidry/Desktop/webServer/CGI/hello_script.php";
+    std::string sfile = "/Users/edraidry/Desktop/webServer/CGI/hello_script.php";
     std::string sscriptType = "php";
     CGISettler cgiSettler(spath, sfile, sscriptType, dataClient);
 
@@ -31,10 +31,10 @@ std::string mainCGI(std::string urlCgi, int clientSocket, Client &dataClient) {
     request.request_data = "fix"; ;
    
 
-    //std::string path = "/Users/eelhafia/Desktop/fixweb/CGIfix/test.py";
-    std::string path ="/Users/eelhafia/Desktop/webServer/CGI/hello_script.php";
+    //std::string path = "/Users/edraidry/Desktop/fixweb/CGIfix/test.py";
+    std::string path ="/Users/edraidry/Desktop/webServer/CGI/hello_script.php";
    
-    std::string file = "/Users/eelhafia/Desktop/webServer/CGI/hello_script.php";
+    std::string file = "/Users/edraidry/Desktop/webServer/CGI/hello_script.php";
     std::string responsesstring;
      try {
 
@@ -43,18 +43,27 @@ std::string mainCGI(std::string urlCgi, int clientSocket, Client &dataClient) {
 
         cgiSettler.executionCGI();
         cgiSettler.dataClient = dataClient;
-        wait(0);
+        // wait(0);
         std::cout << "sdgsdgsdgsdgsdgs------------------\n";
         std::string postDate = "my data";
         int readEnd = cgiSettler.getReadEnd();
-
-        char c[1001];
-        memset(c, 0, 1000);
-        while(read(readEnd ,c,1000))
+        sleep(1);
+        char c;
+        
+        int p = 0;
+        while((p = read(readEnd , &c, 1)))
         {
+            std::cout << "dfhdhfdhdfhdfhdfhdfhd\n";
+
+          if (p <= 0)
+          {
+            std::cout << "dfhdhfdhdfhdfhdfhdfhd-------------------------------\n";
+            dataClient.error = 500;
+            kill(cgiSettler.pid, SIGKILL);
+            cgiSettler.close_pipes();
+            return "s";
+          }
           responsesstring += c;
-          memset(c, 0, 1000);
-           std::cout << "????????????\n";
         }
         //std::cout<< responsesstring << std::endl;
         cgiSettler.close_pipes();
