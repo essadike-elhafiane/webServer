@@ -341,11 +341,11 @@ void server_pars(std::vector<std::string>::iterator &ptr , Mycfg &obj, HTTP_SERV
         else if ((*ptr) == "client_max_body_size")
             size_pars(ptr,m,l);
         else if ((*ptr) == "location")
+            pars_redirection(ptr ,m.hostname ,l , "hostname");
+        else if ((*ptr) == "location")
             location_pars(ptr,m,l);
         else if ((*ptr) != ";" && (*ptr) != "{" && (*ptr) != "}")
-        {
             error_message("error in valide data");
-        }
         ptr++;
     }
 }

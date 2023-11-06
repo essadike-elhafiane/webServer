@@ -66,6 +66,7 @@ class HTTP_SERVER
 {
     public:
         std::string server_name;
+        std::string hostname;
         long long int client_max_body_size ;
         std::map<int , std::string> error_page;
         std::vector<int> port;
