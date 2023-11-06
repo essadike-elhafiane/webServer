@@ -44,7 +44,7 @@ int main(int ac , char **av)
     {
         for (size_t j = 0; j < configData[i].port.size(); j++)
         {
-            server a(configData[i].server_name, "127.0.0.1");
+            server a(configData[i].server_name, configData[i].hostname);
             if (a.runServer(MAX_CLIENTS, configData[i].port[j]))
                 continue;
             fcntl(a.getServerSocket(), F_SETFL, O_NONBLOCK, FD_CLOEXEC);

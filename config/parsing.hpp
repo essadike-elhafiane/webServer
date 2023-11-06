@@ -73,6 +73,7 @@ class HTTP_SERVER
         std::vector<LOCATION> pages;
     HTTP_SERVER()
     {
+        hostname = "0.0.0.0";
         server_name = "";
         client_max_body_size = -1;
     }

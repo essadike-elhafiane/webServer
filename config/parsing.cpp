@@ -340,7 +340,7 @@ void server_pars(std::vector<std::string>::iterator &ptr , Mycfg &obj, HTTP_SERV
             error_page(ptr,m,l);
         else if ((*ptr) == "client_max_body_size")
             size_pars(ptr,m,l);
-        else if ((*ptr) == "location")
+        else if ((*ptr) == "hostname")
             pars_redirection(ptr ,m.hostname ,l , "hostname");
         else if ((*ptr) == "location")
             location_pars(ptr,m,l);
