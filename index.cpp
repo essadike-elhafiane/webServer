@@ -6,7 +6,7 @@
 
 int indexGenerator(std::string url , std::string name )
 {
-    std::string path = "/Users/edraidry/Desktop/webserver";
+    std::string path = "/Users/eelhafia/Desktop/webserver";
     std::string html = name + ".html";
 
     std::ofstream write(html);

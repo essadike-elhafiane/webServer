@@ -12,8 +12,8 @@ std::string mainCGI(std::string urlCgi, int clientSocket, Client &dataClient) {
     std::cout<<urlCgi<<std::endl;
     (void) clientSocket;
   
-    std::string spath ="/Users/edraidry/Desktop/webServer/CGI/hello_script.php";
-    std::string sfile = "/Users/edraidry/Desktop/webServer/CGI/hello_script.php";
+    std::string spath ="/Users/eelhafia/Desktop/webServer/CGI/hello_script.php";
+    std::string sfile = "/Users/eelhafia/Desktop/webServer/CGI/hello_script.php";
     std::string sscriptType = "php";
     CGISettler cgiSettler(spath, sfile, sscriptType, dataClient);
 
@@ -31,10 +31,10 @@ std::string mainCGI(std::string urlCgi, int clientSocket, Client &dataClient) {
     request.request_data = "fix"; ;
    
 
-    //std::string path = "/Users/edraidry/Desktop/fixweb/CGIfix/test.py";
-    std::string path ="/Users/edraidry/Desktop/webServer/CGI/hello_script.php";
+    //std::string path = "/Users/eelhafia/Desktop/fixweb/CGIfix/test.py";
+    std::string path ="/Users/eelhafia/Desktop/webServer/CGI/hello_script.php";
    
-    std::string file = "/Users/edraidry/Desktop/webServer/CGI/hello_script.php";
+    std::string file = "/Users/eelhafia/Desktop/webServer/CGI/hello_script.php";
     std::string responsesstring;
      try {
 

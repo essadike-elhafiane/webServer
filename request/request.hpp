@@ -80,6 +80,8 @@ class request
         void receiveRequest(Client& dataClient)
         {
             read_request(dataClient);
+            std::ofstream m("txt");
+            m << dataClient.getRestRequest();
             if (dataClient.error)
                 return ;
 
@@ -113,8 +115,6 @@ class request
                 dataClient.error = 400;
                 return ;
             }
-            std::ofstream m("txt");
-            m << dataClient.getRestRequest();
             std::cout << "||||||" << dataClient.getReadlen() << "|" << dataClient.getContentLength() << "||||\n";
             if (dataClient.getTypeRequset() == "POST" && dataClient.getReadlen() == dataClient.getContentLength())
             {

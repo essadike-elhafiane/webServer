@@ -108,18 +108,18 @@ void pars_redirection(std::vector<std::string>::iterator &ptr, std::string &m, s
         if (i == 1)
         {
             m = *ptr;
-            if (str == "root")
-            {
-                DIR* directory = opendir(m.c_str());
-                // if (directory == NULL) 
-                // {
-                //     std::cout<< "|" << m << "|" << std::endl;
-                //     error_message("faile to open root directory");
-                // }
-                delete directory->__dd_buf;
-                close(directory->__dd_fd);
-                delete directory;
-            }
+            // if (str == "root")
+            // {
+            //     DIR* directory = opendir(m.c_str());
+            //     // if (directory == NULL) 
+            //     // {
+            //     //     std::cout<< "|" << m << "|" << std::endl;
+            //     //     error_message("faile to open root directory");
+            //     // }
+            //     delete directory->__dd_buf;
+            //     close(directory->__dd_fd);
+            //     delete directory;
+            // }
             // if(str == "index")
             //     if(m[0] != '/')
             //         error_message("index must start with /");
@@ -179,13 +179,13 @@ int is_digit(std::string str)
 
 void assigne_element(HTTP_SERVER &m , std::string str)
 {
-    std::fstream open(str);
-    if (!open.is_open())
-    {
-        //std::cout<< str;
-        error_message("error open file 2");
-    }
-    open.close();
+    // std::fstream open(str);
+    // if (!open.is_open())
+    // {
+    //     //std::cout<< str;
+    //     error_message("error open file 2");
+    // }
+    // open.close();
    for( std::map<int , std::string>::iterator  ptr = m.error_page.begin() ; ptr != m.error_page.end() ; ptr++)
    {
         if((*ptr).second.empty())
@@ -536,16 +536,16 @@ std::vector<HTTP_SERVER>& configFile (int argc , char **argv,std::vector< HTTP_S
                     error_message("error open cgi file");
                 read.close();
             }
-            if(!ptr2->index.empty())
-            {
-                std::ifstream ff(ptr2->root + ptr2->index);
-                if(!ff.is_open() || ptr2->index[0] != '/')
-                {
-                    std::cout << ptr2->root + ptr2->index << std::endl;
-                    error_message("error open index");
-                }
-                ff.close();
-            }
+            // if(!ptr2->index.empty())
+            // {
+            //     std::ifstream ff(ptr2->root + ptr2->index);
+            //     if(!ff.is_open() || ptr2->index[0] != '/')
+            //     {
+            //         std::cout << ptr2->root + ptr2->index << std::endl;
+            //         error_message("error open index");
+            //     }
+            //     ff.close();
+            // }
         }
         if(flg == 0)
             error_message("error not root /");

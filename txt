@@ -1,16 +1,16 @@
-GET /favicon.ico HTTP/1.1
-Host: localhost:8000
+GET /goinfre/m.mp4 HTTP/1.1
+Host: 127.0.0.1:8000
 Connection: keep-alive
 sec-ch-ua: "Chromium";v="118", "Google Chrome";v="118", "Not=A?Brand";v="99"
+Accept-Encoding: identity;q=1, *;q=0
 sec-ch-ua-mobile: ?0
 User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/118.0.0.0 Safari/537.36
 sec-ch-ua-platform: "macOS"
-Accept: image/avif,image/webp,image/apng,image/svg+xml,image/*,*/*;q=0.8
+Accept: */*
 Sec-Fetch-Site: same-origin
 Sec-Fetch-Mode: no-cors
-Sec-Fetch-Dest: image
-Referer: http://localhost:8000/
-Accept-Encoding: gzip, deflate, br
-Accept-Language: en-US,en;q=0.9
-Cookie: name=mahdi
+Sec-Fetch-Dest: video
+Referer: http://127.0.0.1:8000/
+Accept-Language: en-US,en;q=0.9,fr;q=0.8
+Range: bytes=0-
 

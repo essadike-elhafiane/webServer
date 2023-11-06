@@ -58,13 +58,13 @@ CGISettler::CGISettler(const std::string& CGI_path, const std::string& CGI_file,
             char* args[3];
             if (scriptType == "php") {
         
-                bin = "/Users/edraidry/Desktop/webServer/CGI/php-cgi"; 
+                bin = "/Users/eelhafia/Desktop/webServer/CGI/php-cgi"; 
                 args[0] = (char*)bin;
                 args[1] = (char*)this->file.c_str();
                 args[2] = nullptr;
             } else if (scriptType == "python") {
 
-                bin = "/Users/edraidry/Desktop/webServer/CGI/py-cgi";
+                bin = "/Users/eelhafia/Desktop/webServer/CGI/py-cgi";
                 args[0] = (char*)bin;
                 args[1] = (char*)this->file.c_str();
                 args[2] = nullptr;
@@ -132,10 +132,10 @@ CGISettler::CGISettler(const std::string& CGI_path, const std::string& CGI_file,
         addEnv("CONTENT_TYPE", valueContentType); 
         addEnv("QUERY_STRING",  valuequertString);
         addEnv("REQUEST_METHOD", dataClient.getTypeRequset()); 
-        addEnv("SCRIPT_FILENAME", "/Users/edraidry/Desktop/webServer/CGI/hello_script.php");
+        addEnv("SCRIPT_FILENAME", "/Users/eelhafia/Desktop/webServer/CGI/hello_script.php");
         addEnv("SCRIPT_NAME",  "hello_script.php");
         addEnv("CONTENT_LENGTH", std::to_string (dataClient.getContentLength())); //! here!//
-        addEnv("PATH_INFO", "/Users/edraidry/Desktop/webServer");
+        addEnv("PATH_INFO", "/Users/eelhafia/Desktop/webServer");
         addEnv("REDIRECT_STATUS","200");
         size_t pos = 0;
         while (pos < valuequertString.length()) {

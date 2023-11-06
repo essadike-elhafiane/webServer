@@ -48,7 +48,7 @@ class response
             DIR *directory = opendir(path.c_str());
             if(directory == NULL)
             {
-                write += "<h1>error open path" + path + "<h1>\n";
+                dataClient.error = 404;
                 return ;
             }
             
@@ -56,7 +56,11 @@ class response
             while ((file = readdir(directory)) != NULL)
             {
                 std::string d_name = file->d_name;
-                std::string rest = url.substr(url.find(pathLocation), url.size() - url.find(pathLocation));
+                    std::cout << "__________________________________\n";
+                size_t pos = url.find(pathLocation);
+                if (pos == std::string::npos)
+                    pos = 0;
+                std::string rest = url.substr(pos, url.size() - pos);
                 if (pathLocation == "/")
                 {
                     size_t i;
@@ -72,7 +76,7 @@ class response
                 }
                 if (rest[rest.size() -1] != '/')
                     rest += "/";
-                std::cout<< dataClient.configData.pages[0].root << "||" << rest << "||" << d_name << std::endl;
+                std::cout<< rest << "||" << d_name << std::endl;
                 write += "<li><div style=\" padding: 20px; color: rgb(224, 190, 141); margin: 5px;\"><a href=\"" + rest + d_name + "\">" + d_name + "</a></div></li>\n" ; 
                 // std::string name();
             }
@@ -168,6 +172,7 @@ class response
             //     return 0;
             DIR *directory = opendir(url.c_str());
             // std::string root;
+            std::cout << url << "::::::::::::::" << std::endl;
             if(directory == NULL)  
             {
                 std::cout << "not found\n";
@@ -183,7 +188,7 @@ class response
             {
                 // if(ptr->path == "\"")
                 //     root = ptr->root + "\"";
-                std::cout<< "4---|" <<  url << "|" << ptr->autoindex << "|" << dataClient.path << "|44---"<< std::endl;
+                std::cout<< "4---|" <<  url << "|" << ptr->autoindex << "|" << dataClient.path << "|" << ptr->path << "|44---"<< std::endl;
                 if(ptr->redirection.empty() &&  ptr->index.empty() && ptr->autoindex == 0 && dataClient.path == ptr->path)
                 {
                     std::cout<< "77---|\n";
@@ -199,6 +204,8 @@ class response
                     break;
                 ptr++;
             }
+            std::cout << "+++++++++++++++\n";
+            std::cout<< "4---|" <<  url << "|" << ptr->autoindex << "|" << dataClient.path << "|" << ptr->path << "|44---"<< std::endl;
             if (ptr == dataClient.configData.pages.end())
                 return (0);
             indexGenerator(url  , response, dataClient.path, dataClient);   
@@ -255,7 +262,7 @@ class response
                         std::cout << "====\n";
                         std::stringstream ss;
                         ss << dataClient.error;
-                        configResponse = "HTTP/1.1 "+ ss.str() +" Error\r\nContent-Type: text/html\r\nConnection: close\r\nContent-Length: 32\r\n\r\n<!DOCTYPE html>\n<h1>\"Error\"</h1>";
+                        configResponse = "HTTP/1.1 "+ ss.str() +" Error\r\nContent-Type: text/html\r\nConnection: close\r\nContent-Length: 34\r\n\r\n<!DOCTYPE html>\n<h1>Error : " + ss.str() + "</h1>";
                         size_t len = send(dataClient.getClientSocket(), configResponse.c_str() , configResponse.length() , 0);
                         if (len < 0)
                         {
