@@ -39,7 +39,7 @@ class request
                     return (dataClient.error = 404, 1);
                 if (std::find(dataClient.configData.pages[i].allow_methods.begin(), dataClient.configData.pages[i].allow_methods.end(), dataClient.getTypeRequset()) == dataClient.configData.pages[i].allow_methods.end())
                     return (dataClient.error = 403, 1);
-                dataClient.setUrl(dataClient.configData.pages[i].root + dataClient.getUrl());
+                dataClient.setUrl(dataClient.configData.pages[i].root + dataClient.configData.pages[i].path + dataClient.getUrl());
                 dataClient.path = dataClient.configData.pages[i].path;
                 return 0;
             }
@@ -58,7 +58,14 @@ class request
                     {
                         if (std::find(dataClient.configData.pages[i].allow_methods.begin(), dataClient.configData.pages[i].allow_methods.end(), dataClient.getTypeRequset()) == dataClient.configData.pages[i].allow_methods.end())
                             return (dataClient.error = 403, 1);
-                        dataClient.setUrl(dataClient.configData.pages[i].root + dataClient.getUrl().substr(pos, dataClient.getUrl().size() - pos));
+                        if (pos == dataClient.getUrl().size())
+                        {
+                            dataClient.path = dataClient.getUrl();
+                            dataClient.setUrl(dataClient.getUrl() + "/");
+                            dataClient.configData.pages[i].isredirection = 1;
+                            return 0;
+                        }
+                        dataClient.setUrl(dataClient.configData.pages[i].root + dataClient.configData.pages[i].path + dataClient.getUrl().substr(pos, dataClient.getUrl().size() - pos));
                         dataClient.path = dataClient.configData.pages[i].path;
                         return 0;
                     }
@@ -71,7 +78,7 @@ class request
                     return (dataClient.error = 404, 1);
                 if (std::find(dataClient.configData.pages[i].allow_methods.begin(), dataClient.configData.pages[i].allow_methods.end(), dataClient.getTypeRequset()) == dataClient.configData.pages[i].allow_methods.end())
                     return (dataClient.error = 403, 1);
-                dataClient.setUrl(dataClient.configData.pages[i].root + dataClient.getUrl());
+                dataClient.setUrl(dataClient.configData.pages[i].root + dataClient.configData.pages[i].path + dataClient.getUrl());
                 dataClient.path = dataClient.configData.pages[i].path;
             }
             return 0;
@@ -87,7 +94,6 @@ class request
 
             if (dataClient.getTypeRequset() == "POST" && dataClient.getReadlen() < dataClient.getContentLength())
                 return ;
-            
             if(dataClient.getUrl().length() > 3)
             {
                 if (dataClient.getUrl().find(".py", dataClient.getUrl().length() - 4) != dataClient.getUrl().npos) 
@@ -99,6 +105,7 @@ class request
                 }
                 else if (dataClient.getUrl().find(".php", dataClient.getUrl().length() - 4) != dataClient.getUrl().npos)
                 {
+                    
                     std::string res =  mainCGI(dataClient.getUrl(), dataClient.getClientSocket(), dataClient);
                     dataClient.SetCgi(res);
                     //std::cout<< "fgf=++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n";

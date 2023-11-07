@@ -12,7 +12,10 @@ CGISettler::CGISettler(const std::string& CGI_path, const std::string& CGI_file,
     this->W_pipes[1] = -1;
     
     if (!this->validpath())
+    {
+        dataClient.error = 500;
         throw "HTTP  502";
+    }
     this->CgiEnv(dataClient);  
 }
 
@@ -23,15 +26,22 @@ CGISettler::CGISettler(const std::string& CGI_path, const std::string& CGI_file,
    void CGISettler::executionCGI () {
         if (pipe(this->R_pipes) == -1 || pipe(this->W_pipes) == -1) {
             this->close_pipes();
+            dataClient.error = 500;
             throw "HTTP 500";
         }
         // std::cout<< dataClient.getTypeRequset()<<std::endl;
         std::ofstream m("/tmp/file111.tmp");
         int fd = open("/tmp/file111.tmp", O_CREAT | O_RDWR | O_TRUNC);
         if (fd < 0)
-            exit(1);
+        {
+            dataClient.error = 500;
+            throw "HTTP 500";
+        }
         if (write(fd, body.c_str(), body.size())< 0)
-            exit(1);
+        {
+            dataClient.error = 500;
+            throw "HTTP 500";
+        }
         close(fd);
         fd = open("/tmp/file111.tmp", O_RDWR);
 
@@ -39,6 +49,7 @@ CGISettler::CGISettler(const std::string& CGI_path, const std::string& CGI_file,
         pid_t pid = fork();
         if (pid == -1) {
             this->close_pipes();
+            dataClient.error = 500;
             throw "HTTP 500 here";
         }
         fcntl(getReadEnd(), F_SETFL, O_NONBLOCK, FD_CLOEXEC);
@@ -102,7 +113,10 @@ CGISettler::CGISettler(const std::string& CGI_path, const std::string& CGI_file,
 
         close(fd);
         if (close(this->R_pipes[1]) == -1 || close(this->W_pipes[0]) == -1)
+        {
+            dataClient.error = 500;
             throw "HTTP 500";
+        }
     
 }
  
@@ -195,7 +209,10 @@ int CGISettler::getWriteEnd() const {
 void CGISettler::error_CGI() {
     std::cerr << "Error Cgi\n";
     this->close_pipes();
-    exit(1);
+    {
+        dataClient.error = 500;
+        throw "HTTP 500";
+    }
 }
 
 void CGISettler::close_pipes() {

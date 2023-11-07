@@ -37,12 +37,14 @@ class LOCATION
         int autoindex;
         std::string redirection;
         std::string cgi;
+        int isredirection;
         LOCATION()
         {
             path = "";
             root = "";
             index = "";
             autoindex = 0;
+            isredirection = 0;
             cgi = "";
             redirection = "";
         }

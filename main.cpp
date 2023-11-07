@@ -60,10 +60,10 @@ int main(int ac , char **av)
     std::cout<< "number servers: " << numberServer << std::endl;
     while (true) 
     {
-        int activity = poll(fds, MAX_CLIENTS + 1, 10000);
+        int activity = poll(fds, MAX_CLIENTS + 1, 100000);
         if (activity < 0) {
             perror("Poll error");
-            exit(EXIT_FAILURE);
+            // exit(EXIT_FAILURE);
         }
         if (activity == 0)
         {
@@ -93,7 +93,8 @@ int main(int ac , char **av)
                 }
                 if ((clientSocket = accept(servers[i].getServerSocket(), NULL, NULL)) < 0) {
                     perror("Accept error");
-                    exit(EXIT_FAILURE);
+                    // exit(EXIT_FAILURE);
+                    continue;
                 }
                 
                 Client a;
@@ -182,6 +183,7 @@ int main(int ac , char **av)
                 }
                 else if (!resp.sendResponse(dataClient))
                 {
+                    std::cout << dataClient.error << "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n";
                     dataClient.setTypeRequset("");
                     dataClient.setHeaderStatus(false);
                     dataClient.setUrl("");

@@ -151,7 +151,17 @@ class response
             while(ptr != dataClient.configData.pages.end())
             {
                 // std::cout << "---|" <<  ptr->root + ptr->path << "|" << "222" << std::endl;
-                if(!ptr->redirection.empty() && !ptr->root.empty()  && dataClient.path == ptr->path)
+                if (dataClient.path == ptr->path && ptr->isredirection && ptr->redirection.empty())
+                {
+                    configResponse = "HTTP/1.1 302 Found\r\n";
+                    ptr->isredirection = 0;
+                    configResponse += "Location: " + dataClient.getUrl() + "\r\n";
+                    dataClient.clearLenSend();
+                    send(dataClient.getClientSocket(), configResponse.c_str(), configResponse.length(), 0);
+                    dataClient.error = 1000;
+                    return 1;
+                }
+                if(!ptr->redirection.empty() && dataClient.path == ptr->path)
                 {
                     configResponse = "HTTP/1.1 302 Found\r\n";
                     std::string sit = ptr->redirection;
@@ -219,6 +229,7 @@ class response
             std::string url;
             std::string response;
             url = dataClient.getUrl();
+
             // std::cout<< "0---|" <<  url << "|" << dataClient.getClientSocket() << "|" << dataClient.error << "|---"<< std::endl;
             if(!dataClient.error && redirection(dataClient))
                 return 0;

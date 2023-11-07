@@ -8,13 +8,15 @@ std::string mainCGI(std::string urlCgi, int clientSocket, Client &dataClient) {
 
 
     HttpRequest request;
-  
+    std::string responsesstring;
+  std::cout << dataClient.error << "|" << dataClient.getUrl() << "|" << dataClient.getTypeRequset() <<"===============================\n";
     std::cout<<urlCgi<<std::endl;
     (void) clientSocket;
   
     std::string spath ="/Users/eelhafia/Desktop/webServer/CGI/hello_script.php";
     std::string sfile = "/Users/eelhafia/Desktop/webServer/CGI/hello_script.php";
     std::string sscriptType = "php";
+    try {
     CGISettler cgiSettler(spath, sfile, sscriptType, dataClient);
 
     if (dataClient.getTypeRequset() == "POST") 
@@ -35,8 +37,8 @@ std::string mainCGI(std::string urlCgi, int clientSocket, Client &dataClient) {
     std::string path ="/Users/eelhafia/Desktop/webServer/CGI/hello_script.php";
    
     std::string file = "/Users/eelhafia/Desktop/webServer/CGI/hello_script.php";
-    std::string responsesstring;
-     try {
+   
+     
 
         std::string scriptType = "php";
         std::cout << "sdgsdgsdgsdgsdgs\n";
