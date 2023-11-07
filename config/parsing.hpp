@@ -37,6 +37,7 @@ class LOCATION
         int autoindex;
         std::string redirection;
         std::string cgi;
+        std::string cgi_exe;
         int isredirection;
         LOCATION()
         {
@@ -47,6 +48,7 @@ class LOCATION
             isredirection = 0;
             cgi = "";
             redirection = "";
+            cgi_exe = "";
         }
         LOCATION & operator = (const LOCATION & other)
         {

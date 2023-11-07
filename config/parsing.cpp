@@ -108,18 +108,12 @@ void pars_redirection(std::vector<std::string>::iterator &ptr, std::string &m, s
         if (i == 1)
         {
             m = *ptr;
-            // if (str == "root")
-            // {
-            //     DIR* directory = opendir(m.c_str());
-            //     // if (directory == NULL) 
-            //     // {
-            //     //     std::cout<< "|" << m << "|" << std::endl;
-            //     //     error_message("faile to open root directory");
-            //     // }
-            //     delete directory->__dd_buf;
-            //     close(directory->__dd_fd);
-            //     delete directory;
-            // }
+            if (str == "exe")
+            {
+                std::ifstream file(m);
+                if(!file.is_open())
+                    error_message("cgi_file doen't exist");
+            }
             // if(str == "index")
             //     if(m[0] != '/')
             //         error_message("index must start with /");
@@ -314,6 +308,8 @@ void location_pars(std::vector<std::string>::iterator &ptr, HTTP_SERVER &m, std:
                 pars_auto(ptr,m.pages.back().autoindex ,l2);
             else if ( (*ptr) == "cgi_data")
                 pars_redirection(ptr,m.pages.back().cgi ,l2 , "cgi_data");
+            else if (*ptr == "exe")
+                pars_redirection(ptr,m.pages.back().cgi_exe ,l2 , "cgi_exe");
             else 
             {
                 error_message("error ");
@@ -543,11 +539,11 @@ std::vector<HTTP_SERVER>& configFile (int argc , char **argv,std::vector< HTTP_S
                 error_message("error server can only run one scripte");   
             if((ptr2->path == "php" || ptr2->path == "py" ) && flg2 == 0)
                 flg2 = 1;
-            if(ptr2->path == "/py")  
+            if(ptr2->path == "/py")
             {
                 if(ptr2->cgi.length() < 4 || ptr2->cgi.find(".py") != ptr2->cgi.length() - 3)
                         error_message("error in file extention pyton");
-                std::ifstream read(ptr2->root + ptr2->cgi );
+                std::ifstream read(ptr2->root + "/" + ptr2->cgi );
                 if( !read.is_open())
                     error_message("error open cgi file");
                 read.close();
@@ -556,7 +552,7 @@ std::vector<HTTP_SERVER>& configFile (int argc , char **argv,std::vector< HTTP_S
             {
                  if(ptr2->cgi.length() < 5   || ptr2->cgi.find(".php") != ptr2->cgi.length() - 4)
                         error_message("error in file extention php");
-                std::ifstream read(ptr2->root + ptr2->cgi );
+                std::ifstream read(ptr2->root + "/"+ ptr2->cgi );
                 if( !read.is_open())
                     error_message("error open cgi file");
                 read.close();
