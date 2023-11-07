@@ -53,10 +53,12 @@ class response
             }
             
             struct dirent* file;
+
             while ((file = readdir(directory)) != NULL)
             {
                 std::string d_name = file->d_name;
-                    std::cout << "__________________________________\n";
+                if (d_name == "." || d_name == "..")
+                    continue;
                 size_t pos = url.find(pathLocation);
                 if (pos == std::string::npos)
                     pos = 0;
@@ -76,6 +78,8 @@ class response
                 }
                 if (rest[rest.size() -1] != '/')
                     rest += "/";
+                if (rest[0] == '/' && rest[1] == '/')
+                    rest = rest.substr(1,rest.size() - 1);
                 std::cout<< rest << "||" << d_name << std::endl;
                 write += "<li><div style=\" padding: 20px; color: rgb(224, 190, 141); margin: 5px;\"><a href=\"" + rest + d_name + "\">" + d_name + "</a></div></li>\n" ; 
                 // std::string name();
@@ -99,7 +103,17 @@ class response
 
             if (dataClient.error == 0)
             {
-                configResponse = "HTTP/1.1 200 OK\r\nConnection: close\r\nContent-Length: ";
+                size_t pos = url.find_last_of(".");
+                std::string type;
+                if (pos != std::string::npos)
+                {
+                    std::string key = url.substr(pos + 1, url.size() - pos - 1);
+                    type = dataClient.configData.Extensions[key];
+                    std::cout << "||||||||" << key << std::endl;
+                }
+                else
+                    type = "text/plain";
+                configResponse = "HTTP/1.1 200 OK\r\nContent-Type: " + type +"\r\nConnection: close\r\nContent-Length: ";
                 return;
             }
             else if (dataClient.error == 400 && it != dataClient.configData.error_page.end())

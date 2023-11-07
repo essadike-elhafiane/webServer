@@ -430,15 +430,34 @@ void valid_location(HTTP_SERVER data)
     } 
 }
 
-void f()
+void loadDataExtensions(std::map<std::string, std::string> &Extensions)
 {
-    system("leaks webserv");
+    std::ifstream input("include/mime.types");
+    if (!input.is_open())
+    {
+        std::cout << "Error in extension file\n";
+        exit(0);
+    }
+    std::string str;
+    while (!std::getline(input, str).fail())
+    {
+        size_t posSpace = str.find(" ");
+        size_t posP = str.find(";");
+        size_t posEndSpace = str.find_last_of(" ");
+        if (posP == std::string::npos || posSpace == std::string::npos || posEndSpace == std::string::npos)
+        {
+            std::cout << "Error in extension file\n";
+            exit(0);
+        }
+        posEndSpace += 1;
+        std::string key = str.substr(posEndSpace, posP - posEndSpace); 
+        std::string value = str.substr(0, posSpace);
+        Extensions[key] = value;
+    }
 }
 
 std::vector<HTTP_SERVER>& configFile (int argc , char **argv,std::vector< HTTP_SERVER> &data)
 {
-
-   atexit(f);
     if (argc != 2)
         error_message("error invalide argument");
     char *file = argv[1];
@@ -477,6 +496,12 @@ std::vector<HTTP_SERVER>& configFile (int argc , char **argv,std::vector< HTTP_S
         {
             data.push_back(HTTP_SERVER()) ;
             server_pars(ptr ,obj , data.back());
+            loadDataExtensions(data.back().Extensions);
+            // for (std::map<std::string, std::string>::iterator itr = data.back().Extensions.begin(); itr != data.back().Extensions.end(); itr++)
+            // {
+            //     std::cout << itr->second << "|  |  |" << itr->first <<"|"<< std::endl;
+            // }
+            // exit(1);
         }
         else
             error_message("error in server prototype");
