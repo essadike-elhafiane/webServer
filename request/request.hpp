@@ -60,6 +60,14 @@ class request
                             return (dataClient.error = 403, 1);
                         if (pos == dataClient.getUrl().size())
                         {
+                            std::string url = dataClient.configData.pages[i].root + dataClient.configData.pages[i].path;
+                            int fd = open(url.c_str(), O_RDWR);
+                            if (fd > 0)
+                            {
+                                dataClient.path = dataClient.getUrl();
+                                dataClient.setUrl(url);
+                                return 0;
+                            }
                             dataClient.path = dataClient.getUrl();
                             dataClient.setUrl(dataClient.getUrl() + "/");
                             dataClient.configData.pages[i].isredirection = 1;
