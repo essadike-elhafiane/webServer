@@ -7,8 +7,8 @@
 std::string mainCGI(Client &dataClient) {
 
     std::string responsesstring;
-    std::string spath ="/Users/eelhafia/Desktop/webServer/CGI/hello_script.php";
-    std::string sfile = "/Users/eelhafia/Desktop/webServer/CGI/hello_script.php";
+    std::string spath ="/Users/edraidry/Desktop/webserver/CGI/hello_script.php";
+    std::string sfile = "/Users/edraidry/Desktop/webserver/CGI/hello_script.php";
     std::string sscriptType = "php";
     try {
         CGISettler cgiSettler(spath, sfile, sscriptType, dataClient);

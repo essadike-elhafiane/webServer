@@ -69,13 +69,13 @@ CGISettler::CGISettler(const std::string& CGI_path, const std::string& CGI_file,
             char* args[3];
             if (scriptType == "php") {
         
-                bin = "/Users/eelhafia/Desktop/webServer/CGI/php-cgi"; 
+                bin = "/Users/edraidry/Desktop/webserver/CGI/php-cgi"; 
                 args[0] = (char*)bin;
                 args[1] = (char*)this->file.c_str();
                 args[2] = nullptr;
             } else if (scriptType == "python") {
 
-                bin = "/Users/eelhafia/Desktop/webServer/CGI/py-cgi";
+                bin = "/Users/edraidry/Desktop/webserver/CGI/py-cgi";
                 args[0] = (char*)bin;
                 args[1] = (char*)this->file.c_str();
                 args[2] = nullptr;
@@ -137,36 +137,45 @@ CGISettler::CGISettler(const std::string& CGI_path, const std::string& CGI_file,
         } else {
             valuequertString = ""; // Handle the case where there is no '?' in the URL.
         }
-    
+        size_t posCoockie = dataClient.getRestRequest().find("Cookie:");
+        std::string valueCoockie;
+        if (posCoockie != std::string::npos)
+        {   
+            valueCoockie = dataClient.getRestRequest().substr(posCoockie + 8, dataClient.getRestRequest().find("\r\n", posCoockie + 7) - posCoockie - 8);
+            std::cerr << valueCoockie << "*****************************************\n";
+        }
         env.clear();
         // std::string name;
         // std::string path;
         // dataClient.configData.get_cgi( name, path );
         // //std::cout<<"|||||" << name << path << std::endl;
-        addEnv("CONTENT_TYPE", valueContentType); 
-        addEnv("QUERY_STRING",  valuequertString);
-        addEnv("REQUEST_METHOD", dataClient.getTypeRequset()); 
-        addEnv("SCRIPT_FILENAME", "/Users/eelhafia/Desktop/webServer/CGI/hello_script.php");
-        addEnv("SCRIPT_NAME",  "hello_script.php");
-        addEnv("CONTENT_LENGTH", std::to_string (dataClient.getContentLength())); //! here!//
-        addEnv("PATH_INFO", "/Users/eelhafia/Desktop/webServer");
-        addEnv("REDIRECT_STATUS","200");
-        size_t pos = 0;
-        while (pos < valuequertString.length()) {
-            size_t endPos = valuequertString.find("\r\n", pos);
-            if (endPos == std::string::npos)
-                break;
+        addEnv("HTTP_CONTENT_TYPE", valueContentType); 
+        addEnv("HTTP_QUERY_STRING",  valuequertString);
+        addEnv("HTTP_REQUEST_METHOD", dataClient.getTypeRequset()); 
+        addEnv("HTTP_SCRIPT_FILENAME", "/Users/edraidry/Desktop/webserver/CGI/hello_script.php");
+        addEnv("HTTP_SCRIPT_NAME",  "hello_script.php");
+        addEnv("HTTP_CONTENT_LENGTH", std::to_string (dataClient.getContentLength())); //! here!//
+        addEnv("HTTP_PATH_INFO", "/Users/edraidry/Desktop/webserver");
+        addEnv("HTTP_REDIRECT_STATUS","200");
+        // if ()
+        addEnv("HTTP_COOKIE", valueCoockie);
+        // size_t pos = 0;
+        // while (pos < valuequertString.length()) {
+        //     size_t endPos = valuequertString.find("\r\n", pos);
+        //     if (endPos == std::string::npos)
+        //         break;
 
-            std::string headerLine = valuequertString.substr(pos, endPos - pos);
-            size_t separatorPos = headerLine.find(":");
-            if (separatorPos != std::string::npos) {
-                std::string headerKey = "HTTP_" + headerLine.substr(0, separatorPos);
-                std::replace(headerKey.begin(), headerKey.end(), '-', '_');
-                std::string headerValue = headerLine.substr(separatorPos + 1);
-                addEnv(headerKey, headerValue);
-            }
-            pos = endPos + 2;
-        }
+        //     std::string headerLine = valuequertString.substr(pos, endPos - pos);
+        //     size_t separatorPos = headerLine.find(":");
+        //     if (separatorPos != std::string::npos) {
+        //         std::string headerKey = "HTTP_" + headerLine.substr(0, separatorPos);
+        //         std::replace(headerKey.begin(), headerKey.end(), '-', '_');
+        //         std::string headerValue = headerLine.substr(separatorPos + 1);
+        //         std::cout << headerKey << "]]]]]]]]]]]]]]]]]]]]]" << std::endl;
+        //         addEnv(headerKey, headerValue);
+        //     }
+        //     pos = endPos + 2;
+        // }
 }
 
 

@@ -491,7 +491,13 @@ std::vector<HTTP_SERVER>& configFile (int argc , char **argv,std::vector< HTTP_S
         else
             error_message("error in server prototype");
     }
-    // exit(0);
+    
+
+    // std::vector<LOCATION> findcgi(std::vector<>)
+    // {
+
+    // }
+
     std::vector<HTTP_SERVER>::iterator ptr = data.begin();
     ValidData(*ptr);
     int flg;
@@ -532,19 +538,16 @@ std::vector<HTTP_SERVER>& configFile (int argc , char **argv,std::vector< HTTP_S
             {
                 if(ptr2->cgi.length() < 4 || ptr2->cgi.find(".py") != ptr2->cgi.length() - 3)
                         error_message("error in file extention pyton");
-                std::ifstream read(ptr2->root + "/" + ptr2->cgi );
-                if( !read.is_open())
-                    error_message("error open cgi file");
-                read.close();
+                if(ptr2->cgi_exe.empty())
+                    error_message("cgi need exe");
+               
             }
             if(ptr2->path == "/php")
             {
                  if(ptr2->cgi.length() < 5   || ptr2->cgi.find(".php") != ptr2->cgi.length() - 4)
                         error_message("error in file extention php");
-                std::ifstream read(ptr2->root + "/"+ ptr2->cgi );
-                if( !read.is_open())
-                    error_message("error open cgi file");
-                read.close();
+                if(ptr2->cgi_exe.empty())
+                    error_message("cgi need exe");
             }
             // if(!ptr2->index.empty())
             // {
