@@ -4,14 +4,13 @@
 
 
 
-std::string mainCGI(Client &dataClient) {
+std::string mainCGI(std::string cgi_exe, Client &dataClient) {
 
     std::string responsesstring;
-    std::string spath ="CGI/hello_script.php";
-    std::string sfile = "CGI/hello_script.php";
+    std::string sfile = dataClient.getUrl();
     std::string sscriptType = "php";
     try {
-        CGISettler cgiSettler(spath, sfile, sscriptType, dataClient);
+        CGISettler cgiSettler(cgi_exe, sfile, sscriptType, dataClient);
 
         if (dataClient.getTypeRequset() == "POST") 
         {
@@ -22,7 +21,6 @@ std::string mainCGI(Client &dataClient) {
         }
         cgiSettler.executionCGI();
         cgiSettler.dataClient = dataClient;
-        std::string postDate = "my data";
         int readEnd = cgiSettler.getReadEnd();
         sleep(1);
         char c;

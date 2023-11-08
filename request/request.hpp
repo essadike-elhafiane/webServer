@@ -16,7 +16,6 @@ class request
 {
     private:
         void parse_request(Client& dataClient);
-        // void check_Get_Request(Client &dataClient);
 
     public:
         request(/* args */);
@@ -95,8 +94,8 @@ class request
         void receiveRequest(Client& dataClient)
         {
             read_request(dataClient);
-            std::ofstream m("txt",std::ios::app);
-            m << dataClient.getRestRequest();
+            // std::ofstream m("txt",std::ios::app);
+            // m << dataClient.getRestRequest();
             if (dataClient.error)
                 return ;
 
@@ -105,8 +104,24 @@ class request
 
             if (dataClient.getUrl().find(".py") != std::string::npos || dataClient.getUrl().find(".php") != std::string::npos) 
             {
-                std::cout << dataClient.error << "||" << "09090909090909090909009090009\n";
-                std::string res =  mainCGI(dataClient);
+                size_t i;
+                for (i = 0; i < dataClient.configData.pages.size(); i++)
+                    if (dataClient.configData.pages[i].path == dataClient.path)
+                        break;
+                if (i == dataClient.configData.pages.size())
+                {
+                    dataClient.error = 404;
+                    return ;
+                }
+                std::ifstream cgi(dataClient.getUrl());
+                std::cout<< dataClient.getUrl() << "|||||||" << dataClient.error << "||" << "09090909090909090909009090009\n";
+                if (!cgi.is_open())
+                {
+                    dataClient.error = 404;
+                    return ;
+                }
+                std::string exe = dataClient.configData.pages[i].root + dataClient.configData.pages[i].path + dataClient.configData.pages[i].cgi_exe;
+                std::string res =  mainCGI(exe, dataClient);
                 dataClient.SetCgi(res);
                 return ;
             }
@@ -120,40 +135,23 @@ class request
                 dataClient.error = 400;
                 return ;
             }
-            std::cout << "||||||" << dataClient.getReadlen() << "|" << dataClient.getContentLength() << "||||\n";
             if (dataClient.getTypeRequset() == "POST" && dataClient.getReadlen() == dataClient.getContentLength())
             {
-                // std::cout << "dhfhdfhd\n";
                 if (download_file(dataClient, 0))
                     return ;
-                // std::cout << "downnnnnnnnn\n";
                 int s = dataClient.getClientSocket();
                 dataClient.resetData();
-                size_t i;
-                for (i = 0; i < dataClient.configData.pages.size(); i++)
-                    if (dataClient.configData.pages[i].path == "/download")
-                        break;
-                
-                dataClient.setUrl(dataClient.configData.pages[i].root + dataClient.configData.pages[i].index);
-                dataClient.path = dataClient.configData.pages[i].path;
+                dataClient.setUrl("html/dwn.html");
+                dataClient.path = "/";
                 dataClient.setClientSocket(s);
             }
             if (dataClient.getTypeRequset() == "DELETE")
                 delete_request(dataClient);
-            // //std::cout<< "|" << url << "|"<< " " << "|" << "|" << " " << dataClient.getClientSocket() << " "<< client << std::endl << std::endl;
-            //std::cout<< std::endl << "________________________________________________________" << std::endl << std::endl;     
+        
         }
-        // std::string getRequest()
-        // {
-        //     return requests;
-        // }
         ~request();
-        // std::string getUrl()
-        // {
-        //     return url;
-        // }
 };
  
 
-/* code */
-#endif //REQUEST_HPP
+
+#endif 

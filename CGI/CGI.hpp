@@ -18,13 +18,13 @@ private:
     void addEnv(const std::string& key, const std::string& value) {
         envp[key] =  value;
     }
-    std::string allrequest;
-    std::string path;  // : These members could represent the path to the CGI script and the name of the CGI file
+    std::string allrequest;// : These members could represent the path to the CGI script and the name of the CGI file
     std::string file;
     std::string output;
     std::string scriptType;
     std::map<std::string, std::string> envp;
     std::vector<char*> envpp;
+    std::string cgi_exe;
     int R_pipes[2];
     int W_pipes[2];
 
@@ -33,7 +33,7 @@ public:
     Client &dataClient;
     std::string body;
     pid_t pid;
-    CGISettler(const std::string& path, const std::string& file, const std::string& scriptType,  Client &dataClient);
+    CGISettler(std::string exe, const std::string& file, const std::string& scriptType,  Client &dataClient);
     
     int getReadEnd() const;
     int getWriteEnd() const;
@@ -52,6 +52,6 @@ public:
 
 };
 
-std::string mainCGI(Client &dataClient);
+std::string mainCGI(std::string cgi_exe, Client &dataClient);
 
 #endif

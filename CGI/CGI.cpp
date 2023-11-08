@@ -2,15 +2,13 @@
 #include <sys/fcntl.h>
 #include "../Client/Client.hpp"
 
-CGISettler::CGISettler(const std::string& CGI_path, const std::string& CGI_file, const std::string& scriptType,
-                         Client &dataClient)
-    :  path(CGI_path),file(CGI_file),scriptType(scriptType) ,dataClient(dataClient)  {
-        
+CGISettler::CGISettler(std::string exe, const std::string& CGI_file, const std::string& scriptType,Client &dataClient)
+    :file(CGI_file),scriptType(scriptType) ,dataClient(dataClient)  {
     this->R_pipes[0] = -1;
     this->R_pipes[1] = -1;
     this->W_pipes[0] = -1;
     this->W_pipes[1] = -1;
-    
+    cgi_exe = exe;
     if (!this->validpath())
     {
         dataClient.error = 500;
@@ -29,7 +27,6 @@ CGISettler::CGISettler(const std::string& CGI_path, const std::string& CGI_file,
             dataClient.error = 500;
             throw "HTTP 500";
         }
-        // std::cout<< dataClient.getTypeRequset()<<std::endl;
         std::ofstream m("/tmp/file111.tmp");
         int fd = open("/tmp/file111.tmp", O_CREAT | O_RDWR | O_TRUNC);
         if (fd < 0)
@@ -44,8 +41,6 @@ CGISettler::CGISettler(const std::string& CGI_path, const std::string& CGI_file,
         }
         close(fd);
         fd = open("/tmp/file111.tmp", O_RDWR);
-
-        std::cerr<< "dataClient.getContentLength()+++++++++++++++++++++++++"<<std::endl;
         pid_t pid = fork();
         if (pid == -1) {
             this->close_pipes();
@@ -67,27 +62,26 @@ CGISettler::CGISettler(const std::string& CGI_path, const std::string& CGI_file,
             
             const char* bin;
             char* args[3];
-            if (scriptType == "php") {
+            // if (scriptType == "php") {
         
-                bin = "/Users/eelhafia/Desktop/webserver/CGI/php-cgi"; 
+                bin = cgi_exe.c_str(); 
                 args[0] = (char*)bin;
                 args[1] = (char*)this->file.c_str();
-                args[2] = nullptr;
-            } else if (scriptType == "python") {
+                args[2] = NULL;
+            // } else if (scriptType == "python") {
 
-                bin = "/Users/eelhafia/Desktop/webserver/CGI/py-cgi";
-                args[0] = (char*)bin;
-                args[1] = (char*)this->file.c_str();
-                args[2] = nullptr;
-            } else {
-                //std::cout<< "Unsupported scriptType: "<< std::endl;
-                this->error_CGI();
-                exit(1);// not use exit just return
-            }
+                // bin = "/Users/eelhafia/Desktop/webserver/CGI/py-cgi";
+                // args[0] = (char*)bin;
+                // args[1] = (char*)this->file.c_str();
+                // args[2] = nullptr;
+            // } else {
+            //     //std::cout<< "Unsupported scriptType: "<< std::endl;
+            //     this->error_CGI();
+            //     exit(1);// not use exit just return
+            // }
 
-            std::cerr << "|-------|\n";
             char **env = new char *[this->envp.size() + 1];
-            env[this->envp.size()] = nullptr;
+            env[this->envp.size()] = NULL;
             std::map<std::string, std::string>::const_iterator it = this->envp.begin();
             size_t i = 0;
             
@@ -133,7 +127,7 @@ CGISettler::CGISettler(const std::string& CGI_path, const std::string& CGI_file,
         size_t pos1 = dataClient.getUrl().find("?");
         std::string valuequertString;
         if (pos1 != std::string::npos) {
-            valuequertString = dataClient.getUrl().substr(pos1);
+            valuequertString = dataClient.getUrl().substr(pos1 + 1);
         } else {
             valuequertString = ""; // Handle the case where there is no '?' in the URL.
         }
@@ -152,10 +146,10 @@ CGISettler::CGISettler(const std::string& CGI_path, const std::string& CGI_file,
         addEnv("HTTP_CONTENT_TYPE", valueContentType); 
         addEnv("HTTP_QUERY_STRING",  valuequertString);
         addEnv("HTTP_REQUEST_METHOD", dataClient.getTypeRequset()); 
-        addEnv("HTTP_SCRIPT_FILENAME", "/Users/eelhafia/Desktop/webserver/CGI/hello_script.php");
-        addEnv("HTTP_SCRIPT_NAME",  "hello_script.php");
+        addEnv("HTTP_SCRIPT_FILENAME", file);
+        // addEnv("HTTP_SCRIPT_NAME",  "hello_script.php");
         addEnv("HTTP_CONTENT_LENGTH", std::to_string (dataClient.getContentLength())); //! here!//
-        addEnv("HTTP_PATH_INFO", "/Users/eelhafia/Desktop/webserver");
+        // addEnv("HTTP_PATH_INFO", "/Users/eelhafia/Desktop/webserver");
         addEnv("HTTP_REDIRECT_STATUS","200");
         // if ()
         addEnv("HTTP_COOKIE", valueCoockie);
@@ -185,7 +179,7 @@ bool CGISettler::validpath() const {
 
     //std::cout<< this->path << std::endl;
 
-    if (stat(this->path.c_str(), &fileInfo) == 0) {
+    if (stat(this->file.c_str(), &fileInfo) == 0) {
         if (fileInfo.st_mode & S_IXUSR) {
             return true;
         } else {

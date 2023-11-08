@@ -534,21 +534,14 @@ std::vector<HTTP_SERVER>& configFile (int argc , char **argv,std::vector< HTTP_S
                 error_message("error server can only run one scripte");   
             if((ptr2->path == "php" || ptr2->path == "py" ) && flg2 == 0)
                 flg2 = 1;
-            if(ptr2->path == "/py")
-            {
-                if(ptr2->cgi.length() < 4 || ptr2->cgi.find(".py") != ptr2->cgi.length() - 3)
-                        error_message("error in file extention pyton");
-                if(ptr2->cgi_exe.empty())
-                    error_message("cgi need exe");
-               
-            }
-            if(ptr2->path == "/php")
-            {
-                 if(ptr2->cgi.length() < 5   || ptr2->cgi.find(".php") != ptr2->cgi.length() - 4)
-                        error_message("error in file extention php");
-                if(ptr2->cgi_exe.empty())
-                    error_message("cgi need exe");
-            }
+           
+            // if(ptr2->path == "/php")
+            // {
+            //      if(ptr2->cgi.length() < 5   || ptr2->cgi.find(".php") != ptr2->cgi.length() - 4)
+            //             error_message("error in file extention php");
+            //     if(ptr2->cgi_exe.empty())
+            //         error_message("cgi need exe");
+            // }
             // if(!ptr2->index.empty())
             // {
             //     std::ifstream ff(ptr2->root + ptr2->index);
