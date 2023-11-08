@@ -121,15 +121,12 @@ CGISettler::CGISettler(std::string exe, const std::string& CGI_file, const std::
     size_t pos2 = dataClient.getRestRequest().find("Content-Type: ");
     std::string valueContentType =dataClient.getRestRequest().substr(pos2 + 14,dataClient.getRestRequest().find("\r\n", pos2) - pos2 - 14);
 
-  
-
-
         size_t pos1 = dataClient.getUrl().find("?");
         std::string valuequertString;
         if (pos1 != std::string::npos) {
             valuequertString = dataClient.getUrl().substr(pos1 + 1);
         } else {
-            valuequertString = ""; // Handle the case where there is no '?' in the URL.
+            valuequertString = ""; 
         }
         size_t posCoockie = dataClient.getRestRequest().find("Cookie:");
         std::string valueCoockie;
@@ -139,37 +136,19 @@ CGISettler::CGISettler(std::string exe, const std::string& CGI_file, const std::
             std::cerr << valueCoockie << "*****************************************\n";
         }
         env.clear();
-        // std::string name;
-        // std::string path;
-        // dataClient.configData.get_cgi( name, path );
-        // //std::cout<<"|||||" << name << path << std::endl;
+      
         addEnv("HTTP_CONTENT_TYPE", valueContentType); 
-        addEnv("HTTP_QUERY_STRING",  valuequertString);
+        if (!valuequertString.empty())
+            addEnv("HTTP_QUERY_STRING",  valuequertString);
         addEnv("HTTP_REQUEST_METHOD", dataClient.getTypeRequset()); 
         addEnv("HTTP_SCRIPT_FILENAME", file);
         // addEnv("HTTP_SCRIPT_NAME",  "hello_script.php");
         addEnv("HTTP_CONTENT_LENGTH", std::to_string (dataClient.getContentLength())); //! here!//
         // addEnv("HTTP_PATH_INFO", "/Users/eelhafia/Desktop/webserver");
         addEnv("HTTP_REDIRECT_STATUS","200");
-        // if ()
-        addEnv("HTTP_COOKIE", valueCoockie);
-        // size_t pos = 0;
-        // while (pos < valuequertString.length()) {
-        //     size_t endPos = valuequertString.find("\r\n", pos);
-        //     if (endPos == std::string::npos)
-        //         break;
-
-        //     std::string headerLine = valuequertString.substr(pos, endPos - pos);
-        //     size_t separatorPos = headerLine.find(":");
-        //     if (separatorPos != std::string::npos) {
-        //         std::string headerKey = "HTTP_" + headerLine.substr(0, separatorPos);
-        //         std::replace(headerKey.begin(), headerKey.end(), '-', '_');
-        //         std::string headerValue = headerLine.substr(separatorPos + 1);
-        //         std::cout << headerKey << "]]]]]]]]]]]]]]]]]]]]]" << std::endl;
-        //         addEnv(headerKey, headerValue);
-        //     }
-        //     pos = endPos + 2;
-        // }
+        if (posCoockie != std::string::npos)
+            addEnv("HTTP_COOKIE", valueCoockie);
+        
 }
 
 

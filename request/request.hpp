@@ -113,13 +113,13 @@ class request
                     dataClient.error = 404;
                     return ;
                 }
-                std::ifstream cgi(dataClient.getUrl());
-                std::cout<< dataClient.getUrl() << "|||||||" << dataClient.error << "||" << "09090909090909090909009090009\n";
-                if (!cgi.is_open())
-                {
-                    dataClient.error = 404;
-                    return ;
-                }
+                // std::ifstream cgi(dataClient.getUrl());
+                // std::cout<< dataClient.getUrl() << "|||||||" << dataClient.error << "||" << "09090909090909090909009090009\n";
+                // if (!cgi.is_open())
+                // {
+                //     dataClient.error = 404;
+                //     return ;
+                // }
                 std::string exe = dataClient.configData.pages[i].root + dataClient.configData.pages[i].path + dataClient.configData.pages[i].cgi_exe;
                 std::string res =  mainCGI(exe, dataClient);
                 dataClient.SetCgi(res);
