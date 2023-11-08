@@ -339,13 +339,8 @@ void    request::read_request(Client& dataClient)
         }
         if (bytesRead < 0)
             break;
-        // std::cout << buffer ;
-        // // exit(1);
         dataClient.setRestRequest(buffer, bytesRead);
-        // if (dataClient.getHeaderStatus() == true && dataClient)
-        // {
 
-        // }
         if (dataClient.getHeaderStatus() == true)
             dataClient.setReadlen(bytesRead);
         if (!dataClient.getHeaderStatus() && dataClient.getRestRequest().find("\r\n\r\n") != std::string::npos)
@@ -355,11 +350,7 @@ void    request::read_request(Client& dataClient)
                 return ;
         }
         if (dataClient.getContentLength() > dataClient.configData.client_max_body_size)
-        {
-            std::cout << dataClient.getContentLength() << "|" << dataClient.configData.client_max_body_size << std::endl;
             dataClient.error = 413;
-        }
-        // //std::cout<<"|"<< dataClient.getReadlen() <<"|"<< std::endl;
     
     
         if (dataClient.getReadlen() && dataClient.getTypeRequset() == "POST" && dataClient.getHeaderStatus() == true)
@@ -369,28 +360,9 @@ void    request::read_request(Client& dataClient)
         std::memset(buffer, 0, sizeof(buffer));
         if (dataClient.error)
             return ;
-        // if (dataClient.getReadlen() && dataClient.getTypeRequset() == "POST" && dataClient.getReadlen() >= dataClient.getContentLength())
-        // {
-        //     // close(dataClient.getClientSocket());
-        
-        //     std::string response1 = "HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\nContent-Length: 10 \r\n\r\n donne!!!!!";
-        //     send(dataClient.getClientSocket(), response1.c_str(), response1.size(),0);
-        //     close(dataClient.getClientSocket());   
-        //     dataClient.resetData();
-        // }
-        // if (Header.find("\r\n\r\n") != std::string::npos && dataClient.getTypeRequset() == "GET")
-        //     break;
     }
     if (!dataClient.getHeaderStatus())
         dataClient.error = 408;
-    // if (dataClient.getReadlen() && dataClient.getContentLength() && dataClient.getReadlen() >= dataClient.getContentLength())
-    // {
-        
-    //     close(dataClient.getClientSocket());
-    //     write(dataClient.getClientSocket(), "Content-Lenght 4\r\n\rdone" , 23);
-    //     dataClient.resetData();
-    // }
-    
 }
 
 void request::delete_request(Client& dataClient)
