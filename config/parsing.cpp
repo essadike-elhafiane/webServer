@@ -60,7 +60,7 @@ void listen_port(std::vector<std::string>::iterator &ptr , HTTP_SERVER &m , std:
         ptr++;
         i++;
     }
-    //std::cout<< "error3 listen" << "\n";
+    std::cout<< "error3 listen" << "\n";
     exit(0); 
 }
 
@@ -92,7 +92,7 @@ void server_name_parsing(std::vector<std::string>::iterator &ptr , HTTP_SERVER &
         ptr++;
         i++;
     }
-    //std::cout<< "error2 server_name" << "\n";
+    std::cout<< "error2 server_name" << "\n";
     exit(0); 
 }
 
@@ -106,18 +106,7 @@ void pars_redirection(std::vector<std::string>::iterator &ptr, std::string &m, s
         if(i == 1 && ((*ptr) == ";" || (*ptr) =="{" || (*ptr) == "}"))
             error_message(str);
         if (i == 1)
-        {
-            m = *ptr;
-            if (str == "exe")
-            {
-                std::ifstream file(m);
-                if(!file.is_open())
-                    error_message("cgi_file doen't exist");
-            }
-            // if(str == "index")
-            //     if(m[0] != '/')
-            //         error_message("index must start with /");
-        }
+            m= *ptr;
         if (i == 2 && (*ptr) == ";")
             return;
         ptr++;

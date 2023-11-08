@@ -34,7 +34,7 @@
  
 #!/Users/eelhafia/Desktop/webServer/CGI/php-cgi
 <?php
-sleep(100000);
+// sleep(100000);
 // Check if cookies are set and retrieve their values
 if (isset($_COOKIE["name"])) {
     $name = $_COOKIE["name"];

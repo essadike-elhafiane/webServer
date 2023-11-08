@@ -11,20 +11,9 @@
 #include <sys/stat.h>
 #include "../response/response.hpp"
 #include "../Client/Client.hpp"
-struct HttpRequest {
-    std::string request_data ;
-};
-
-// struct Clientt {
-//     std::string response_data;
-// };
-
 
 class CGISettler {
 private:
-    // HttpRequest& request;
-     //Clientt& Client;
-
     std::vector<std::pair<std::string, std::string> > env;
     void addEnv(const std::string& key, const std::string& value) {
         envp[key] =  value;
@@ -62,8 +51,7 @@ public:
     ~CGISettler();
 
 };
-//int mainCGI(std::string urlCgi, int clientSocket, client dataClient);
 
-std::string mainCGI(std::string urlCgi, int clientSocket, Client &dataClient);
+std::string mainCGI(Client &dataClient);
 
-#endif // CGI_RESOLVER_HPP
+#endif

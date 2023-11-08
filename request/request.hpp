@@ -95,30 +95,20 @@ class request
         void receiveRequest(Client& dataClient)
         {
             read_request(dataClient);
-            std::ofstream m("txt");
+            std::ofstream m("txt",std::ios::app);
             m << dataClient.getRestRequest();
             if (dataClient.error)
                 return ;
 
             if (dataClient.getTypeRequset() == "POST" && dataClient.getReadlen() < dataClient.getContentLength())
                 return ;
-            if(dataClient.getUrl().length() > 3)
+
+            if (dataClient.getUrl().find(".py") != std::string::npos || dataClient.getUrl().find(".php") != std::string::npos) 
             {
-                if (dataClient.getUrl().find(".py", dataClient.getUrl().length() - 4) != dataClient.getUrl().npos) 
-                {
-                    // dataClient.cgi =  mainCGI(dataClient.getUrl(), dataClient.getClientSocket(),  dataClient);
-                    std::string res =  mainCGI(dataClient.getUrl(), dataClient.getClientSocket(), dataClient);
-                    dataClient.SetCgi(res);
-                    return ;
-                }
-                else if (dataClient.getUrl().find(".php", dataClient.getUrl().length() - 4) != dataClient.getUrl().npos)
-                {
-                    
-                    std::string res =  mainCGI(dataClient.getUrl(), dataClient.getClientSocket(), dataClient);
-                    dataClient.SetCgi(res);
-                    //std::cout<< "fgf=++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n";
-                    return ;
-                }
+                std::cout << dataClient.error << "||" << "09090909090909090909009090009\n";
+                std::string res =  mainCGI(dataClient);
+                dataClient.SetCgi(res);
+                return ;
             }
             if (dataClient.getHeaderStatus() == true && dataClient.TransferEncoding == "chunked" && dataClient.getTypeRequset() == "POST")
             {
