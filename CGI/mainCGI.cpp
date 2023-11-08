@@ -7,10 +7,9 @@
 std::string mainCGI(std::string cgi_exe, Client &dataClient) {
 
     std::string responsesstring;
-    std::string sfile = dataClient.getUrl();
     std::string sscriptType = "php";
     try {
-        CGISettler cgiSettler(cgi_exe, sfile, sscriptType, dataClient);
+        CGISettler cgiSettler(cgi_exe, sscriptType, dataClient);
 
         if (dataClient.getTypeRequset() == "POST") 
         {

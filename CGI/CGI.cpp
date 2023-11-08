@@ -2,18 +2,13 @@
 #include <sys/fcntl.h>
 #include "../Client/Client.hpp"
 
-CGISettler::CGISettler(std::string exe, const std::string& CGI_file, const std::string& scriptType,Client &dataClient)
-    :file(CGI_file),scriptType(scriptType) ,dataClient(dataClient)  {
+CGISettler::CGISettler(std::string exe, const std::string& scriptType,Client &dataClient)
+    :scriptType(scriptType) ,dataClient(dataClient)  {
     this->R_pipes[0] = -1;
     this->R_pipes[1] = -1;
     this->W_pipes[0] = -1;
     this->W_pipes[1] = -1;
     cgi_exe = exe;
-    if (!this->validpath())
-    {
-        dataClient.error = 500;
-        throw "HTTP  502";
-    }
     this->CgiEnv(dataClient);  
 }
 
@@ -62,24 +57,12 @@ CGISettler::CGISettler(std::string exe, const std::string& CGI_file, const std::
             
             const char* bin;
             char* args[3];
-            // if (scriptType == "php") {
-        
-                bin = cgi_exe.c_str(); 
-                args[0] = (char*)bin;
-                args[1] = (char*)this->file.c_str();
-                args[2] = NULL;
-            // } else if (scriptType == "python") {
-
-                // bin = "/Users/eelhafia/Desktop/webserver/CGI/py-cgi";
-                // args[0] = (char*)bin;
-                // args[1] = (char*)this->file.c_str();
-                // args[2] = nullptr;
-            // } else {
-            //     //std::cout<< "Unsupported scriptType: "<< std::endl;
-            //     this->error_CGI();
-            //     exit(1);// not use exit just return
-            // }
-
+    
+            bin = cgi_exe.c_str(); 
+            args[0] = (char*)bin;
+            args[1] = (char*)this->file.c_str();
+            args[2] = NULL;
+            
             char **env = new char *[this->envp.size() + 1];
             env[this->envp.size()] = NULL;
             std::map<std::string, std::string>::const_iterator it = this->envp.begin();
@@ -128,6 +111,15 @@ CGISettler::CGISettler(std::string exe, const std::string& CGI_file, const std::
         } else {
             valuequertString = ""; 
         }
+        if (pos1 != std::string::npos)
+            file = dataClient.getUrl().substr(0, pos1);
+        else
+            file = dataClient.getUrl();
+        // if (!this->validpath())
+        // {
+        //     dataClient.error = 500;
+        //     throw "HTTP  502";
+        // }
         size_t posCoockie = dataClient.getRestRequest().find("Cookie:");
         std::string valueCoockie;
         if (posCoockie != std::string::npos)

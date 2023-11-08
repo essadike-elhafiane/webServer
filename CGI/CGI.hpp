@@ -33,7 +33,7 @@ public:
     Client &dataClient;
     std::string body;
     pid_t pid;
-    CGISettler(std::string exe, const std::string& file, const std::string& scriptType,  Client &dataClient);
+    CGISettler(std::string exe, const std::string& scriptType,  Client &dataClient);
     
     int getReadEnd() const;
     int getWriteEnd() const;
