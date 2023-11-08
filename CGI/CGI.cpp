@@ -69,13 +69,13 @@ CGISettler::CGISettler(const std::string& CGI_path, const std::string& CGI_file,
             char* args[3];
             if (scriptType == "php") {
         
-                bin = "/Users/edraidry/Desktop/webserver/CGI/php-cgi"; 
+                bin = "/Users/eelhafia/Desktop/webserver/CGI/php-cgi"; 
                 args[0] = (char*)bin;
                 args[1] = (char*)this->file.c_str();
                 args[2] = nullptr;
             } else if (scriptType == "python") {
 
-                bin = "/Users/edraidry/Desktop/webserver/CGI/py-cgi";
+                bin = "/Users/eelhafia/Desktop/webserver/CGI/py-cgi";
                 args[0] = (char*)bin;
                 args[1] = (char*)this->file.c_str();
                 args[2] = nullptr;
@@ -152,10 +152,10 @@ CGISettler::CGISettler(const std::string& CGI_path, const std::string& CGI_file,
         addEnv("HTTP_CONTENT_TYPE", valueContentType); 
         addEnv("HTTP_QUERY_STRING",  valuequertString);
         addEnv("HTTP_REQUEST_METHOD", dataClient.getTypeRequset()); 
-        addEnv("HTTP_SCRIPT_FILENAME", "/Users/edraidry/Desktop/webserver/CGI/hello_script.php");
+        addEnv("HTTP_SCRIPT_FILENAME", "/Users/eelhafia/Desktop/webserver/CGI/hello_script.php");
         addEnv("HTTP_SCRIPT_NAME",  "hello_script.php");
         addEnv("HTTP_CONTENT_LENGTH", std::to_string (dataClient.getContentLength())); //! here!//
-        addEnv("HTTP_PATH_INFO", "/Users/edraidry/Desktop/webserver");
+        addEnv("HTTP_PATH_INFO", "/Users/eelhafia/Desktop/webserver");
         addEnv("HTTP_REDIRECT_STATUS","200");
         // if ()
         addEnv("HTTP_COOKIE", valueCoockie);

@@ -1,5 +1,11 @@
 <?php
     $Cook = $_SERVER["HTTP_COOKIE"];
-    // setcookie("name", "essadike", time() + 3600, '/');
-    print_r($Cook);
+    $values = explode("; ", $Cook);
+
+    foreach ($values as $value) {
+        list($key, $val) = explode("=", $value);
+        setcookie($key, $val, time() + 3600, '/');
+    }
+    
+    print_r($_COOKIE);
 ?>

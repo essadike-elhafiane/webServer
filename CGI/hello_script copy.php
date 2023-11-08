@@ -52,7 +52,7 @@ print_r($_COOKIE);
     // if ($uploadedFile['error'] === UPLOAD_ERR_OK) { 
     // $tempFileName = $uploadedFile['tmp_name']; // The temporary file name on the server.
 
-    // $destination = '/Users/edraidry/Desktop/webserver/' . $uploadedFile['name']; // Set your desired destination path and filename.
+    // $destination = '/Users/eelhafia/Desktop/webserver/' . $uploadedFile['name']; // Set your desired destination path and filename.
 
     // if (move_uploaded_file($tempFileName, $destination)) {
     //     echo 'File successfully uploaded and moved to ' . $destination;
@@ -65,4 +65,4 @@ print_r($_COOKIE);
 
 
     ?> -->
-    #!/Users/edraidry/Desktop/webserver/CGI/php-cgi
+    #!/Users/eelhafia/Desktop/webserver/CGI/php-cgi
