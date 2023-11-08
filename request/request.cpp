@@ -396,27 +396,15 @@ void    request::read_request(Client& dataClient)
 void request::delete_request(Client& dataClient)
 {
     std::string filename;
-    size_t i = 0;
-    for (i = 0; i < dataClient.configData.pages.size() ; i++)
-    {
-        if (dataClient.configData.pages[i].path == dataClient.path)
-            break;
-    }
+    if (dataClient.error)
+        return ;
     filename = dataClient.getUrl();
-    std::cout << "+++++++++++++++++++++++++++" << filename << std::endl;
     if (dataClient.getUrl() == "")
         return ;
     int result = std::remove(filename.c_str());
     if (result == 0) {
-        // std::string response1 = "HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\nContent-Length: ";
-        dataClient.setUrl("/Users/eelhafia/Desktop/webserver/html/delete.html");
-        // rsp.sendResponse("/Users/eelhafia/Desktop/webserver/html/delete.html", response1, dataClient.getClientSocket(), dataClient);
-        // printf("File deleted successfully.");
-        // dataClient.resetData();
+        dataClient.setUrl("html/delete.html");
     } else {
-        dataClient.setUrl("/Users/eelhafia/Desktop/webserver/html/not_delete.html");
-        // rsp.sendResponse("/Users/eelhafia/Desktop/webserver/html/not_delete.html", response1, dataClient.getClientSocket(), dataClient);
-        // printf("Failed to delete the file.\n");
-        // dataClient.resetData();
+        dataClient.setUrl("html/not_delete.html");
     }
 }
