@@ -18,7 +18,7 @@ private:
     void addEnv(const std::string& key, const std::string& value) {
         envp[key] =  value;
     }
-    std::string allrequest;// : These members could represent the path to the CGI script and the name of the CGI file
+    std::string allrequest;
     std::string file;
     std::string output;
     std::string scriptType;
@@ -32,6 +32,7 @@ public:
 
     Client &dataClient;
     std::string body;
+    size_t posbody;
     pid_t pid;
     CGISettler(std::string exe, const std::string& scriptType,  Client &dataClient);
     

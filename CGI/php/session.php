@@ -1,7 +1,5 @@
 <?php
-
     session_start();
-
     if (isset($_SERVER["HTTP_QUERY_STRING"])) {
         $colors = $_SERVER["HTTP_QUERY_STRING"];
         print_r($colors);

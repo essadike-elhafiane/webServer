@@ -13,10 +13,10 @@ std::string mainCGI(std::string cgi_exe, Client &dataClient) {
 
         if (dataClient.getTypeRequset() == "POST") 
         {
-          cgiSettler.CgiEnv(dataClient);
           size_t posBady = dataClient.getRestRequest().find("\r\n\r\n");
-          std::string postData = dataClient.getRestRequest().substr(posBady + 4, dataClient.getContentLength());
+          std::string postData = dataClient.getRestRequest().substr(posBady + 4, dataClient.getContentLength() - posBady - 4);
           cgiSettler.body = postData;
+          cgiSettler.posbody = posBady + 4;
         }
         cgiSettler.executionCGI();
         cgiSettler.dataClient = dataClient;

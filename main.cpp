@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.cpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: eelhafia <eelhafia@student.42.fr>          +#+  +:+       +#+        */
+/*   By: edraidry <edraidry@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/09/29 21:28:36 by eelhafia          #+#    #+#             */
-/*   Updated: 2023/11/05 15:46:26 by eelhafia         ###   ########.fr       */
+/*   Created: 2023/09/29 21:28:36 by edraidry          #+#    #+#             */
+/*   Updated: 2023/11/05 15:46:26 by edraidry         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,10 +51,9 @@ int main(int ac , char **av)
     std::cout<< "number servers: " << numberServer << std::endl;
     while (true) 
     {
-        int activity = poll(fds, MAX_CLIENTS + 1, 100000);
+        int activity = poll(fds, MAX_CLIENTS + 1, 10000);
         if (activity < 0) {
             perror("Poll error");
-            // exit(EXIT_FAILURE);
         }
         if (activity == 0)
         {

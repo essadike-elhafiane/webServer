@@ -16,12 +16,14 @@ CGISettler::CGISettler(std::string exe, const std::string& scriptType,Client &da
 
 
 
-   void CGISettler::executionCGI () {
+   void CGISettler::executionCGI () 
+   {
         if (pipe(this->R_pipes) == -1 || pipe(this->W_pipes) == -1) {
             this->close_pipes();
             dataClient.error = 500;
             throw "HTTP 500";
         }
+
         std::ofstream m("/tmp/file111.tmp");
         int fd = open("/tmp/file111.tmp", O_CREAT | O_RDWR | O_TRUNC);
         if (fd < 0)
@@ -29,11 +31,13 @@ CGISettler::CGISettler(std::string exe, const std::string& scriptType,Client &da
             dataClient.error = 500;
             throw "HTTP 500";
         }
-        if (write(fd, body.c_str(), body.size())< 0)
+        
+        if (write(fd, dataClient.getRestRequest().c_str() + posbody, dataClient.getRestRequest().size() - posbody) < 0)
         {
             dataClient.error = 500;
             throw "HTTP 500";
         }
+
         close(fd);
         fd = open("/tmp/file111.tmp", O_RDWR);
         pid_t pid = fork();
@@ -48,12 +52,6 @@ CGISettler::CGISettler(std::string exe, const std::string& scriptType,Client &da
            if (dup2(this->R_pipes[1], STDOUT_FILENO) == -1 ||
                 dup2(fd, STDIN_FILENO) == -1)
                 this->error_CGI();
-            if (close(this->R_pipes[0]) == -1 ||
-                close(this->R_pipes[1]) == -1 ||
-                close(this->W_pipes[0]) == -1 ||
-                close(this->W_pipes[1]) == -1)
-                this->error_CGI();
-            
             
             const char* bin;
             char* args[3];
@@ -89,13 +87,8 @@ CGISettler::CGISettler(std::string exe, const std::string& scriptType,Client &da
         }
 
         close(fd);
-        if (close(this->R_pipes[1]) == -1 || close(this->W_pipes[0]) == -1)
-        {
-            dataClient.error = 500;
-            throw "HTTP 500";
-        }
     
-}
+    }
  
 
 
@@ -115,29 +108,28 @@ CGISettler::CGISettler(std::string exe, const std::string& scriptType,Client &da
             file = dataClient.getUrl().substr(0, pos1);
         else
             file = dataClient.getUrl();
-        // if (!this->validpath())
-        // {
-        //     dataClient.error = 500;
-        //     throw "HTTP  502";
-        // }
+        if (!this->validpath())
+        {
+            dataClient.error = 404;
+            throw "HTTP  502";
+        }
         size_t posCoockie = dataClient.getRestRequest().find("Cookie:");
         std::string valueCoockie;
         if (posCoockie != std::string::npos)
         {   
             valueCoockie = dataClient.getRestRequest().substr(posCoockie + 8, dataClient.getRestRequest().find("\r\n", posCoockie + 7) - posCoockie - 8);
-            std::cerr << valueCoockie << "*****************************************\n";
         }
         env.clear();
       
-        addEnv("HTTP_CONTENT_TYPE", valueContentType); 
+        addEnv("CONTENT_TYPE", valueContentType); 
         if (!valuequertString.empty())
             addEnv("HTTP_QUERY_STRING",  valuequertString);
-        addEnv("HTTP_REQUEST_METHOD", dataClient.getTypeRequset()); 
-        addEnv("HTTP_SCRIPT_FILENAME", file);
-        // addEnv("HTTP_SCRIPT_NAME",  "hello_script.php");
-        addEnv("HTTP_CONTENT_LENGTH", std::to_string (dataClient.getContentLength())); //! here!//
-        // addEnv("HTTP_PATH_INFO", "/Users/eelhafia/Desktop/webserver");
-        addEnv("HTTP_REDIRECT_STATUS","200");
+        addEnv("REQUEST_METHOD", dataClient.getTypeRequset()); 
+        addEnv("SCRIPT_FILENAME", file);
+        // addEnv("SCRIPT_NAME",  "upload.php");
+        addEnv("CONTENT_LENGTH", std::to_string (dataClient.getContentLength())); //! here!//
+        // addEnv("PATH_INFO", "/Users/edraidry/Desktop/webServer");
+        addEnv("REDIRECT_STATUS","200");
         if (posCoockie != std::string::npos)
             addEnv("HTTP_COOKIE", valueCoockie);
         
@@ -146,29 +138,11 @@ CGISettler::CGISettler(std::string exe, const std::string& scriptType,Client &da
 
 
 bool CGISettler::validpath() const {
-    struct stat fileInfo;
-
-    //std::cout<< this->path << std::endl;
-
-    if (stat(this->file.c_str(), &fileInfo) == 0) {
-        if (fileInfo.st_mode & S_IXUSR) {
-            return true;
-        } else {
-            // Handle the case where the file doesn't have execute permission.
-            //std::cout<< "File does not have execute permission." << std::endl;
-        }
-    } else {
-        // Handle the case where stat fails, e.g., the file doesn't exist.
-        //std::cout<< "File not found or stat failed." << std::endl;
-    }
-
-    return false;
+    std::ifstream in(file);
+    if (!in.is_open())
+        return false;
+    return true;
 }
-
-
-
-
-
 
 
 
@@ -205,30 +179,6 @@ void CGISettler::close_pipes() {
 }
 
 
-
-
-// std::string CGISettler::stringQuery(std::string &restQuery)
-// {
-//     std::size_t pos = restQuery.find("?");
-//     if (pos != std::string::npos)
-//     {
-//         return restQuery.substr(pos + 1); // You want to include the character after the question mark.
-//     }
-//     else
-//     {
-//         return ""; // Return an empty string if there's no question mark.
-//     }
-    
-// }
-// void CGISettler::processResponse() {
-
-//     Clientt.response_data += "Processed response from CGI";
-// }
-
-
-
-
-
 char* const* CGISettler::getEnv() const {
     std::vector<char*> envp(env.size() + 1);
     for (size_t i = 0; i < env.size(); i++) {
@@ -241,8 +191,5 @@ char* const* CGISettler::getEnv() const {
     return envp_heap;
     
 }
-
-
-
 
 CGISettler::~CGISettler() {}
