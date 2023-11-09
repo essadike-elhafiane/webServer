@@ -109,10 +109,16 @@ class response
                 {
                     std::string key = url.substr(pos + 1, url.size() - pos - 1);
                     type = dataClient.configData.Extensions[key];
-                    std::cout << "||||||||" << key << std::endl;
+                    std::map<std::string , std::string>::const_iterator it = dataClient.configData.Extensions.begin();
+                    while(it != dataClient.configData.Extensions.end())
+                    {
+                    std::cout << "|||||||1" << it->first << "||" << it->second << "1||" << std::endl;
+                        it ++;
+                    }
                 }
                 else
                     type = "text/plain";
+                std::cout << type << "|||||||||||||||||||||||||||||||\n";
                 configResponse = "HTTP/1.1 200 OK\r\nContent-Type: " + type +"\r\nConnection: close\r\nContent-Length: ";
                 return;
             }

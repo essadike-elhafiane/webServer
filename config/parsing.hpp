@@ -61,6 +61,8 @@ class LOCATION
                 this->redirection = other.redirection;
                 this->cgi = other.cgi;
                 this->allow_methods = other.allow_methods;
+                cgi_exe = other.cgi_exe;
+                isredirection = other.isredirection;
             }
             return *this;
         }
@@ -88,11 +90,12 @@ class HTTP_SERVER
                 if (this != &other)
                 {
                     this->server_name = other.server_name;
-                    
                     this->client_max_body_size = other.client_max_body_size;
                     this->error_page = other.error_page;
                     this->port = other.port;
-                    this->pages = other.pages;   
+                    this->pages = other.pages;  
+                    hostname = other.hostname; 
+                    this->Extensions = other.Extensions;
                 }
             return *this;
         }

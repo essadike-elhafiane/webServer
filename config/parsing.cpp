@@ -417,7 +417,7 @@ void valid_location(HTTP_SERVER data)
 
 void loadDataExtensions(std::map<std::string, std::string> &Extensions)
 {
-    std::ifstream input("include/mime.types");
+    std::ifstream input("./include/mime.types");
     if (!input.is_open())
     {
         std::cout << "Error in extension file\n";

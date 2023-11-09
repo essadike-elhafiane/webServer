@@ -77,6 +77,7 @@ int checkValidRequest(std::string &requests, size_t poss, Client& dataClient)
     if (dataClient.HostName.empty())
         return 1;
     std::cout << "|" << dataClient.HostName << "|" << std::endl;
+    
     if (!checkIsIp(dataClient.HostName))
     {
         size_t posServerData = 0;
@@ -90,6 +91,7 @@ int checkValidRequest(std::string &requests, size_t poss, Client& dataClient)
             return 0;
         dataClient.configData = dataClient.dataServers[posServerData];
     }
+    
     //std::cout<< "|" << dataClient.HostName << "|" << dataClient.port << "|" << dataClient.getTypeRequset() << "\n";
     return 0;
 }

@@ -44,49 +44,33 @@ class request
             }
             else
             {
-                size_t pos = dataClient.getUrl().find("/", 1);
-                if (pos == std::string::npos)
-                    pos = dataClient.getUrl().size();
-                {
-                    std::string nameLocation = dataClient.getUrl().substr(0, pos);
                     size_t i;
                     for (i = 0; i < dataClient.configData.pages.size(); i++)
+                    {
+                        std::string nameLocation = dataClient.getUrl().substr(0, dataClient.configData.pages[i].path.size());
+                        std::cout << nameLocation << "}}}}}}}{{{{{{{{{}}}}}}}}}\n";
+                        if (dataClient.configData.pages[i].path == "/")
+                            continue;
                         if (dataClient.configData.pages[i].path == nameLocation)
                             break;
-                    if (i < dataClient.configData.pages.size())
+                    }
+                    if (i == dataClient.configData.pages.size())
                     {
-                        if (std::find(dataClient.configData.pages[i].allow_methods.begin(), dataClient.configData.pages[i].allow_methods.end(), dataClient.getTypeRequset()) == dataClient.configData.pages[i].allow_methods.end())
-                            return (dataClient.error = 403, 1);
-                        if (pos == dataClient.getUrl().size())
-                        {
-                            std::string url = dataClient.configData.pages[i].root + dataClient.configData.pages[i].path;
-                            int fd = open(url.c_str(), O_RDWR);
-                            if (fd > 0)
-                            {
-                                dataClient.path = dataClient.getUrl();
-                                dataClient.setUrl(url);
-                                return 0;
-                            }
-                            dataClient.path = dataClient.getUrl();
-                            dataClient.setUrl(dataClient.getUrl() + "/");
-                            dataClient.configData.pages[i].isredirection = 1;
-                            return 0;
-                        }
-                        dataClient.setUrl(dataClient.configData.pages[i].root + dataClient.configData.pages[i].path + dataClient.getUrl().substr(pos, dataClient.getUrl().size() - pos));
+                        size_t i;
+                        for (i = 0; i < dataClient.configData.pages.size(); i++)
+                            if (dataClient.configData.pages[i].path == "/")
+                                break;
+                        dataClient.setUrl(dataClient.configData.pages[i].root + dataClient.getUrl());
                         dataClient.path = dataClient.configData.pages[i].path;
+                        // return (dataClient.error = 404, 1);
                         return 0;
                     }
-                }
-                size_t i;
-                for (i = 0; i < dataClient.configData.pages.size(); i++)
-                    if (dataClient.configData.pages[i].path == "/")
-                        break;
-                if (i == dataClient.configData.pages.size())
-                    return (dataClient.error = 404, 1);
-                if (std::find(dataClient.configData.pages[i].allow_methods.begin(), dataClient.configData.pages[i].allow_methods.end(), dataClient.getTypeRequset()) == dataClient.configData.pages[i].allow_methods.end())
-                    return (dataClient.error = 403, 1);
-                dataClient.setUrl(dataClient.configData.pages[i].root + dataClient.configData.pages[i].path + dataClient.getUrl());
-                dataClient.path = dataClient.configData.pages[i].path;
+                    if (std::find(dataClient.configData.pages[i].allow_methods.begin(), dataClient.configData.pages[i].allow_methods.end(), dataClient.getTypeRequset()) == dataClient.configData.pages[i].allow_methods.end())
+                        return (dataClient.error = 403, 1);
+                    dataClient.setUrl(dataClient.configData.pages[i].root + dataClient.getUrl());
+                    dataClient.path = dataClient.configData.pages[i].path;
+                    return 0;
+                    
             }
             return 0;
         }

@@ -15,21 +15,6 @@
 #include <cstring>
 #include <netdb.h>
 #include <arpa/inet.h>
-// class webserv
-// {
-//     private:
-//         /* data */
-//     public:
-//         webserv(/* args */);
-//         ~webserv();
-// };
 
-// webserv::webserv(/* args */)
-// {
-// }
-
-// webserv::~webserv()
-// {
-// }
 
 #endif //WEBSERV_HPP
