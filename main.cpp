@@ -31,13 +31,6 @@ int main(int ac , char **av)
     size_t numberServer = 0;
     memset(fds, 0, sizeof(fds));
     signal(SIGPIPE, SIG_IGN);
-    // std::map<std::string , std::string>::const_iterator it = configData[0].Extensions.begin();
-    // while(it != configData[0].Extensions.end())
-    // {
-    // std::cout << "|||||||1" << it->first << "||" << it->second << "1||" << std::endl;
-    //     it ++;
-    // }
-    // exit(0);
     for (size_t i = 0; i < configData.size(); i++)
     {
         for (size_t j = 0; j < configData[i].port.size(); j++)

@@ -223,8 +223,8 @@ int request::parseChunck(Client& dataClient, size_t pos)
     size_t startpos = posf + 4 + ll;
     while (startpos != std::string::npos)
     {
-        // if (dataClient.getRestRequest()[startpos + 1] != '\r')
-        //     return (dataClient.error = 400);
+        if (dataClient.getRestRequest()[startpos] != '\r')
+            return (dataClient.error = 400);
         size_t endPos = dataClient.getRestRequest().find("\r\n", startpos + 2);
         if (endPos ==  std::string::npos)
             break;
@@ -257,17 +257,13 @@ int request::download_file(Client &dataClient, ssize_t pos_start)
         if (po == std::string::npos)
             return (dataClient.error = 400, 1); // bad request if not fond
         std::string namefile = dataClient.getRestRequest().substr(p + 1, po - p - 2);
-        size_t i = 0;
-        for (i = 0; i < dataClient.configData.pages.size() ; i++)
-            if (dataClient.configData.pages[i].path == dataClient.path)
-                break;
-        namefile = dataClient.configData.pages[i].root + "/" + namefile;
+        namefile = dataClient.getUrl() + "/" + namefile;
         std::cout << namefile << std::endl;
         dataClient.setFileName(namefile);
         std::ofstream file(namefile, std::ios::out | std::ios::binary);
-        if (!file) {
+        if (!file.is_open()) {
             std::cerr << "Error opening file for writing" << namefile << std::endl;
-            return (dataClient.error = 400, 1);
+            return (dataClient.error = 500, 1);
         }
     }
     if (dataClient.getFileName() != "")

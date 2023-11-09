@@ -48,7 +48,6 @@ class request
                     for (i = 0; i < dataClient.configData.pages.size(); i++)
                     {
                         std::string nameLocation = dataClient.getUrl().substr(0, dataClient.configData.pages[i].path.size());
-                        std::cout << nameLocation << "}}}}}}}{{{{{{{{{}}}}}}}}}\n";
                         if (dataClient.configData.pages[i].path == "/")
                             continue;
                         if (dataClient.configData.pages[i].path == nameLocation)
@@ -62,7 +61,8 @@ class request
                                 break;
                         dataClient.setUrl(dataClient.configData.pages[i].root + dataClient.getUrl());
                         dataClient.path = dataClient.configData.pages[i].path;
-                        // return (dataClient.error = 404, 1);
+                        if (std::find(dataClient.configData.pages[i].allow_methods.begin(), dataClient.configData.pages[i].allow_methods.end(), dataClient.getTypeRequset()) == dataClient.configData.pages[i].allow_methods.end())
+                            return (dataClient.error = 403, 1);
                         return 0;
                     }
                     if (std::find(dataClient.configData.pages[i].allow_methods.begin(), dataClient.configData.pages[i].allow_methods.end(), dataClient.getTypeRequset()) == dataClient.configData.pages[i].allow_methods.end())
@@ -78,8 +78,8 @@ class request
         void receiveRequest(Client& dataClient)
         {
             read_request(dataClient);
-            // std::ofstream m("txt",std::ios::app);
-            // m << dataClient.getRestRequest();
+            std::ofstream m("txt",std::ios::app);
+            m << dataClient.getRestRequest();
             if (dataClient.error)
                 return ;
 

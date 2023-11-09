@@ -337,7 +337,6 @@ void server_pars(std::vector<std::string>::iterator &ptr , Mycfg &obj, HTTP_SERV
 
 void token_elemet(std::vector<std::string> line,std::vector<std::string> &line1 ,const char *c )
 {
-    ;;;;
     std::string tmp;
     int i = 0;
     while(!line[i].empty())

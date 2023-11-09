@@ -109,12 +109,12 @@ class response
                 {
                     std::string key = url.substr(pos + 1, url.size() - pos - 1);
                     type = dataClient.configData.Extensions[key];
-                    std::map<std::string , std::string>::const_iterator it = dataClient.configData.Extensions.begin();
-                    while(it != dataClient.configData.Extensions.end())
-                    {
-                    std::cout << "|||||||1" << it->first << "||" << it->second << "1||" << std::endl;
-                        it ++;
-                    }
+                    // std::map<std::string , std::string>::const_iterator it = dataClient.configData.Extensions.begin();
+                    // while(it != dataClient.configData.Extensions.end())
+                    // {
+                    // std::cout << "|||||||1" << it->first << "||" << it->second << "1||" << std::endl;
+                    //     it ++;
+                    // }
                 }
                 else
                     type = "text/plain";
@@ -263,19 +263,14 @@ class response
             //  std::cout<< "2?---|" <<  url << "|" << dataClient.getClientSocket() << "|" << dataClient.error << "|---"<< std::endl;
             if(!response.empty())
             {
-                //  std::cout<< "4---|" <<  url << "|" << dataClient.getClientSocket() << "|" << dataClient.error << "|---"<< std::endl;
                 if (dataClient.error == 0)
                 {
-                    // std::cout<< "5---|" <<  url << "|" << dataClient.getClientSocket() << "|" << dataClient.error << "|---"<< std::endl;
-                    //   std::cout<< "5---|" <<  configResponse << "|---"<< std::endl;
                     configResponse = "HTTP/1.1 200 OK\r\nContent-Length: " +  std::to_string(response.length())+ "\r\n\r\n" + response;
-                    // std::cout<< "4---|" << configResponse  << "|---"<< std::endl;
                     send(dataClient.getClientSocket(), configResponse.c_str() , configResponse.length() , 0);
                     dataClient.error = 1000;
                     return 0 ;
                 }
             }
-            // std::cout<< "---|" <<  url << "|" << dataClient.getClientSocket() << "|" << dataClient.error << "|---"<< std::endl;
             if(!dataClient.getLenSend())
             {
                 headre(dataClient , url , configResponse);
@@ -317,8 +312,7 @@ class response
                     return 0;
                 }
                 r.close();
-            }   
-            //std::cout<< dataClient.getLenSend() <<  "mm\n";   
+            }    
             std::ifstream input(url, O_RDWR);
             char buffer[30001];
             if(!input.is_open())
@@ -334,17 +328,12 @@ class response
             input.read(buffer, lenRead);
             if ((input.tellg() <= 0))
             {
-                // //std::cout<< "fhd\n" << input.tellg() << "|" << dataClient.getLenSend()  << "|" << dataClient.lengthFile << std::endl;
                 input.close();
                 dataClient.clearLenSend();
                 dataClient.error = 1000;
                 return 0;
             }
-            // std::cout<< dataClient.getClientSocket() << "|"<<static_cast<ssize_t>(input.tellg()) - dataClient.getLenSend() << "h\n";
-            // std::cout<< "ttt\n";
-            std::cout << dataClient.configData.server_name << "+++++++++++\n";
             size_t len = send(dataClient.getClientSocket(), buffer , input.tellg() - dataClient.getLenSend(), 0);
-            // std::cout<< "tttp\n";
             if (len < 0)
             {
                 std::cerr << "Failed to send response." << std::endl;
@@ -357,9 +346,6 @@ class response
             if (dataClient.getLenSend() < dataClient.lengthFile)
                 return 1;
             dataClient.clearLenSend();
-            // dataClient.resetdataResponse();
-            //std::cout<< "|" << url  << "|"<< std::endl;
-            //std::cout<< "send success" << std::endl;
             return 0;
         }
         response(/* args */);
