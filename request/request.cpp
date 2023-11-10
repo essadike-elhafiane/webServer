@@ -229,7 +229,7 @@ int request::download_file(Client &dataClient, ssize_t pos_start)
         std::ofstream file(namefile, std::ios::out | std::ios::binary);
         if (!file.is_open()) {
             std::cerr << "Error opening file for writing" << namefile << std::endl;
-            return (dataClient.error = 500, 1);
+            return (dataClient.error = 204, 1);
         }
     }
     if (dataClient.getFileName() != "")
