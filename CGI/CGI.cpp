@@ -68,10 +68,9 @@ CGISettler::CGISettler(std::string exe, const std::string& scriptType,Client &da
             
             for (it = this->envp.begin(); it != this->envp.end(); it++) {
                 env[i++] = strdup((it->first + "=" + it->second).c_str());
-                std::cerr << it->first << ": "<< it->second << "|-------|\n";
             }
-            for (size_t i = 0; env[i]; i++)
-                std::cerr << env[i] << std::endl;
+            // for (size_t i = 0; env[i]; i++)
+            //     std::cerr << env[i] << std::endl;
             
             close_pipes();
             close(fd);
@@ -126,11 +125,9 @@ CGISettler::CGISettler(std::string exe, const std::string& scriptType,Client &da
             addEnv("HTTP_QUERY_STRING",  valuequertString);
         addEnv("REQUEST_METHOD", dataClient.getTypeRequset()); 
         addEnv("SCRIPT_FILENAME", file);
-        // addEnv("SCRIPT_NAME",  "upload.php");
         std::stringstream m;
         m << dataClient.getContentLength();
-        addEnv("CONTENT_LENGTH", m.str()); //! here!//
-        // addEnv("PATH_INFO", "/Users/edraidry/Desktop/webServer");
+        addEnv("CONTENT_LENGTH", m.str());
         addEnv("REDIRECT_STATUS","200");
         if (posCoockie != std::string::npos)
             addEnv("HTTP_COOKIE", valueCoockie);

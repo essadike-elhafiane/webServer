@@ -51,7 +51,6 @@ class Client
         {
             for (size_t i = 0; i < s.size(); i++)
                 cgi.push_back(s[i]);
-            // //std::cout<< "||||||" << cgi << "!!!!!!!!!\n";
         }
         std::string &getCgi()
         {
