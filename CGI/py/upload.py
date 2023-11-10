@@ -20,7 +20,7 @@ if "fileToUpload" in form:
 
     if file_item.file:
         # Specify the directory where you want to save the files
-        upload_dir = "/Users/edraidry/Desktop/webServer/"
+        upload_dir = "/Users/eelhafia/Desktop/webServer/"
 
         # Construct the absolute path to the destination file
         destination = os.path.join(upload_dir, os.path.basename(file_item.filename))

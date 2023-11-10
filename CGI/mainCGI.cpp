@@ -25,9 +25,10 @@ std::string mainCGI(std::string cgi_exe, Client &dataClient) {
         char c;
         
         int p = 0;
+        clock_t time = clock();
         while((p = read(readEnd , &c, 1)))
         {
-          if (p == 0)
+          if (p == 0 || (clock() - time > 3000))
           {
             dataClient.error = 500;
             kill(cgiSettler.pid, SIGKILL);
@@ -42,6 +43,8 @@ std::string mainCGI(std::string cgi_exe, Client &dataClient) {
      } catch (const char* error) {
         std::cerr << "Error: " << error << std::endl;
       }  
-    std::string res = "HTTP/1.1 200 OK\r\nContent-Length: " + std::to_string(responsesstring.size() - responsesstring.find("\r\n\r\n") - 4) +"\r\n"+ responsesstring;
+    std::stringstream m;
+    m << responsesstring.size() - responsesstring.find("\r\n\r\n") - 4;
+    std::string res = "HTTP/1.1 200 OK\r\nContent-Length: " + m.str() +"\r\n"+ responsesstring;
     return res;
 }

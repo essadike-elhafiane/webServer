@@ -127,7 +127,9 @@ CGISettler::CGISettler(std::string exe, const std::string& scriptType,Client &da
         addEnv("REQUEST_METHOD", dataClient.getTypeRequset()); 
         addEnv("SCRIPT_FILENAME", file);
         // addEnv("SCRIPT_NAME",  "upload.php");
-        addEnv("CONTENT_LENGTH", std::to_string (dataClient.getContentLength())); //! here!//
+        std::stringstream m;
+        m << dataClient.getContentLength();
+        addEnv("CONTENT_LENGTH", m.str()); //! here!//
         // addEnv("PATH_INFO", "/Users/edraidry/Desktop/webServer");
         addEnv("REDIRECT_STATUS","200");
         if (posCoockie != std::string::npos)

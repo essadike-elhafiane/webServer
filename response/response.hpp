@@ -29,6 +29,7 @@ class response
             if (len < 0)
             {
                 std::cerr << "Failed to send response." << std::endl;
+                dataClient.error = 1000;
                 return ;
             }
             dataClient.SetCgi("");
@@ -265,7 +266,9 @@ class response
             {
                 if (dataClient.error == 0)
                 {
-                    configResponse = "HTTP/1.1 200 OK\r\nContent-Length: " +  std::to_string(response.length())+ "\r\n\r\n" + response;
+                    std::stringstream m;
+                    m << response.length();
+                    configResponse = "HTTP/1.1 200 OK\r\nContent-Length: " +  m.str() + "\r\n\r\n" + response;
                     send(dataClient.getClientSocket(), configResponse.c_str() , configResponse.length() , 0);
                     dataClient.error = 1000;
                     return 0 ;
@@ -293,6 +296,7 @@ class response
                         if (len < 0)
                         {
                             std::cerr << "Failed to send response." << std::endl;
+                            dataClient.error = 1000;
                             return 0;
                         }
                         return 0;
@@ -302,12 +306,15 @@ class response
                         return 0;
                     return 0;
                 }
-                configResponse = configResponse + std::to_string(r.tellg()) + "\r\n\r\n";
+                std::stringstream m;
+                m << r.tellg();
+                configResponse = configResponse + m.str() + "\r\n\r\n";
                 dataClient.lengthFile = static_cast<size_t>(r.tellg());
                 size_t len = send(dataClient.getClientSocket(), configResponse.c_str() , configResponse.length() , 0);
                 if (len < 0)
                 {
                     std::cerr << "Failed to send response." << std::endl;
+                    dataClient.error = 1000;
                     r.close();
                     return 0;
                 }

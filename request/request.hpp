@@ -78,8 +78,8 @@ class request
         void receiveRequest(Client& dataClient)
         {
             read_request(dataClient);
-            std::ofstream m("txt",std::ios::app);
-            m << dataClient.getRestRequest();
+            // std::ofstream m("txt",std::ios::app);
+            // m << dataClient.getRestRequest();
             if (dataClient.error)
                 return ;
 
@@ -88,6 +88,11 @@ class request
 
             if (dataClient.getUrl().find(".py") != std::string::npos || dataClient.getUrl().find(".php") != std::string::npos) 
             {
+                if (dataClient.getTypeRequset() != "POST" && dataClient.getTypeRequset() != "GET")
+                {
+                    dataClient.error = 403;
+                    return ;
+                }
                 size_t i;
                 for (i = 0; i < dataClient.configData.pages.size(); i++)
                     if (dataClient.configData.pages[i].path == dataClient.path)
@@ -97,13 +102,6 @@ class request
                     dataClient.error = 404;
                     return ;
                 }
-                // std::ifstream cgi(dataClient.getUrl());
-                // std::cout<< dataClient.getUrl() << "|||||||" << dataClient.error << "||" << "09090909090909090909009090009\n";
-                // if (!cgi.is_open())
-                // {
-                //     dataClient.error = 404;
-                //     return ;
-                // }
                 std::string exe = dataClient.configData.pages[i].root + dataClient.configData.pages[i].path + dataClient.configData.pages[i].cgi_exe;
                 std::string res =  mainCGI(exe, dataClient);
                 dataClient.SetCgi(res);

@@ -10,7 +10,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_FILES['fileToUpload'])) {
     if ($uploadedFile['error'] === UPLOAD_ERR_OK) {
         $tempFileName = $uploadedFile['tmp_name'];
 
-        $destinationDirectory = '/Users/edraidry/Desktop/webServer/';
+        $destinationDirectory = '/Users/eelhafia/Desktop/webServer/';
         $destination = $destinationDirectory . $uploadedFile['name'];
 
         // Check if the destination directory exists, if not, create it.

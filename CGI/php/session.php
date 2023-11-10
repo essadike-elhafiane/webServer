@@ -10,5 +10,4 @@
 
     $favoriteColor = isset($_SESSION['favcolor']) ? $_SESSION['favcolor'] : 'not set';
     echo "<h1 style=\"color:$favoriteColor\"> hhhhhhh </h1>";
-    print_r($favoriteColor);
 ?>

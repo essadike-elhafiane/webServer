@@ -154,7 +154,8 @@ int main(int ac , char **av)
                     dataClient.resetRestRequest();
                     fds[i].events = POLLIN;
                     fds[i].revents = 0;
-                    continue;
+                    if (!dataClient.error)
+                        continue;
                 }
                 else if (!resp.sendResponse(dataClient))
                 {
@@ -173,7 +174,7 @@ int main(int ac , char **av)
                 if (dataClient.error || dataClient.connection == "close")
                 {
                     mClients.erase(fds[i].fd);
-                    std::cout<< "closeedd" << fds[i].fd << std::endl;
+                    std::cout<< "close with Error :" << fds[i].fd << std::endl;
                     close(fds[i].fd);
                     fds[i].fd = 0;
                     fds[i].events = 0;
@@ -197,3 +198,6 @@ int main(int ac , char **av)
         close(servers[i].getServerSocket());
     return 0;
 }
+
+// just get and post work in cgi
+// to_string ;
