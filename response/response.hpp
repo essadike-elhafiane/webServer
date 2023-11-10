@@ -93,7 +93,7 @@ class response
 
         void headre(Client & dataClient , std::string &url , std::string & configResponse)
         {
-            //std::cout<< dataClient.error << std::endl;
+            
             std::map<int , std::string>::const_iterator it = dataClient.configData.error_page.begin();
             while(it != dataClient.configData.error_page.end())
             {
@@ -110,16 +110,9 @@ class response
                 {
                     std::string key = url.substr(pos + 1, url.size() - pos - 1);
                     type = dataClient.configData.Extensions[key];
-                    // std::map<std::string , std::string>::const_iterator it = dataClient.configData.Extensions.begin();
-                    // while(it != dataClient.configData.Extensions.end())
-                    // {
-                    // std::cout << "|||||||1" << it->first << "||" << it->second << "1||" << std::endl;
-                    //     it ++;
-                    // }
                 }
                 else
                     type = "text/plain";
-                std::cout << type << "|||||||||||||||||||||||||||||||\n";
                 configResponse = "HTTP/1.1 200 OK\r\nContent-Type: " + type +"\r\nConnection: close\r\nContent-Length: ";
                 return;
             }
@@ -151,7 +144,8 @@ class response
             else if (dataClient.error == 413 && it != dataClient.configData.error_page.end())
             {
                 url = dataClient.configData.error_page[413];
-                configResponse = "HTTP/1.1 502 Bad Gateway\r\nContent-Type: text/html\r\nConnection: close\r\nContent-Length: ";
+                std::cout<< dataClient.error << "|||||||" << url << std::endl;
+                configResponse = "HTTP/1.1 413 Bad Gateway\r\nContent-Type: text/html\r\nConnection: close\r\nContent-Length: ";
                 return;
             }
             else
@@ -161,7 +155,6 @@ class response
                 ss << dataClient.error;
                 configResponse = "HTTP/1.1 "+ ss.str() +" Internal Server Error\r\nContent-Type: text/html\r\nConnection: close\r\nContent-Length: ";
             }
-            //std::cout<< url << std::endl;
         }
 
         int redirection (Client & dataClient)
@@ -171,7 +164,6 @@ class response
 
             while(ptr != dataClient.configData.pages.end())
             {
-                // std::cout << "---|" <<  ptr->root + ptr->path << "|" << "222" << std::endl;
                 if (dataClient.path == ptr->path && ptr->isredirection && ptr->redirection.empty())
                 {
                     configResponse = "HTTP/1.1 302 Found\r\n";
@@ -199,10 +191,7 @@ class response
 
        int  outoindex(std::string &url  , Client & dataClient ,  std:: string &response)
         {
-            // if(url[url.length() - 1] !=  '/' )
-            //     return 0;
             DIR *directory = opendir(url.c_str());
-            // std::string root;
             std::cout << url << "::::::::::::::" << std::endl;
             if(directory == NULL)  
             {
@@ -235,8 +224,6 @@ class response
                     break;
                 ptr++;
             }
-            std::cout << "+++++++++++++++\n";
-            std::cout<< "4---|" <<  url << "|" << ptr->autoindex << "|" << dataClient.path << "|" << ptr->path << "|44---"<< std::endl;
             if (ptr == dataClient.configData.pages.end())
                 return (0);
             indexGenerator(url  , response, dataClient.path, dataClient);   
@@ -251,17 +238,14 @@ class response
             std::string response;
             url = dataClient.getUrl();
 
-            // std::cout<< "0---|" <<  url << "|" << dataClient.getClientSocket() << "|" << dataClient.error << "|---"<< std::endl;
+            std::cout<< "0---|" <<  url << "|" << dataClient.getClientSocket() << "|" << dataClient.error << "|---"<< std::endl;
             if(!dataClient.error && redirection(dataClient))
                 return 0;
-            // std::cout<< "1---|" <<  url << "|" << dataClient.getClientSocket() << "|" << dataClient.error << "|---"<< std::endl;
             if (!dataClient.error && outoindex(url , dataClient , response ))
             {
-                // std::cout << dataClient.error << "||||||||||||||||||||" << std::endl;
                 sendResponse(dataClient);
                 return 0;
             }
-            //  std::cout<< "2?---|" <<  url << "|" << dataClient.getClientSocket() << "|" << dataClient.error << "|---"<< std::endl;
             if(!response.empty())
             {
                 if (dataClient.error == 0)
@@ -288,7 +272,6 @@ class response
                     }
                     if (dataClient.error)
                     {
-                        std::cout << "====\n";
                         std::stringstream ss;
                         ss << dataClient.error;
                         configResponse = "HTTP/1.1 "+ ss.str() +" Error\r\nContent-Type: text/html\r\nConnection: close\r\nContent-Length: 34\r\n\r\n<!DOCTYPE html>\n<h1>Error : " + ss.str() + "</h1>";
@@ -309,6 +292,7 @@ class response
                 std::stringstream m;
                 m << r.tellg();
                 configResponse = configResponse + m.str() + "\r\n\r\n";
+                std::cout << configResponse;
                 dataClient.lengthFile = static_cast<size_t>(r.tellg());
                 size_t len = send(dataClient.getClientSocket(), configResponse.c_str() , configResponse.length() , 0);
                 if (len < 0)

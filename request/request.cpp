@@ -101,7 +101,6 @@ void request::parse_request(Client& dataClient)
     size_t poss = dataClient.getRestRequest().find("\r\n\r\n");
     if (poss == std::string::npos)
     {
-        //std::cout<< "not\n";
         dataClient.error = 400;
         return ;
     }
@@ -125,14 +124,11 @@ void request::parse_request(Client& dataClient)
     size_t postype = dataClient.getRestRequest().find("Transfer-Encoding:");
     if (postype != std::string::npos)
         dataClient.TransferEncoding = dataClient.getRestRequest().substr(postype + 19,dataClient.getRestRequest().find("\r\n", postype) - postype - 19);
-    std::cout << "-----------" << dataClient.TransferEncoding << std::endl;
     if (tokens[2].substr(0,tokens[2].find("\r\n")) != "HTTP/1.1" || tokens[1].empty() || tokens[0] == "")
     {
         dataClient.error = 400;
-        //std::cout<< "Error http1.1 not fond\n";
         return ;
     }
-    // //std::cout<< "hhh |" << dataClient.getRestRequest() << "|" << std::endl;
     dataClient.setTypeRequset(tokens[0]);
     dataClient.setUrl(tokens[1]);
     if (tokens[0] == "POST")
@@ -149,7 +145,6 @@ void request::parse_request(Client& dataClient)
         else
             dataClient.setBoundaryRequest(dataClient.getRestRequest().substr(pos_boundary + 9, pos_rn - pos_boundary - 7));
 
-        //std::cout<< dataClient.getBoundarytSocket() << std::endl;
         size_t pos_Content = dataClient.getRestRequest().find("Content-Length:", 0) + 16;
         if (pos_Content == std::string::npos)
         {
@@ -158,9 +153,6 @@ void request::parse_request(Client& dataClient)
         }
         size_t poss_end = dataClient.getRestRequest().find("\r\n", pos_Content);
         dataClient.setContentLength((ssize_t)std::atof(dataClient.getRestRequest().substr(pos_Content,poss_end - pos_Content).c_str()));
-        
-        // std::string k = Header.substr(pos, poss - pos + 1);
-        // //std::cout<< dataClient.getContentLength() << std::endl;
     }
     size_t pos = dataClient.getRestRequest().find("Connection:");
     if (pos != std::string::npos)
@@ -176,11 +168,6 @@ void request::parse_request(Client& dataClient)
         return ;
     }
     dataClient.setHeaderStatus(true);
-    
-    // //exit(1);
-    // std::string kk = k.substr(0, k.size() -2 );
-    // }
-    // //std::cout<< "|" << kk << "|" << std::endl;
 }
 
 
@@ -191,18 +178,6 @@ request::request(/* args */)
 
 request::~request()
 {
-}
-
-int findchar(const char *buffer, const char *dest, size_t size)
-{
-    for (size_t i = 0; i < size; i++)
-    {
-        std::string s = buffer + i;
-        size_t pos = s.find(dest, 0);
-        if (pos != s.npos)
-            return i + pos;
-    }
-    return -1;
 }
 
 int request::parseChunck(Client& dataClient, size_t pos)
@@ -350,11 +325,11 @@ void    request::read_request(Client& dataClient)
         if (dataClient.getContentLength() > dataClient.configData.client_max_body_size)
             dataClient.error = 413;
     
-    
+
         if (dataClient.getReadlen() && dataClient.getTypeRequset() == "POST" && dataClient.getHeaderStatus() == true)
             printLoadingBar((double)(dataClient.getReadlen()) / dataClient.getContentLength() * 100, 40);
  
-
+        std::cout << dataClient.error << "{{{{{{{}}}}}}}\n";
         std::memset(buffer, 0, sizeof(buffer));
         if (dataClient.error)
             return ;
