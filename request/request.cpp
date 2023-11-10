@@ -55,12 +55,9 @@ int checkValidRequest(std::string &requests, size_t poss, Client& dataClient)
             if (line[line.size() - 1] != '\r')
                 return 1;   
             i++; 
-            //std::cout<< "1111\n"; 
-            // std::cout<< line<< "\n";
         }
         else
         {            
-            // std::cout<< line<< "\n";
             if (line[line.size() - 1] != '\r')
                 return 1;
             size_t posSpace = line.find(" ");
@@ -76,8 +73,6 @@ int checkValidRequest(std::string &requests, size_t poss, Client& dataClient)
     getHost(requests, posHost, dataClient);
     if (dataClient.HostName.empty())
         return 1;
-    std::cout << "|" << dataClient.HostName << "|" << std::endl;
-    
     if (!checkIsIp(dataClient.HostName))
     {
         size_t posServerData = 0;
@@ -91,8 +86,6 @@ int checkValidRequest(std::string &requests, size_t poss, Client& dataClient)
             return 0;
         dataClient.configData = dataClient.dataServers[posServerData];
     }
-    
-    //std::cout<< "|" << dataClient.HostName << "|" << dataClient.port << "|" << dataClient.getTypeRequset() << "\n";
     return 0;
 }
 
@@ -173,7 +166,6 @@ void request::parse_request(Client& dataClient)
 
 request::request(/* args */)
 {
-    // len = 0;
 }
 
 request::~request()
@@ -233,7 +225,6 @@ int request::download_file(Client &dataClient, ssize_t pos_start)
             return (dataClient.error = 400, 1); // bad request if not fond
         std::string namefile = dataClient.getRestRequest().substr(p + 1, po - p - 2);
         namefile = dataClient.getUrl() + "/" + namefile;
-        std::cout << namefile << std::endl;
         dataClient.setFileName(namefile);
         std::ofstream file(namefile, std::ios::out | std::ios::binary);
         if (!file.is_open()) {
@@ -325,11 +316,9 @@ void    request::read_request(Client& dataClient)
         if (dataClient.getContentLength() > dataClient.configData.client_max_body_size)
             dataClient.error = 413;
     
-
         if (dataClient.getReadlen() && dataClient.getTypeRequset() == "POST" && dataClient.getHeaderStatus() == true)
             printLoadingBar((double)(dataClient.getReadlen()) / dataClient.getContentLength() * 100, 40);
  
-        std::cout << dataClient.error << "{{{{{{{}}}}}}}\n";
         std::memset(buffer, 0, sizeof(buffer));
         if (dataClient.error)
             return ;

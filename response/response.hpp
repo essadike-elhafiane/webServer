@@ -81,9 +81,7 @@ class response
                     rest += "/";
                 if (rest[0] == '/' && rest[1] == '/')
                     rest = rest.substr(1,rest.size() - 1);
-                std::cout<< rest << "||" << d_name << std::endl;
                 write += "<li><div style=\" padding: 20px; color: rgb(224, 190, 141); margin: 5px;\"><a href=\"" + rest + d_name + "\">" + d_name + "</a></div></li>\n" ; 
-                // std::string name();
             }
             delete directory->__dd_buf;
             close(directory->__dd_fd);
@@ -130,7 +128,6 @@ class response
             }
             else if (dataClient.error == 403 && it != dataClient.configData.error_page.end())
             {
-                //std::cout<< dataClient.configData.error_page[403]<< "fhd\n" ;
                 url = dataClient.configData.error_page[403];
                 configResponse = "HTTP/1.1 403 Forbidden\r\nConnection: close\r\nContent-Length: ";
                 return;
@@ -144,7 +141,6 @@ class response
             else if (dataClient.error == 413 && it != dataClient.configData.error_page.end())
             {
                 url = dataClient.configData.error_page[413];
-                std::cout<< dataClient.error << "|||||||" << url << std::endl;
                 configResponse = "HTTP/1.1 413 Bad Gateway\r\nContent-Type: text/html\r\nConnection: close\r\nContent-Length: ";
                 return;
             }
@@ -192,12 +188,8 @@ class response
        int  outoindex(std::string &url  , Client & dataClient ,  std:: string &response)
         {
             DIR *directory = opendir(url.c_str());
-            std::cout << url << "::::::::::::::" << std::endl;
-            if(directory == NULL)  
-            {
-                std::cout << "not found\n";
+            if(directory == NULL)
                 return 0 ;
-            }
             delete directory->__dd_buf;
             close (directory->__dd_fd);
             delete directory;     
@@ -206,12 +198,8 @@ class response
 
             while(ptr != dataClient.configData.pages.end())
             {
-                // if(ptr->path == "\"")
-                //     root = ptr->root + "\"";
-                std::cout<< "4---|" <<  url << "|" << ptr->autoindex << "|" << dataClient.path << "|" << ptr->path << "|44---"<< std::endl;
                 if(ptr->redirection.empty() &&  ptr->index.empty() && ptr->autoindex == 0 && dataClient.path == ptr->path)
                 {
-                    std::cout<< "77---|\n";
                     dataClient.error = 404;
                     return 1;
                 }
@@ -238,7 +226,6 @@ class response
             std::string response;
             url = dataClient.getUrl();
 
-            std::cout<< "0---|" <<  url << "|" << dataClient.getClientSocket() << "|" << dataClient.error << "|---"<< std::endl;
             if(!dataClient.error && redirection(dataClient))
                 return 0;
             if (!dataClient.error && outoindex(url , dataClient , response ))
@@ -284,7 +271,7 @@ class response
                         }
                         return 0;
                     }
-                    std::cerr << "Error open file1"  << std::endl;
+                    std::cerr << "Error open file"  << std::endl;
                     if (dataClient.error == 404)
                         return 0;
                     return 0;
@@ -292,7 +279,6 @@ class response
                 std::stringstream m;
                 m << r.tellg();
                 configResponse = configResponse + m.str() + "\r\n\r\n";
-                std::cout << configResponse;
                 dataClient.lengthFile = static_cast<size_t>(r.tellg());
                 size_t len = send(dataClient.getClientSocket(), configResponse.c_str() , configResponse.length() , 0);
                 if (len < 0)
@@ -308,7 +294,7 @@ class response
             char buffer[30001];
             if(!input.is_open())
             {
-                std::cout<< "error on file" << url << std::endl;
+                // std::cout<< "error on file" << url << std::endl;
                 dataClient.error = 1000;
                 return 0;
             }
@@ -342,5 +328,5 @@ class response
         response(/* args */);
         ~response();
 };
-/* code */
-#endif //RESPONSE_H
+
+#endif 

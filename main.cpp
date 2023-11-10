@@ -80,7 +80,6 @@ int main(int ac , char **av)
                 {}
                 if ((clientSocket = accept(servers[i].getServerSocket(), NULL, NULL)) < 0) {
                     perror("Accept error");
-                    // exit(EXIT_FAILURE);
                     continue;
                 }
                 

@@ -25,7 +25,6 @@ class request
         void read_request(Client& dataClient);
         int   checkAllowedMethods(Client& dataClient)
         {
-            std::cout << dataClient.getUrl() << std::endl;
             if (dataClient.error)
                 return 1;
             if (dataClient.getUrl() == "/")
