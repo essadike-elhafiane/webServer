@@ -89,9 +89,30 @@ class response
             return ;
         }
 
+        void  assigne_code(std::map<int , std::string> &s)
+        {
+            s[200] = "ok";
+            s[201] = "Created";
+            s[204] = "No Content";
+            s[307]= "Temporary Redirect";
+            s[400] = "bad Request";
+            s[401] = "Unauthorized";
+            s[403] = "Forbidden";
+            s[404] = "Not Found";
+            s[408] = "Request Timeout";
+            s[413] = "Content Too Large";
+            s[500] = "Internal Server Error";
+        }
+
         void headre(Client & dataClient , std::string &url , std::string & configResponse)
         {
-            
+            std::map<int , std::string> code;
+            assigne_code(code);
+            std::string key_error;
+            std::string type_error;
+            std::string key;
+            std::string type;
+
             std::map<int , std::string>::const_iterator it = dataClient.configData.error_page.begin();
             while(it != dataClient.configData.error_page.end())
             {
@@ -99,49 +120,30 @@ class response
                     break;
                 it++;
             }
-
-            if (dataClient.error == 0)
+            if(dataClient.error == 0)
             {
+                type_error = code[200];
                 size_t pos = url.find_last_of(".");
-                std::string type;
-                if (pos != std::string::npos)
+                if (std::string::npos != pos)
                 {
-                    std::string key = url.substr(pos + 1, url.size() - pos - 1);
-                    type = dataClient.configData.Extensions[key];
+                    key = url.substr(pos + 1 , url.length() - pos - 1);
+                    type = dataClient.configData.Extensions[key];       
                 }
                 else
                     type = "text/plain";
-                configResponse = "HTTP/1.1 200 OK\r\nContent-Type: " + type +"\r\nConnection: close\r\nContent-Length: ";
-                return;
+                std::stringstream ss;
+                ss << dataClient.error;
+                key_error = ss.str() ;
+                configResponse = "HTTP/1.1 " + key_error + " " + code[200]  + "\r\nContent-Type: " + type  + "\r\nConnection: close\r\nContent-Length: ";
+                return ;
             }
-            else if (dataClient.error == 400 && it != dataClient.configData.error_page.end())
+            if(it != dataClient.configData.error_page.end() && !dataClient.error)
             {
-                url = dataClient.configData.error_page[400];
-                configResponse = "HTTP/1.1 400 Bad Request\r\nContent-Type: text/html\r\nConnection: close\r\nContent-Length: ";
-                return;
-            }
-            else if (dataClient.error == 401  && it != dataClient.configData.error_page.end())
-            {
-                url = dataClient.configData.error_page[401];
-                configResponse = "HTTP/1.1 401 Unauthorized\r\nContent-Type: text/html\r\nConnection: close\r\nContent-Length: ";
-                return;
-            }
-            else if (dataClient.error == 403 && it != dataClient.configData.error_page.end())
-            {
-                url = dataClient.configData.error_page[403];
-                configResponse = "HTTP/1.1 403 Forbidden\r\nConnection: close\r\nContent-Length: ";
-                return;
-            }
-            else if (dataClient.error == 404 && it != dataClient.configData.error_page.end())
-            {
-                url = dataClient.configData.error_page[404];
-                configResponse = "HTTP/1.1 404 Not Found\r\nContent-Type: text/html\r\nContent-Length: ";
-                return;
-            }
-            else if (dataClient.error == 413 && it != dataClient.configData.error_page.end())
-            {
-                url = dataClient.configData.error_page[413];
-                configResponse = "HTTP/1.1 413 Bad Gateway\r\nContent-Type: text/html\r\nConnection: close\r\nContent-Length: ";
+                std::stringstream ss;
+                ss << dataClient.error;
+                key_error = ss.str() ;
+                url = dataClient.configData.error_page[dataClient.error];
+                configResponse = "HTTP/1.1 " + key_error + " " + code[dataClient.error]  + "\r\nContent-Type: text/html\r\nConnection: close\r\nContent-Length: ";
                 return;
             }
             else
@@ -149,10 +151,11 @@ class response
                 url = dataClient.configData.error_page.begin()->second;
                 std::stringstream ss;
                 ss << dataClient.error;
-                configResponse = "HTTP/1.1 "+ ss.str() +" Internal Server Error\r\nContent-Type: text/html\r\nConnection: close\r\nContent-Length: ";
+                key_error = ss.str();
+                configResponse = "HTTP/1.1 " + key_error + " " + code[dataClient.error]  + "\r\nContent-Type: text/html\r\nConnection: close\r\nContent-Length: ";
             }
         }
-
+        
         int redirection (Client & dataClient)
         {
             std::string configResponse;
@@ -225,7 +228,6 @@ class response
             std::string url;
             std::string response;
             url = dataClient.getUrl();
-
             if(!dataClient.error && redirection(dataClient))
                 return 0;
             if (!dataClient.error && outoindex(url , dataClient , response ))
@@ -259,9 +261,11 @@ class response
                     }
                     if (dataClient.error)
                     {
+                        std::map<int , std::string> code;
+                        assigne_code(code);
                         std::stringstream ss;
                         ss << dataClient.error;
-                        configResponse = "HTTP/1.1 "+ ss.str() +" Error\r\nContent-Type: text/html\r\nConnection: close\r\nContent-Length: 34\r\n\r\n<!DOCTYPE html>\n<h1>Error : " + ss.str() + "</h1>";
+                        configResponse = "HTTP/1.1 "+ ss.str() + " " + code[dataClient.error] + "\r\nContent-Type: text/html\r\nConnection: close\r\nContent-Length: 34\r\n\r\n<!DOCTYPE html>\n<h1>Error : " + ss.str() + "</h1>";
                         size_t len = send(dataClient.getClientSocket(), configResponse.c_str() , configResponse.length() , 0);
                         if (len < 0)
                         {

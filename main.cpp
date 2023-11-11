@@ -51,7 +51,7 @@ int main(int ac , char **av)
     std::cout<< "number servers: " << numberServer << std::endl;
     while (true) 
     {
-        int activity = poll(fds, MAX_CLIENTS + 1, 10000);
+        int activity = poll(fds, MAX_CLIENTS + 1, 100000);
         if (activity < 0) {
             perror("Poll error");
         }
@@ -134,6 +134,8 @@ int main(int ac , char **av)
                     fds[i].revents = 0;
                     continue;
                 }
+                if (!mClients[clientSocket].getHeaderStatus())
+                    continue;
                 if (mClients[clientSocket].getTypeRequset() == "POST" && mClients[clientSocket].getReadlen() < mClients[clientSocket].getContentLength())
                     continue;
                 fds[i].events = POLLOUT | POLLIN;

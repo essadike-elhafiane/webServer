@@ -48,10 +48,8 @@ class server
             }
             std::memset((char*)&serverAddress, 0, sizeof(serverAddress));
             serverAddress.sin_family = AF_INET;
-            serverAddress.sin_addr.s_addr = inet_addr(host.c_str()); // Bind to any available address
+            serverAddress.sin_addr.s_addr = inet_addr(host.c_str()); 
             serverAddress.sin_port = htons(port);
-            // bind server;
-            
 
             if (bind(serverSocket, reinterpret_cast<sockaddr*>(&serverAddress), sizeof(serverAddress)) < 0) {
                 std::cerr << "Error binding socket." << std::endl;

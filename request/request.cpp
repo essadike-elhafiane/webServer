@@ -344,8 +344,8 @@ void    request::read_request(Client& dataClient)
         if (dataClient.error)
             return ;
     }
-    if (!dataClient.getHeaderStatus())
-        dataClient.error = 408;
+    // if (!dataClient.getHeaderStatus())
+    //     dataClient.error = 408;
 }
 
 void request::delete_request(Client& dataClient)

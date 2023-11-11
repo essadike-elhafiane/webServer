@@ -6,8 +6,6 @@ Web_Secript_Setter::Web_Secript_Setter(std::string exe, const std::string& scrip
     :scriptType(scriptType) ,dataClient(dataClient)  {
     this->R_pipes[0] = -1;
     this->R_pipes[1] = -1;
-    this->W_pipes[0] = -1;
-    this->W_pipes[1] = -1;
     cgi_exe = exe;
     this->Http_request_Env(dataClient);  
 }

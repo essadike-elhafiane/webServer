@@ -64,6 +64,17 @@ class request
                             return (dataClient.error = 403, 1);
                         return 0;
                     }
+                    if (dataClient.configData.pages[i].path == dataClient.getUrl())
+                    {
+                        std::ifstream f(dataClient.configData.pages[i].root + dataClient.getUrl(), std::ios::out);
+                        if (!f.is_open() && dataClient.getTypeRequset() != "POST" && dataClient.getTypeRequset() != "DELETE" )
+                        {
+                            dataClient.configData.pages[i].isredirection = 1;
+                            dataClient.path = dataClient.getUrl();
+                            dataClient.setUrl(dataClient.getUrl() + "/");
+                            return 0;
+                        }
+                    }
                     if (std::find(dataClient.configData.pages[i].allow_methods.begin(), dataClient.configData.pages[i].allow_methods.end(), dataClient.getTypeRequset()) == dataClient.configData.pages[i].allow_methods.end())
                         return (dataClient.error = 403, 1);
                     dataClient.setUrl(dataClient.configData.pages[i].root + dataClient.getUrl());
