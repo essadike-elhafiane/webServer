@@ -12,7 +12,7 @@
 #include "../response/response.hpp"
 #include "../Client/Client.hpp"
 
-class CGISettler {
+class Web_Secript_Setter {
 private:
     std::vector<std::pair<std::string, std::string> > env;
     void addEnv(const std::string& key, const std::string& value) {
@@ -26,7 +26,6 @@ private:
     std::vector<char*> envpp;
     std::string cgi_exe;
     int R_pipes[2];
-    int W_pipes[2];
 
 public:
 
@@ -34,22 +33,16 @@ public:
     std::string body;
     size_t posbody;
     pid_t pid;
-    CGISettler(std::string exe, const std::string& scriptType,  Client &dataClient);
-    
-    int getReadEnd() const;
-    int getWriteEnd() const;
-    // void processResponse();
+    Web_Secript_Setter(std::string exe, const std::string& scriptType,  Client &dataClient);
     char* const*getEnv() const ;
-
-
     void executionCGI();
-    void CgiEnv(Client &dataClient);
-    bool validpath() const;
-    // char** createEnvArray();
+    void Http_request_Env(Client &dataClient);
+    bool Is_valid_path() const;
+    int ReadValue() const;
+    int Writevalue() const;
     void error_CGI();
     void close_pipes();
-    // std::string stringQuery(std::string &restQuery);
-    ~CGISettler();
+    ~Web_Secript_Setter();
 
 };
 

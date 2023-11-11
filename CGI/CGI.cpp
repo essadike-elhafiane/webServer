@@ -2,23 +2,20 @@
 #include <sys/fcntl.h>
 #include "../Client/Client.hpp"
 
-CGISettler::CGISettler(std::string exe, const std::string& scriptType,Client &dataClient)
+Web_Secript_Setter::Web_Secript_Setter(std::string exe, const std::string& scriptType,Client &dataClient)
     :scriptType(scriptType) ,dataClient(dataClient)  {
     this->R_pipes[0] = -1;
     this->R_pipes[1] = -1;
     this->W_pipes[0] = -1;
     this->W_pipes[1] = -1;
     cgi_exe = exe;
-    this->CgiEnv(dataClient);  
+    this->Http_request_Env(dataClient);  
 }
 
 
-
-
-
-   void CGISettler::executionCGI () 
+   void Web_Secript_Setter::executionCGI () 
    {
-        if (pipe(this->R_pipes) == -1 || pipe(this->W_pipes) == -1) {
+        if (pipe(this->R_pipes) == -1) {
             this->close_pipes();
             dataClient.error = 500;
             throw "HTTP 500";
@@ -46,7 +43,7 @@ CGISettler::CGISettler(std::string exe, const std::string& scriptType,Client &da
             dataClient.error = 500;
             throw "HTTP 500 here";
         }
-        fcntl(getReadEnd(), F_SETFL, O_NONBLOCK, FD_CLOEXEC);
+        fcntl(ReadValue(), F_SETFL, O_NONBLOCK, FD_CLOEXEC);
         this->pid = pid;
         if (pid == 0) {
            if (dup2(this->R_pipes[1], STDOUT_FILENO) == -1 ||
@@ -69,8 +66,6 @@ CGISettler::CGISettler(std::string exe, const std::string& scriptType,Client &da
             for (it = this->envp.begin(); it != this->envp.end(); it++) {
                 env[i++] = strdup((it->first + "=" + it->second).c_str());
             }
-            // for (size_t i = 0; env[i]; i++)
-            //     std::cerr << env[i] << std::endl;
             
             close_pipes();
             close(fd);
@@ -84,14 +79,10 @@ CGISettler::CGISettler(std::string exe, const std::string& scriptType,Client &da
             this->error_CGI();
             exit(1);
         }
-
         close(fd);
-    
     }
  
-
-
- void CGISettler::CgiEnv(Client& dataClient) {
+ void Web_Secript_Setter::Http_request_Env(Client& dataClient) {
     
     size_t pos2 = dataClient.getRestRequest().find("Content-Type: ");
     std::string valueContentType =dataClient.getRestRequest().substr(pos2 + 14,dataClient.getRestRequest().find("\r\n", pos2) - pos2 - 14);
@@ -107,7 +98,7 @@ CGISettler::CGISettler(std::string exe, const std::string& scriptType,Client &da
             file = dataClient.getUrl().substr(0, pos1);
         else
             file = dataClient.getUrl();
-        if (!this->validpath())
+        if (!this->Is_valid_path())
         {
             dataClient.error = 404;
             throw "HTTP  502";
@@ -136,7 +127,7 @@ CGISettler::CGISettler(std::string exe, const std::string& scriptType,Client &da
 
 
 
-bool CGISettler::validpath() const {
+bool Web_Secript_Setter::Is_valid_path() const {
     std::ifstream in(file);
     if (!in.is_open())
         return false;
@@ -145,15 +136,12 @@ bool CGISettler::validpath() const {
 
 
 
-int CGISettler::getReadEnd() const {
+int Web_Secript_Setter::ReadValue() const {
     return this->R_pipes[0];
 }
 
-int CGISettler::getWriteEnd() const {
-    return this->W_pipes[1];
-}
 
-void CGISettler::error_CGI() {
+void Web_Secript_Setter::error_CGI() {
     std::cerr << "Error Cgi\n";
     this->close_pipes();
     {
@@ -162,28 +150,22 @@ void CGISettler::error_CGI() {
     }
 }
 
-void CGISettler::close_pipes() {
+void Web_Secript_Setter::close_pipes() {
     if (this->R_pipes[0] != -1) {
         close(this->R_pipes[0]);
     }
     if (this->R_pipes[1] != -1) {
         close(this->R_pipes[1]);
     } 
-    if (this->W_pipes[0] != -1) {
-        close(this->W_pipes[0]);
-    }
-    if (this->W_pipes[1] != -1) {
-        close(this->W_pipes[1]);
-    }
 }
 
 
-char* const* CGISettler::getEnv() const {
+char* const* Web_Secript_Setter::getEnv() const {
     std::vector<char*> envp(env.size() + 1);
     for (size_t i = 0; i < env.size(); i++) {
         envp[i] = strdup((env[i].first + "=" + env[i].second).c_str());
     }
-    envp[env.size()] = nullptr;
+    envp[env.size()] = NULL;
     char** envp_heap = new char*[envp.size()];
     std::copy(envp.begin(), envp.end(), envp_heap);
 
@@ -191,4 +173,4 @@ char* const* CGISettler::getEnv() const {
     
 }
 
-CGISettler::~CGISettler() {}
+Web_Secript_Setter::~Web_Secript_Setter() {}

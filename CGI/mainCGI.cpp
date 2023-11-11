@@ -9,18 +9,18 @@ std::string mainCGI(std::string cgi_exe, Client &dataClient) {
     std::string responsesstring;
     std::string sscriptType = "php";
     try {
-        CGISettler cgiSettler(cgi_exe, sscriptType, dataClient);
+        Web_Secript_Setter Web_Secript_Setter(cgi_exe, sscriptType, dataClient);
 
         if (dataClient.getTypeRequset() == "POST") 
         {
           size_t posBady = dataClient.getRestRequest().find("\r\n\r\n");
           std::string postData = dataClient.getRestRequest().substr(posBady + 4, dataClient.getContentLength() - posBady - 4);
-          cgiSettler.body = postData;
-          cgiSettler.posbody = posBady + 4;
+          Web_Secript_Setter.body = postData;
+          Web_Secript_Setter.posbody = posBady + 4;
         }
-        cgiSettler.executionCGI();
-        cgiSettler.dataClient = dataClient;
-        int readEnd = cgiSettler.getReadEnd();
+        Web_Secript_Setter.executionCGI();
+        Web_Secript_Setter.dataClient = dataClient;
+        int readEnd = Web_Secript_Setter.ReadValue();
         sleep(1);
         char c;
         
@@ -31,15 +31,15 @@ std::string mainCGI(std::string cgi_exe, Client &dataClient) {
           if (p == 0 || (clock() - time > 3000))
           {
             dataClient.error = 500;
-            kill(cgiSettler.pid, SIGKILL);
-            cgiSettler.close_pipes();
+            kill(Web_Secript_Setter.pid, SIGKILL);
+            Web_Secript_Setter.close_pipes();
             return "s";
           }
           if (p < 0)
             break;
           responsesstring += c;
         }
-        cgiSettler.close_pipes();
+        Web_Secript_Setter.close_pipes();
      } catch (const char* error) {
         std::cerr << "Error: " << error << std::endl;
       }  

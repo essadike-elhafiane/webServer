@@ -124,7 +124,7 @@ void request::parse_request(Client& dataClient)
     }
     dataClient.setTypeRequset(tokens[0]);
     dataClient.setUrl(tokens[1]);
-    if (tokens[0] == "POST")
+    if (tokens[0] == "POST" && dataClient.TransferEncoding != "chunked")
     {
         size_t pos_boundary = dataClient.getRestRequest().find("boundary=");
         if (pos_boundary == std::string::npos)
@@ -137,7 +137,9 @@ void request::parse_request(Client& dataClient)
             dataClient.setBoundaryRequest(dataClient.getRestRequest().substr(pos_boundary + 9, pos_rn - pos_boundary - 9));
         else
             dataClient.setBoundaryRequest(dataClient.getRestRequest().substr(pos_boundary + 9, pos_rn - pos_boundary - 7));
-
+    }
+    if (tokens[0] == "POST")
+    {
         size_t pos_Content = dataClient.getRestRequest().find("Content-Length:", 0) + 16;
         if (pos_Content == std::string::npos)
         {
@@ -184,8 +186,10 @@ int request::parseChunck(Client& dataClient, size_t pos)
     f << len;
     int ll;
     f >> std::hex >> ll;
+    if (ll == 0)
+        return(dataClient.error = 204, 1);
     lenRead += ll;
-   
+    dataClient.setBoundaryRequest(dataClient.getRestRequest().substr(poss + 4, dataClient.getRestRequest().find("\r\n", poss + 4) - poss - 4));
     dataClient.getRestRequest().erase(posf + 4, poss - posf - 2);
     size_t startpos = posf + 4 + ll;
     while (startpos != std::string::npos)
@@ -216,15 +220,31 @@ int request::download_file(Client &dataClient, ssize_t pos_start)
         return (dataClient.error = 400, 1);
     if(dataClient.getFileName() == "")
     {
-        size_t p = dataClient.getRestRequest().find("filename=", startPos); // bad request if not fond
-        if (p == std::string::npos)
-            return (dataClient.error = 400, 1);
-        p += 9;
+        size_t p = dataClient.getRestRequest().find("filename=\"", startPos);
         size_t po = dataClient.getRestRequest().find("\r\n", p);
-        if (po == std::string::npos)
+        if (po == std::string::npos && po != std::string::npos)
             return (dataClient.error = 400, 1); // bad request if not fond
-        std::string namefile = dataClient.getRestRequest().substr(p + 1, po - p - 2);
-        namefile = dataClient.getUrl() + "/" + namefile;
+        std::string namefile;
+        if (p != std::string::npos && po != std::string::npos)
+        {
+            p += 9;
+            namefile = dataClient.getRestRequest().substr(p + 1, po - p - 2);
+        }
+        size_t posname = dataClient.getRestRequest().find("name=\"", startPos);
+        size_t endPosname;
+        if (po != std::string::npos)
+            endPosname = dataClient.getRestRequest().find("\";", posname);
+        else
+            endPosname = dataClient.getRestRequest().find("\"\r\n", posname);
+        std::string name;
+        if (posname != std::string::npos && endPosname != std::string::npos)
+           name = dataClient.getRestRequest().substr(posname + 6, endPosname - posname - 6);
+        if (namefile.empty())
+            namefile = dataClient.getUrl() + "/" + name;
+        else
+            namefile = dataClient.getUrl() + "/" + namefile;
+        if (namefile.empty() && name.empty())
+            return (dataClient.error = 204, 1);
         dataClient.setFileName(namefile);
         std::ofstream file(namefile, std::ios::out | std::ios::binary);
         if (!file.is_open()) {
@@ -235,7 +255,6 @@ int request::download_file(Client &dataClient, ssize_t pos_start)
     if (dataClient.getFileName() != "")
     {
         std::string bonadry;
-
         bonadry = "--" + dataClient.getBoundarytSocket();
         size_t endPos = dataClient.getRestRequest().find(bonadry, startPos + bonadry.length() - 2);
         if (endPos == std::string::npos)
@@ -247,6 +266,8 @@ int request::download_file(Client &dataClient, ssize_t pos_start)
         size_t start = dataClient.getRestRequest().find("\r\n\r\n", startPos);
         if (start != std::string::npos)
             start += 4;
+        if (endPos - start - 2 == 0)
+            return (dataClient.error = 204, 1);
         std::ofstream file(dataClient.getFileName(), std::ios::app | std::ios::binary);
         file.write(dataClient.getRestRequest().c_str() + start, endPos - start - 2);
         file.close();

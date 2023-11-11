@@ -81,7 +81,6 @@ class request
             // m << dataClient.getRestRequest();
             if (dataClient.error)
                 return ;
-
             if (dataClient.getTypeRequset() == "POST" && dataClient.getReadlen() < dataClient.getContentLength())
                 return ;
 
@@ -116,13 +115,12 @@ class request
                 dataClient.error = 400;
                 return ;
             }
-            if (dataClient.getTypeRequset() == "POST" && dataClient.getReadlen() == dataClient.getContentLength())
+            if (dataClient.getTypeRequset() == "POST")
             {
                 if (download_file(dataClient, 0))
                     return ;
                 int s = dataClient.getClientSocket();
                 dataClient.resetData();
-                // dataClient.setUrl("html/dwn.html");
                 dataClient.error = 201;
                 dataClient.path = "/";
                 dataClient.setClientSocket(s);
