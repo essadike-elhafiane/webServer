@@ -162,7 +162,7 @@ class response
             {
                 if (dataClient.path == ptr->path && ptr->isredirection && ptr->redirection.empty())
                 {
-                    configResponse = "HTTP/1.1 302 Found\r\n";
+                    configResponse = "HTTP/1.1 307 Temporary Redirect\r\n";
                     ptr->isredirection = 0;
                     configResponse += "Location: " + dataClient.getUrl() + "\r\n";
                     dataClient.clearLenSend();
@@ -172,7 +172,7 @@ class response
                 }
                 if(!ptr->redirection.empty() && dataClient.path == ptr->path)
                 {
-                    configResponse = "HTTP/1.1 302 Found\r\n";
+                    configResponse = "HTTP/1.1 307 Temporary Redirect\r\n";
                     std::string sit = ptr->redirection;
                     configResponse += "Location: " + sit + "\r\n";
                     dataClient.clearLenSend();
@@ -330,3 +330,7 @@ class response
 };
 
 #endif 
+
+/*
+
+*/

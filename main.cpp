@@ -198,5 +198,3 @@ int main(int ac , char **av)
     return 0;
 }
 
-// just get and post work in cgi
-// to_string ;

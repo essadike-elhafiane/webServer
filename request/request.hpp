@@ -122,7 +122,8 @@ class request
                     return ;
                 int s = dataClient.getClientSocket();
                 dataClient.resetData();
-                dataClient.setUrl("html/dwn.html");
+                // dataClient.setUrl("html/dwn.html");
+                dataClient.error = 201;
                 dataClient.path = "/";
                 dataClient.setClientSocket(s);
             }
