@@ -230,7 +230,6 @@ class response
             std::string url;
             std::string response;
             url = dataClient.getUrl();
-            std::cout << url << std::endl;
             if(!dataClient.error && redirection(dataClient))
                 return 0;
             if (!dataClient.error && outoindex(url , dataClient , response ))
