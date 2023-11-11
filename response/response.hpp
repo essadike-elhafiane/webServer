@@ -93,6 +93,7 @@ class response
         {
             s[200] = "ok";
             s[201] = "Created";
+            s[202] = "Accepted";
             s[204] = "No Content";
             s[307]= "Temporary Redirect";
             s[400] = "bad Request";
@@ -223,11 +224,13 @@ class response
 
         int sendResponse(Client & dataClient)
         {
+        
             std::string configResponse;
             std::string line;
             std::string url;
             std::string response;
             url = dataClient.getUrl();
+            std::cout << url << std::endl;
             if(!dataClient.error && redirection(dataClient))
                 return 0;
             if (!dataClient.error && outoindex(url , dataClient , response ))
@@ -253,7 +256,6 @@ class response
                 std::ifstream r(url, std::ios::binary | std::ios::ate | std::ios::in | std::ios::out);
                 if (!r.is_open())
                 {
-                    std::cout<< url << std::endl;
                     if (!dataClient.error)
                     {
                         dataClient.error = 404;

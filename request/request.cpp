@@ -358,8 +358,8 @@ void request::delete_request(Client& dataClient)
         return ;
     int result = std::remove(filename.c_str());
     if (result == 0) {
-        dataClient.setUrl("html/delete.html");
+        dataClient.error = 202;
     } else {
-        dataClient.setUrl("html/not_delete.html");
+        dataClient.error = 204;
     }
 }
