@@ -50,9 +50,9 @@ void listen_port(std::vector<std::string>::iterator &ptr , HTTP_SERVER &m , std:
             m.port.push_back(atoi((*ptr).c_str()));
         if(i == 2 && (*ptr) == ";")
         {
-            if(m.port[0] > 65536)
+            if(m.port[0] >= 65536)
             {
-                 //std::cout<< "error2 listen" << "\n";
+                 std::cout<< "error2 listen" << "\n";
                 exit(0);
             }
             return;
@@ -142,7 +142,7 @@ void size_pars(std::vector<std::string>::iterator &ptr, HTTP_SERVER &m, std::vec
         ptr++;
         i++;
     }
-    //std::cout<< "error2 index" <<  "\n";
+    std::cout<< "error2 client body size" <<  "\n";
     exit(0);
 }
 
@@ -211,7 +211,7 @@ void error_page(std::vector<std::string>::iterator &ptr, HTTP_SERVER &m, std::ve
         ptr++;
         i++;
     }
-    //std::cout<< "error2 error page" <<  "\n";
+    std::cout<< "error2 error page" <<  "\n";
     exit(0);
 }
 
@@ -455,7 +455,6 @@ std::vector<HTTP_SERVER>& configFile (int argc , char **argv,std::vector< HTTP_S
     std::string name(file);
     if(name.length() < 6   || name.find(".conf") != name.length() - 5 )
         error_message("error in file extention");
-    //std::cout<< name.find(".conf") << "|" << name.length() <<std::endl;
     if (!readcofg.is_open())
         error_message("error open cpnfig file");
     while(getline(readcofg,tmp))
@@ -473,30 +472,23 @@ std::vector<HTTP_SERVER>& configFile (int argc , char **argv,std::vector< HTTP_S
     chek_line(obj.line2);
     token_elemet(obj.line2 , obj.line3 ,";");
     clean_element(obj.line3 , obj.line4);
-    // s = 0;
+
+    if (obj.line4.empty())
+        error_message("empty server");
+
     for(std::vector<std::string>::iterator ptr = obj.line4.begin() ; ptr < obj.line4.end() ;ptr++)
     {
-        if(std::string::npos != (*ptr).find("server") && (*ptr).length() == 6)
+        if( std::string::npos != (*ptr).find("server") && (*ptr).length() == 6)
         {
             data.push_back(HTTP_SERVER()) ;
             server_pars(ptr ,obj , data.back());
             loadDataExtensions(data.back().Extensions);
-            // for (std::map<std::string, std::string>::iterator itr = data.back().Extensions.begin(); itr != data.back().Extensions.end(); itr++)
-            // {
-            //     std::cout << itr->second << "|  |  |" << itr->first <<"|"<< std::endl;
-            // }
-            // exit(1);
+            
         }
         else
             error_message("error in server prototype");
     }
     
-
-    // std::vector<LOCATION> findcgi(std::vector<>)
-    // {
-
-    // }
-
     std::vector<HTTP_SERVER>::iterator ptr = data.begin();
     ValidData(*ptr);
     int flg;
@@ -533,24 +525,6 @@ std::vector<HTTP_SERVER>& configFile (int argc , char **argv,std::vector< HTTP_S
                 error_message("error server can only run one scripte");   
             if((ptr2->path == "php" || ptr2->path == "py" ) && flg2 == 0)
                 flg2 = 1;
-           
-            // if(ptr2->path == "/php")
-            // {
-            //      if(ptr2->cgi.length() < 5   || ptr2->cgi.find(".php") != ptr2->cgi.length() - 4)
-            //             error_message("error in file extention php");
-            //     if(ptr2->cgi_exe.empty())
-            //         error_message("cgi need exe");
-            // }
-            // if(!ptr2->index.empty())
-            // {
-            //     std::ifstream ff(ptr2->root + ptr2->index);
-            //     if(!ff.is_open() || ptr2->index[0] != '/')
-            //     {
-            //         std::cout << ptr2->root + ptr2->index << std::endl;
-            //         error_message("error open index");
-            //     }
-            //     ff.close();
-            // }
         }
         if(flg == 0)
             error_message("error not root /");

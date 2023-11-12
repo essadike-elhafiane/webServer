@@ -25,13 +25,15 @@ class response
 
         void sendStringResponse(Client &dataClient)
         {
-            size_t len = send(dataClient.getClientSocket(), dataClient.getCgi().c_str() , dataClient.getCgi().size(), 0);
+            ssize_t len = send(dataClient.getClientSocket(), dataClient.getCgi().c_str() , dataClient.getCgi().size(), 0);
             if (len < 0)
             {
                 std::cerr << "Failed to send response." << std::endl;
                 dataClient.error = 1000;
                 return ;
             }
+            if (len == 0)
+                return ;
             dataClient.SetCgi("");
         }
 
@@ -132,13 +134,10 @@ class response
                 }
                 else
                     type = "text/plain";
-                std::stringstream ss;
-                ss << dataClient.error;
-                key_error = ss.str() ;
-                configResponse = "HTTP/1.1 " + key_error + " " + code[200]  + "\r\nContent-Type: " + type  + "\r\nConnection: close\r\nContent-Length: ";
+                configResponse = "HTTP/1.1 200 " + code[200]  + "\r\nContent-Type: " + type  + "\r\nContent-Length: ";
                 return ;
             }
-            if(it != dataClient.configData.error_page.end() && !dataClient.error)
+            if(it != dataClient.configData.error_page.end())
             {
                 std::stringstream ss;
                 ss << dataClient.error;
@@ -170,8 +169,12 @@ class response
                     ptr->isredirection = 0;
                     configResponse += "Location: " + dataClient.getUrl() + "\r\n";
                     dataClient.clearLenSend();
-                    send(dataClient.getClientSocket(), configResponse.c_str(), configResponse.length(), 0);
+                    ssize_t len = send(dataClient.getClientSocket(), configResponse.c_str(), configResponse.length(), 0);
                     dataClient.error = 1000;
+                    if( len <= 0)
+                    {
+                        return 0;
+                    }
                     return 1;
                 }
                 if(!ptr->redirection.empty() && dataClient.path == ptr->path)
@@ -180,7 +183,11 @@ class response
                     std::string sit = ptr->redirection;
                     configResponse += "Location: " + sit + "\r\n";
                     dataClient.clearLenSend();
-                    send(dataClient.getClientSocket(), configResponse.c_str(), configResponse.length(), 0);
+                    ssize_t len = send(dataClient.getClientSocket(), configResponse.c_str(), configResponse.length(), 0);
+                    if( len <= 0)
+                    {
+                        return 0;
+                    }
                     dataClient.error = 1000;
                     return 1;
                 }
@@ -244,7 +251,15 @@ class response
                     std::stringstream m;
                     m << response.length();
                     configResponse = "HTTP/1.1 200 OK\r\nContent-Length: " +  m.str() + "\r\n\r\n" + response;
-                    send(dataClient.getClientSocket(), configResponse.c_str() , configResponse.length() , 0);
+                    ssize_t len = send(dataClient.getClientSocket(), configResponse.c_str() , configResponse.length() , 0);
+                    if (len < 0)
+                        {
+                            std::cerr << "Failed to send response." << std::endl;
+                            dataClient.error = 1000;
+                            return 0;
+                        }
+                        if(len == 0)
+                            return 0;
                     dataClient.error = 1000;
                     return 0 ;
                 }
@@ -260,20 +275,22 @@ class response
                         dataClient.error = 404;
                         sendResponse(dataClient);
                     }
-                    if (dataClient.error)
+                    else if (dataClient.error)
                     {
                         std::map<int , std::string> code;
                         assigne_code(code);
                         std::stringstream ss;
                         ss << dataClient.error;
                         configResponse = "HTTP/1.1 "+ ss.str() + " " + code[dataClient.error] + "\r\nContent-Type: text/html\r\nConnection: close\r\nContent-Length: 34\r\n\r\n<!DOCTYPE html>\n<h1>Error : " + ss.str() + "</h1>";
-                        size_t len = send(dataClient.getClientSocket(), configResponse.c_str() , configResponse.length() , 0);
+                        ssize_t len = send(dataClient.getClientSocket(), configResponse.c_str() , configResponse.length() , 0);
                         if (len < 0)
                         {
                             std::cerr << "Failed to send response." << std::endl;
                             dataClient.error = 1000;
                             return 0;
                         }
+                        if(len == 0)
+                            return 0;
                         return 0;
                     }
                     std::cerr << "Error open file"  << std::endl;
@@ -285,10 +302,16 @@ class response
                 m << r.tellg();
                 configResponse = configResponse + m.str() + "\r\n\r\n";
                 dataClient.lengthFile = static_cast<size_t>(r.tellg());
-                size_t len = send(dataClient.getClientSocket(), configResponse.c_str() , configResponse.length() , 0);
+                ssize_t len = send(dataClient.getClientSocket(), configResponse.c_str() , configResponse.length() , 0);
                 if (len < 0)
                 {
                     std::cerr << "Failed to send response." << std::endl;
+                    dataClient.error = 1000;
+                    r.close();
+                    return 0;
+                }
+                if (len == 0)
+                {
                     dataClient.error = 1000;
                     r.close();
                     return 0;
@@ -299,7 +322,6 @@ class response
             char buffer[30001];
             if(!input.is_open())
             {
-                // std::cout<< "error on file" << url << std::endl;
                 dataClient.error = 1000;
                 return 0;
             }
@@ -315,8 +337,8 @@ class response
                 dataClient.error = 1000;
                 return 0;
             }
-            size_t len = send(dataClient.getClientSocket(), buffer , input.tellg() - dataClient.getLenSend(), 0);
-            if (len < 0)
+            ssize_t len= send(dataClient.getClientSocket(), buffer , input.tellg() - dataClient.getLenSend(), 0);
+            if (len <= 0)
             {
                 std::cerr << "Failed to send response." << std::endl;
                 input.close();

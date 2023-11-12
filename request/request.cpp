@@ -347,7 +347,7 @@ void    request::read_request(Client& dataClient)
     // if (!dataClient.getHeaderStatus())
     //     dataClient.error = 408;
 }
-
+ 
 void request::delete_request(Client& dataClient)
 {
     std::string filename;
