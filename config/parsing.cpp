@@ -49,6 +49,8 @@ void listen_port(std::vector<std::string>::iterator &ptr , HTTP_SERVER &m , std:
         {
             if(std::find(m.port.begin() ,m.port.end() , atoi((*ptr).c_str()) )  != m.port.end() )
                 error_message( "error3 listen");
+            if(atoi((*ptr).c_str()) <= 0 || (*ptr).length() > 6)
+                error_message( "error3 listen");
             m.port.push_back(atoi((*ptr).c_str()));
         }
         if(i == 2 && (*ptr) == ";")
@@ -184,10 +186,12 @@ void error_page(std::vector<std::string>::iterator &ptr, HTTP_SERVER &m, std::ve
             error_message("error in error page");
         if (i == 1)
             m.error_page[atoi((*ptr).c_str())] = "";
-        if(i > 1)
+        if(i >= 1)
         {
             while(ptr != l && is_digit(*ptr))
             {
+                if((*ptr).length() >= 4)
+                    error_message("error in error page");
                 m.error_page[atoi((*ptr).c_str())] = "";
                 ptr++;
             }
@@ -396,7 +400,7 @@ void chek_line(std::vector<std::string> line)
 
 void ValidData(HTTP_SERVER data)
 {
-    if(data.error_page.empty() || data.port.empty() || data.client_max_body_size == -1 )
+    if(data.error_page.empty() || data.port.empty() || data.client_max_body_size == -1  || data.server_name.empty())
         error_message("error not enough data");
 }
 
@@ -494,6 +498,9 @@ std::vector<HTTP_SERVER>& configFile (int argc , char **argv,std::vector< HTTP_S
         flg = 0;
         flg = 0;
         flg2 = 0;
+        if(ptr->server_name.empty())
+            error_message("error no server name");
+
         for(std::vector<HTTP_SERVER>::iterator ptr1 = ptr + 1 ; ptr1 != data.end(); ptr1++)
         {
             if((!ptr->server_name.empty() && !ptr1->server_name.empty() &&  ptr->server_name == ptr1->server_name))
@@ -526,3 +533,6 @@ std::vector<HTTP_SERVER>& configFile (int argc , char **argv,std::vector< HTTP_S
     readcofg.close();
     return data;
 }
+
+
+// port

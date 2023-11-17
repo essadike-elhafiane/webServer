@@ -41,7 +41,12 @@ Web_Secript_Setter::Web_Secript_Setter(std::string exe, const std::string& scrip
             dataClient.error = 500;
             throw "HTTP 500 here";
         }
-        fcntl(ReadValue(), F_SETFL, O_NONBLOCK, FD_CLOEXEC);
+        if (fcntl(ReadValue(), F_SETFL, O_NONBLOCK, FD_CLOEXEC) < 0)
+        {
+            perror("fcnl failed");
+            dataClient.error = 500;
+            throw "HTTP 500 here";
+        }
         this->pid = pid;
         if (pid == 0) {
            if (dup2(this->R_pipes[1], STDOUT_FILENO) == -1 ||

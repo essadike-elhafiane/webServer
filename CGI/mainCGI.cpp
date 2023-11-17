@@ -6,7 +6,6 @@
 
 std::string mainCGI(std::string cgi_exe, Client &dataClient) {
 
-    std::cout << "hererrere\n\n";
     std::string responsesstring;
     std::string sscriptType = "php";
     try {
@@ -23,25 +22,23 @@ std::string mainCGI(std::string cgi_exe, Client &dataClient) {
         Web_Secript_Setter.dataClient = dataClient;
         int readEnd = Web_Secript_Setter.ReadValue();
         sleep(1);
-        char c;
         
+        char c;
         int p = 0;
         clock_t time = clock();
         while((p = read(readEnd , &c, 1)))
         {
           if (p == 0 || (clock() - time > 3000))
           {
-            std::cout << "error\n";
             dataClient.error = 500;
-            kill(Web_Secript_Setter.pid, SIGKILL);
             Web_Secript_Setter.close_pipes();
+            kill(Web_Secript_Setter.pid, SIGKILL);
             return "s";
           }
           if (p < 0)
             break;
           responsesstring += c;
         }
-        std::cout << responsesstring << std::endl;
         Web_Secript_Setter.close_pipes();
      } catch (const char* error) {
         std::cerr << "Error: " << error << std::endl;
