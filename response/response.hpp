@@ -26,15 +26,14 @@ class response
         void sendStringResponse(Client &dataClient)
         {
             ssize_t len = send(dataClient.getClientSocket(), dataClient.getCgi().c_str() , dataClient.getCgi().size(), 0);
-            if (len < 0)
+            if (len <= 0)
             {
                 std::cerr << "Failed to send response." << std::endl;
                 dataClient.error = 1000;
                 return ;
             }
-            if (len == 0)
-                return ;
             dataClient.SetCgi("");
+            dataClient.error = 1000;
         }
 
         void indexGenerator(std::string url, std::string &write, std::string pathLocation, Client& dataClient)

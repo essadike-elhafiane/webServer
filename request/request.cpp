@@ -358,7 +358,7 @@ void request::delete_request(Client& dataClient)
         return ;
     int result = std::remove(filename.c_str());
     if (result == 0) {
-        dataClient.error = 202;
+        dataClient.error = 200;
     } else {
         dataClient.error = 204;
     }
