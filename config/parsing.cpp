@@ -27,7 +27,6 @@ void bracket_part(std::vector<std::string>::iterator &ptr , Mycfg &obj)
         ptr++;
         i++;
     }
-    if (c == 0 )
         error_message( "error no server bracket");
 }
 
@@ -47,7 +46,11 @@ void listen_port(std::vector<std::string>::iterator &ptr , HTTP_SERVER &m , std:
                 error_message( "error1 listen");
         }
         if (i == 1)
+        {
+            if(std::find(m.port.begin() ,m.port.end() , atoi((*ptr).c_str()) )  != m.port.end() )
+                error_message( "error3 listen");
             m.port.push_back(atoi((*ptr).c_str()));
+        }
         if(i == 2 && (*ptr) == ";")
         {
             if(m.port[0] >= 65536)
@@ -120,7 +123,7 @@ void size_pars(std::vector<std::string>::iterator &ptr, HTTP_SERVER &m, std::vec
 {
     int i = 0;
     int j = 0;
-    // //std::cout<< *ptr;
+
     while(ptr != l && i < 3)
     {
         if(i == 1)
@@ -162,13 +165,6 @@ int is_digit(std::string str)
 
 void assigne_element(HTTP_SERVER &m , std::string str)
 {
-    // std::fstream open(str);
-    // if (!open.is_open())
-    // {
-    //     //std::cout<< str;
-    //     error_message("error open file 2");
-    // }
-    // open.close();
    for( std::map<int , std::string>::iterator  ptr = m.error_page.begin() ; ptr != m.error_page.end() ; ptr++)
    {
         if((*ptr).second.empty())
@@ -181,8 +177,7 @@ void assigne_element(HTTP_SERVER &m , std::string str)
 
 void error_page(std::vector<std::string>::iterator &ptr, HTTP_SERVER &m, std::vector<std::string>::iterator l)
 {
-    int i = 0;
-    // //std::cout<< *ptr;
+    int i = 0;;
     while(ptr != l && i < 3)
     {
         if(i == 1 && !is_digit(*ptr))
@@ -381,7 +376,7 @@ void chek_line(std::vector<std::string> line)
     for(std::vector<std::string>::iterator ptr = line.begin() ; ptr != line.end(); ptr++)
     {
         if(std::string::npos != (*ptr).find("location"))
-            ptr++;
+            continue;
         else if(*ptr != "{" && *ptr != "}" && std::string::npos == (*ptr).find("server"))
         {
             last = (*ptr).find_last_not_of(" \t");
@@ -506,7 +501,9 @@ std::vector<HTTP_SERVER>& configFile (int argc , char **argv,std::vector< HTTP_S
         }
         if(ptr != data.begin() && (ptr->client_max_body_size == -1))
             ptr->client_max_body_size = data.begin()->client_max_body_size;
-        for(std::vector<LOCATION>::iterator ptr2 = ptr->pages.begin() ; ptr2 != ptr->pages.end(); ptr2++ )
+        if(ptr->port.empty())
+            ptr->port.push_back(data.begin()->port[0]);
+        for(std::vector<LOCATION>::iterator ptr2 = ptr->pages.begin() ; ptr2 != ptr->pages.end(); ptr2++)
         {
             if(ptr2->path == "/upload" && flg1 == 1)
                 error_message("error server can only have one upload directory");
@@ -521,10 +518,6 @@ std::vector<HTTP_SERVER>& configFile (int argc , char **argv,std::vector< HTTP_S
                 std::cout << "|" << ptr2->root << "|" << ptr2->path << std::endl;
                 error_message("error not root ");
             }
-            if((ptr2->path == "php" || ptr2->path == "py" ) && flg2 == 1)
-                error_message("error server can only run one scripte");   
-            if((ptr2->path == "php" || ptr2->path == "py" ) && flg2 == 0)
-                flg2 = 1;
         }
         if(flg == 0)
             error_message("error not root /");
