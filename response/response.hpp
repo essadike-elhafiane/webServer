@@ -232,7 +232,6 @@ class response
         {
         
             std::string configResponse;
-            std::string line;
             std::string url;
             std::string response;
             url = dataClient.getUrl();

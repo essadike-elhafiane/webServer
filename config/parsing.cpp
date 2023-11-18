@@ -491,13 +491,10 @@ std::vector<HTTP_SERVER>& configFile (int argc , char **argv,std::vector< HTTP_S
     std::vector<HTTP_SERVER>::iterator ptr = data.begin();
     ValidData(*ptr);
     int flg;
-    int flg1;
-    int flg2 = 0;
+
     while(ptr != data.end())
     {
         flg = 0;
-        flg = 0;
-        flg2 = 0;
         if(ptr->server_name.empty())
             error_message("error no server name");
 
@@ -512,10 +509,6 @@ std::vector<HTTP_SERVER>& configFile (int argc , char **argv,std::vector< HTTP_S
             ptr->port.push_back(data.begin()->port[0]);
         for(std::vector<LOCATION>::iterator ptr2 = ptr->pages.begin() ; ptr2 != ptr->pages.end(); ptr2++)
         {
-            if(ptr2->path == "/upload" && flg1 == 1)
-                error_message("error server can only have one upload directory");
-            if(ptr2->path == "/upload" && flg1 == 0)
-                flg1 = 1;
             if(ptr2->path == "/" && flg ==1)  
                 error_message("error server can have only one root /");
             if(ptr2->path == "/" && flg == 0)
@@ -534,5 +527,3 @@ std::vector<HTTP_SERVER>& configFile (int argc , char **argv,std::vector< HTTP_S
     return data;
 }
 
-
-// port
