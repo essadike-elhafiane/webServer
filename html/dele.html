@@ -1,0 +1,15 @@
+<button onclick="sendDeleteRequest()">Delete</button>
+
+<script>
+  function sendDeleteRequest() {
+    fetch('http://127.0.0.1:10000/download/cerr.crtkk', {
+      method: 'DELETE'
+    })
+    .then(response => {
+      // Handle the response
+    })
+    .catch(error => {
+      // Handle any errors
+    });
+  }
+</script>
